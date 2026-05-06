@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const FADE_MS = 500;
-const MAX_WAIT_MS = 4_000; // paksa selesai setelah 4 detik (lebih cepat dari 8 detik)
+const FADE_MS = 700;
+const MAX_WAIT_MS = 8_000; // paksa selesai setelah 8 detik
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -41,7 +41,6 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
     const tryPlay = () => {
       setBuffering(false);
-      video.playbackRate = 1.35; // Putar video sedikit lebih cepat agar durasi muat singkat
       video.play().catch(finish); // autoplay diblokir → langsung selesai
     };
 

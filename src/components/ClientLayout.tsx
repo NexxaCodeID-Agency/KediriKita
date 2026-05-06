@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import LoadingScreen from './LoadingScreen';
 
 export const ReadyContext = createContext(false);
@@ -12,11 +12,15 @@ export function useReady() {
 const SESSION_KEY = 'kediri_intro_played';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  // Cek sessionStorage saat inisialisasi state — sudah pernah lihat intro di sesi ini?
-  const [ready, setReady] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(SESSION_KEY) === '1';
-  });
+  // Selalu mulai false agar server & client HTML cocok (tidak ada hydration mismatch)
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      setReady(true); // langsung skip loader, tanpa render LoadingScreen
+    }
+  }, []);
 
   const handleDone = () => {
     sessionStorage.setItem(SESSION_KEY, '1');

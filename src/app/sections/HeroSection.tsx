@@ -316,8 +316,8 @@ export default function HeroSection() {
           style={{
             willChange: "transform",
             zIndex: 5,
-            width: "clamp(140px, 42%, 520px)",
-            height: "clamp(55%, 75%, 85%)",
+            width: "clamp(180px, 48%, 520px)",
+            height: "clamp(65%, 80%, 88%)",
             opacity: 0,
           }}
         >
@@ -342,8 +342,8 @@ export default function HeroSection() {
           style={{
             willChange: "transform",
             zIndex: 5,
-            width: "clamp(140px, 42%, 520px)",
-            height: "clamp(55%, 75%, 85%)",
+            width: "clamp(180px, 48%, 520px)",
+            height: "clamp(65%, 80%, 88%)",
             opacity: 0,
           }}
         >
@@ -426,8 +426,8 @@ export default function HeroSection() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "clamp(500px, 65vw, 1000px)",
-            height: "320px",
+            width: "clamp(300px, 65vw, 1000px)",
+            height: "clamp(200px, 30vh, 320px)",
             background:
               "radial-gradient(ellipse, rgba(212,160,23,0.18) 0%, rgba(212,160,23,0.05) 40%, transparent 68%)",
             opacity: 0,
@@ -472,7 +472,7 @@ export default function HeroSection() {
           <h1
             style={{
               fontFamily: "var(--font-cinzel)",
-              fontSize: "clamp(3.2rem, 8vw, 6.8rem)",
+              fontSize: "clamp(3.6rem, 10vw, 6.8rem)",
               fontWeight: 900,
               letterSpacing: "0.08em",
               textAlign: "center",
@@ -517,7 +517,7 @@ export default function HeroSection() {
               fontSize: "0.85rem",
               fontWeight: 400,
               textAlign: "center",
-              maxWidth: "26rem",
+              maxWidth: "min(26rem, 88vw)",
               letterSpacing: "0.12em",
               textShadow:
                 "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",

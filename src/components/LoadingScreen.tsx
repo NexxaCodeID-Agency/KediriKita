@@ -10,6 +10,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const onDoneRef = useRef(onDone);
   const [fading, setFading] = useState(false);
   const [buffering, setBuffering] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Selalu simpan referensi onDone terbaru tanpa re-run effect
   useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
@@ -19,8 +20,9 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     if (!video) return;
 
     // Pilih video sesuai viewport — portrait/mobile pakai loadingMobile.mp4
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    video.src = isMobile ? '/loadingMobile.mp4' : '/loading.mp4';
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    setIsMobile(mobile);
+    video.src = mobile ? '/loadingMobile.mp4' : '/loading.mp4';
     video.load();
 
     let finished = false;
@@ -87,7 +89,9 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           inset: 0,
           width: '100%',
           height: '100%',
-          objectFit: 'cover',
+          // contain di mobile: tampilkan video penuh tanpa crop
+          // cover di desktop: isi layar penuh
+          objectFit: isMobile ? 'contain' : 'cover',
           willChange: 'transform',
           transform: 'translateZ(0)',
         }}

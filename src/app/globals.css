@@ -158,7 +158,7 @@ body {
 .hero-wrapper { height: 250vh; }
 
 @media (max-width: 767px) {
-  .hero-wrapper { height: 160vh; }
+  .hero-wrapper { height: 210vh; }
 }
 
 /* Override Leaflet popup */

@@ -141,7 +141,6 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
               Memuat...
             </span>
           </div>
-        </>
       )}
 
       {/* Instruksi/opsi sentuh untuk melewati */}

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const FADE_MS = 700;
-const MAX_WAIT_MS = 8_000; // paksa selesai setelah 8 detik
+const FADE_MS = 500;
+const MAX_WAIT_MS = 4_000; // paksa selesai setelah 4 detik (lebih cepat dari 8 detik)
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,6 +39,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
     const tryPlay = () => {
       setBuffering(false);
+      video.playbackRate = 1.35; // Putar video sedikit lebih cepat agar durasi muat singkat
       video.play().catch(finish); // autoplay diblokir → langsung selesai
     };
 
@@ -64,8 +65,16 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     };
   }, []);
 
+  const skipLoading = () => {
+    if (!fading) {
+      setFading(true);
+      setTimeout(() => onDoneRef.current(), FADE_MS);
+    }
+  };
+
   return (
     <div
+      onClick={skipLoading}
       style={{
         position: 'fixed',
         inset: 0,
@@ -77,6 +86,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         opacity: fading ? 0 : 1,
         transition: fading ? `opacity ${FADE_MS}ms ease` : 'none',
         pointerEvents: fading ? 'none' : 'auto',
+        cursor: 'pointer',
       }}
     >
       <video
@@ -89,9 +99,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           inset: 0,
           width: '100%',
           height: '100%',
-          // contain di mobile: tampilkan video penuh tanpa crop
-          // cover di desktop: isi layar penuh
-          objectFit: isMobile ? 'contain' : 'cover',
+          objectFit: 'cover',
           willChange: 'transform',
           transform: 'translateZ(0)',
         }}
@@ -121,16 +129,44 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
               animation: 'ls-spin 0.8s linear infinite',
             }}
           />
+            <span
+              style={{
+                fontSize: '11px',
+                letterSpacing: '0.2em',
+                color: 'rgba(212,160,23,0.5)',
+                fontFamily: 'serif',
+                textTransform: 'uppercase',
+              }}
+            >
+              Memuat...
+            </span>
+          </div>
+        </>
+      )}
+
+      {/* Instruksi/opsi sentuh untuk melewati */}
+      {!buffering && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '2.5rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: fading ? 0 : 0.5,
+            transition: 'opacity 0.3s',
+            animation: 'ls-pulse 2s infinite',
+          }}
+        >
           <span
             style={{
               fontSize: '11px',
-              letterSpacing: '0.2em',
-              color: 'rgba(212,160,23,0.5)',
-              fontFamily: 'serif',
+              letterSpacing: '0.15em',
+              color: 'rgba(255,255,255,0.7)',
+              fontFamily: 'sans-serif',
               textTransform: 'uppercase',
             }}
           >
-            Memuat...
+            Ketuk &middot; Lewati
           </span>
         </div>
       )}
@@ -138,6 +174,10 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
       <style>{`
         @keyframes ls-spin {
           to { transform: rotate(360deg); }
+        }
+        @keyframes ls-pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.7; }
         }
       `}</style>
     </div>

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(ffprobe *)",
+      "Bash(ffmpeg *)",
+      "Bash(npx next *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(identify /c/file_code/kedirikita/public/assets/images/icontengah.avif)",
+      "Bash(Get-ChildItem -Path \"C:\\\\file_code\\\\kedirikita\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(pnpm type-check *)",
+      "Bash(pnpm dev *)",
+      "Bash(kill %1)",
+      "Bash(npm run *)",
+      "Bash(jobs -l)",
+      "Bash(node *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\file_code\\\\kedirikita\" -Recurse -Force)",
+      "Bash(Select-Object -First 50)",
+      "Bash(Format-Table Name, FullName)"
+    ]
+  }
+}

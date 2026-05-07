@@ -272,8 +272,12 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
-    this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
-    this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
+    // Mobile: items 25% lebih kecil supaya nggak terlalu mendominasi viewport portrait
+    const isMobile = this.screen.width < 768;
+    const baseH = isMobile ? 675 : 900;
+    const baseW = isMobile ? 525 : 700;
+    this.plane.scale.y = (this.viewport.height * (baseH * this.scale)) / this.screen.height;
+    this.plane.scale.x = (this.viewport.width * (baseW * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
     this.width = this.plane.scale.x + this.padding;
@@ -318,6 +322,9 @@ class App {
     });
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
+    this.gl.canvas.style.width = '100%';
+    this.gl.canvas.style.height = '100%';
+    this.gl.canvas.style.display = 'block';
     this.container.appendChild(this.gl.canvas);
   }
   createCamera() {
@@ -452,7 +459,7 @@ class App {
 
     // Touch
     this.container.addEventListener('touchstart', this.boundOnTouchDown, { passive: true });
-    this.container.addEventListener('touchmove',  this.boundOnTouchMove, { passive: false });
+    this.container.addEventListener('touchmove',  this.boundOnTouchMove, { passive: true });
     this.container.addEventListener('touchend',   this.boundOnTouchUp);
 
     window.addEventListener('resize', this.boundOnResize);

@@ -53,11 +53,8 @@ export default function Carauser() {
   }, []);
 
   return (
-    <div ref={sectionRef} className="relative w-full" style={{ height: "120vh" }}>
-      <div
-        className="sticky overflow-hidden top-0 w-full"
-        style={{ height: "100dvh" }}
-      >
+    <div ref={sectionRef} className="carauser-wrapper relative w-full">
+      <div className="carauser-sticky sticky overflow-hidden top-0 w-full">
         {/* Background */}
         <div
           className="absolute inset-0"

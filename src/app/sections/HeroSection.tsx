@@ -149,69 +149,9 @@ export default function HeroSection() {
     return () => ctx.revert();
   }, [ready]);
 
-  // ─── Scroll story ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    const ctx = gsap.context(() => {
-      // 1. Langit makin gelap sepanjang scroll
-      gsap.to(skyOverlayRef.current, {
-        opacity: 0.82,
-        ease: "none",
-        scrollTrigger: {
-          trigger: wrapper,
-          start: "top top",
-          end: "bottom top",
-          scrub: 2,
-        },
-      });
-
-      // 2. Gapura membuka — bergerak ke sisi, seperti pintu terbuka
-      const spreadCfg = {
-        ease: "power2.inOut",
-        scrollTrigger: {
-          trigger: wrapper,
-          start: "28% top",
-          end: "bottom top",
-          scrub: 2.5,
-        },
-      };
-      gsap.to(gapuraKiriRef.current, { x: "-14vw", ...spreadCfg });
-      gsap.to(gapuraKananRef.current, { x: "14vw", ...spreadCfg });
-
-      // 3. Title blur saat menghilang
-      gsap.to(teksRef.current, {
-        filter: "blur(6px)",
-        ease: "power1.in",
-        scrollTrigger: {
-          trigger: wrapper,
-          start: "20% top",
-          end: "60% top",
-          scrub: 1,
-        },
-      });
-
-      // 4. Cahaya kota muncul di antara gapura yang terbuka
-      gsap.fromTo(
-        gateRevealRef.current,
-        { opacity: 0, scale: 0.08 },
-        {
-          opacity: 1,
-          scale: 6,
-          ease: "power2.inOut",
-          scrollTrigger: {
-            trigger: wrapper,
-            start: "52% top",
-            end: "bottom top",
-            scrub: 2,
-          },
-        },
-      );
-    });
-
-    return () => ctx.revert();
-  }, []);
+  // Scroll story dihilangkan: hero = 100vh full screen, scroll langsung ke section berikutnya
+  // tanpa "gap" parallax. Entrance animation (gapura rising, awan fade, text appear) tetap ada
+  // karena di-trigger oleh `ready`, bukan scroll.
 
   // ─── Mouse parallax ───────────────────────────────────────────────────────
   useEffect(() => {

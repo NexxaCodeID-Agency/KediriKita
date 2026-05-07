@@ -28,11 +28,8 @@ const poinData = [
 
 export default function CardSection() {
   return (
-    <div className="relative w-full" style={{ height: "130vh" }}>
-      <div
-        className="sticky top-0 w-full overflow-hidden"
-        style={{ height: "100dvh" }}
-      >
+    <div className="card-section-wrapper relative w-full">
+      <div className="card-section-sticky sticky top-0 w-full overflow-hidden">
         {/* Background */}
         <div
           className="absolute inset-0"
@@ -360,7 +357,8 @@ export default function CardSection() {
               {/* Badge */}
               <div className="flex justify-center mt-6">
                 <span
-                  className="text-[8.5px] tracking-[3px] uppercase px-5 py-1.5"
+                  onClick={() => (window.location.href = "/map")}
+                  className="text-[8.5px] tracking-[3px] uppercase px-5 py-1.5 cursor-pointer"
                   style={{
                     fontFamily: "var(--font-lato)",
                     background:
@@ -369,6 +367,17 @@ export default function CardSection() {
                     border: "1px solid rgba(200,168,75,0.38)",
                     borderRadius: "2px",
                     letterSpacing: "0.28em",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, rgba(106,72,14,1) 0%, rgba(140,100,20,1) 100%)";
+                    e.currentTarget.style.borderColor = "rgba(212,160,23,0.8)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, rgba(74,46,6,0.85) 0%, rgba(106,72,14,0.85) 100%)";
+                    e.currentTarget.style.borderColor = "rgba(200,168,75,0.38)";
                   }}
                 >
                   ✦ Explore Kediri

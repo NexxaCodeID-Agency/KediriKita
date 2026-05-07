@@ -8,7 +8,7 @@ const Footer        = dynamic(() => import("./sections/Footer"));
 
 export default function Home() {
   return (
-    <main className="w-full overflow-x-hidden">
+    <main>
       <HeroSection />
       <KediriSection />
       <CardSection />

@@ -31,7 +31,7 @@ export default function CardSection() {
     <div className="relative w-full" style={{ height: "130vh" }}>
       <div
         className="sticky top-0 w-full overflow-hidden"
-        style={{ height: "100vh" }}
+        style={{ height: "100dvh" }}
       >
         {/* Background */}
         <div
@@ -184,10 +184,10 @@ export default function CardSection() {
         {/* Main layout — centered on mobile, left-anchored on desktop */}
         <div
           className="relative z-10 h-full flex items-center justify-center md:justify-start px-4 md:px-0 md:pl-10 lg:pl-24"
-          style={{ paddingTop: "5vh" }}
+          style={{ paddingTop: "clamp(3vh, 5vh, 6vh)" }}
         >
           {/* Card wrapper */}
-          <div className="relative w-[min(360px,92vw)] md:w-90">
+          <div className="relative w-[min(340px,90vw)] md:w-[22.5rem]">
             {/* Glow di belakang card */}
             <div
               className="absolute inset-0 pointer-events-none"
@@ -223,7 +223,7 @@ export default function CardSection() {
 
             {/* Body card */}
             <div
-              className="relative rounded-2xl flex flex-col px-8 py-14"
+              className="relative rounded-2xl flex flex-col px-6 py-10 sm:px-8 sm:py-14"
               style={{
                 zIndex: 10,
                 background:

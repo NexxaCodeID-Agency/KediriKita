@@ -39,8 +39,7 @@ export default function StreetView({ url, name }: StreetViewProps) {
 
       <iframe
         src={url}
-        width="100%"
-        height="400"
+        className="w-full h-[260px] sm:h-[340px] md:h-[400px]"
         style={{ border: 0, display: "block" }}
         allowFullScreen
         loading="lazy"

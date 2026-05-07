@@ -88,7 +88,10 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         transition: fading ? `opacity ${FADE_MS}ms ease` : "none",
         pointerEvents: fading ? "none" : "auto",
         cursor: "pointer",
-        minHeight: "100dvh", // pastikan tutup seluruh viewport, termasuk di mobile dengan dynamic viewport height
+        width: "100vw",
+        height: "100dvh", // dynamic viewport height — fix untuk mobile address bar
+        minHeight: "100dvh",
+        overflow: "hidden",
       }}
     >
       <video
@@ -102,6 +105,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           width: "100%",
           height: "100%",
           objectFit: "cover",
+          objectPosition: "center",
           willChange: "transform",
           transform: "translateZ(0)",
         }}
@@ -109,65 +113,22 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
       {/* Spinner saat buffering */}
       {buffering && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "2.5rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.75rem",
-          }}
-        >
-          <div
-            style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
-              border: "2px solid rgba(212,160,23,0.15)",
-              borderTopColor: "rgba(212,160,23,0.8)",
-              animation: "ls-spin 0.8s linear infinite",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              color: "rgba(212,160,23,0.5)",
-              fontFamily: "serif",
-              textTransform: "uppercase",
-            }}
-          >
-            Memuat...
-          </span>
+        <div className="ls-bottom-info">
+          <div className="ls-spinner" />
+          <span className="ls-label ls-label-buffer">Memuat...</span>
         </div>
       )}
 
       {/* Instruksi/opsi sentuh untuk melewati */}
       {!buffering && (
         <div
+          className="ls-bottom-info ls-skip-hint"
           style={{
-            position: "absolute",
-            bottom: "2.5rem",
-            left: "50%",
-            transform: "translateX(-50%)",
             opacity: fading ? 0 : 0.5,
-            transition: "opacity 0.3s",
-            animation: "ls-pulse 2s infinite",
           }}
         >
-          <span
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.15em",
-              color: "rgba(255,255,255,0.7)",
-              fontFamily: "sans-serif",
-              textTransform: "uppercase",
-            }}
-          >
-            Ketuk &middot; Lewati
+          <span className="ls-label ls-label-skip">
+            {isMobile ? "Ketuk untuk Lewati" : "Ketuk · Lewati"}
           </span>
         </div>
       )}
@@ -179,6 +140,59 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         @keyframes ls-pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.7; }
+        }
+        .ls-bottom-info {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: max(2.5rem, env(safe-area-inset-bottom, 0px) + 1.25rem);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0 1rem;
+          width: 100%;
+          max-width: 24rem;
+          text-align: center;
+        }
+        .ls-spinner {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          border: 2px solid rgba(212,160,23,0.15);
+          border-top-color: rgba(212,160,23,0.8);
+          animation: ls-spin 0.8s linear infinite;
+        }
+        .ls-label {
+          font-size: 11px;
+          letter-spacing: 0.2em;
+          color: rgba(212,160,23,0.5);
+          font-family: serif;
+          text-transform: uppercase;
+        }
+        .ls-label-skip {
+          letter-spacing: 0.15em;
+          color: rgba(255,255,255,0.7);
+          font-family: sans-serif;
+        }
+        .ls-skip-hint {
+          transition: opacity 0.3s;
+          animation: ls-pulse 2s infinite;
+        }
+        @media (max-width: 480px) {
+          .ls-bottom-info {
+            bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
+            gap: 0.5rem;
+          }
+          .ls-spinner {
+            width: 24px;
+            height: 24px;
+            border-width: 2px;
+          }
+          .ls-label {
+            font-size: 10px;
+            letter-spacing: 0.18em;
+          }
         }
       `}</style>
     </div>

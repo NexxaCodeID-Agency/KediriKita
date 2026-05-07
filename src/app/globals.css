@@ -161,6 +161,78 @@ body {
   .hero-wrapper { height: 210vh; }
 }
 
+/* ─── Hero responsive typography ─────────────────────────── */
+.hero-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.38em;
+  margin-bottom: 1.1rem;
+}
+
+.hero-desc {
+  font-size: 0.85rem;
+  max-width: min(26rem, 88vw);
+  letter-spacing: 0.12em;
+}
+
+.hero-scroll-indicator {
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+
+@media (max-width: 480px) {
+  .hero-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    margin-bottom: 0.85rem;
+  }
+  .hero-desc {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    line-height: 1.75;
+    max-width: 90vw;
+  }
+  .hero-scroll-indicator {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
+    font-size: 0.55rem !important;
+    letter-spacing: 0.18em !important;
+  }
+}
+
+/* ─── Carauser scroll hint button ────────────────────────── */
+.carauser-scroll-hint {
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  padding: 0.5rem 1.4rem;
+}
+
+@media (max-width: 480px) {
+  .carauser-scroll-hint {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    padding: 0.45rem 1rem;
+  }
+}
+
+/* ─── Footer responsive padding ──────────────────────────── */
+.footer-inner {
+  padding: 6rem 2rem 0;
+}
+.footer-links-grid {
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 640px) {
+  .footer-inner {
+    padding: 5rem 1.25rem 0;
+  }
+  .footer-links-grid {
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+}
+
 /* Override Leaflet popup */
 .custom-popup .leaflet-popup-content-wrapper {
   background: transparent !important;

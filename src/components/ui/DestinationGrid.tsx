@@ -39,11 +39,11 @@ export default function DestinationGrid({
     );
 
   return (
-    <section className="min-h-screen px-6 pt-10 pb-24 max-w-7xl mx-auto">
+    <section className="min-h-screen px-4 sm:px-6 pt-8 sm:pt-10 pb-20 sm:pb-24 max-w-7xl mx-auto">
       {/* Back nav */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 mb-10 text-sm transition-colors duration-200"
+        className="inline-flex items-center gap-2 mb-8 sm:mb-10 text-sm transition-colors duration-200"
         style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
       >
         <ArrowLeft size={16} />
@@ -51,15 +51,15 @@ export default function DestinationGrid({
       </Link>
 
       {/* Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-10 sm:mb-12 px-2">
         <p
-          className="text-xs tracking-[0.3em] mb-3 uppercase"
+          className="text-[10px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] mb-2 sm:mb-3 uppercase"
           style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
         >
           ✦ Temukan Destinasimu ✦
         </p>
         <h1
-          className="text-4xl md:text-5xl font-bold text-white"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-white"
           style={{
             fontFamily: "var(--font-cinzel)",
             textShadow: "0 2px 16px rgba(0,0,0,0.6)",
@@ -68,7 +68,7 @@ export default function DestinationGrid({
           Jelajahi Kediri
         </h1>
         <p
-          className="mt-4 text-sm max-w-md mx-auto"
+          className="mt-3 sm:mt-4 text-xs sm:text-sm max-w-md mx-auto leading-relaxed"
           style={{
             color: "rgba(255,255,255,0.55)",
             fontFamily: "var(--font-lato)",
@@ -80,14 +80,14 @@ export default function DestinationGrid({
       </div>
 
       {/* Search bar */}
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-5 sm:mb-6">
         <div className="relative w-full max-w-md">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari destinasi..."
-            className="w-full px-5 py-3 rounded-full text-sm outline-none"
+            className="w-full px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-sm outline-none"
             style={{
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.12)",
@@ -104,7 +104,7 @@ export default function DestinationGrid({
           />
           {/* Icon search */}
           <span
-            className="absolute right-5 top-1/2 -translate-y-1/2 text-sm"
+            className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-sm"
             style={{ color: "rgba(255,255,255,0.3)" }}
           >
             🔍
@@ -113,12 +113,12 @@ export default function DestinationGrid({
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10">
+      <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className="px-4 py-1.5 rounded-full text-xs tracking-widest uppercase transition-all duration-200"
+            className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-200"
             style={{
               fontFamily: "var(--font-lato)",
               background:
@@ -162,7 +162,7 @@ export default function DestinationGrid({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {filtered.map((item, i) => (
             <motion.div
               key={item.id}
@@ -197,7 +197,7 @@ export default function DestinationGrid({
                   }}
                 >
                   {/* Gambar */}
-                  <div className="relative w-full h-56 overflow-hidden">
+                  <div className="relative w-full h-48 sm:h-56 overflow-hidden">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -224,15 +224,15 @@ export default function DestinationGrid({
                   </div>
 
                   {/* Info */}
-                  <div className="p-5">
+                  <div className="p-4 sm:p-5">
                     <h2
-                      className="text-white text-lg font-semibold leading-snug"
+                      className="text-white text-base sm:text-lg font-semibold leading-snug"
                       style={{ fontFamily: "var(--font-cinzel)" }}
                     >
                       {item.name}
                     </h2>
                     <p
-                      className="text-sm mt-2 line-clamp-2 leading-relaxed"
+                      className="text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed"
                       style={{
                         color: "rgba(255,255,255,0.5)",
                         fontFamily: "var(--font-lato)",
@@ -241,7 +241,7 @@ export default function DestinationGrid({
                       {item.short_desc}
                     </p>
                     <span
-                      className="inline-block mt-4 text-xs tracking-widest uppercase"
+                      className="inline-block mt-3 sm:mt-4 text-[10px] sm:text-xs tracking-widest uppercase"
                       style={{
                         color: "var(--color-emas)",
                         fontFamily: "var(--font-lato)",

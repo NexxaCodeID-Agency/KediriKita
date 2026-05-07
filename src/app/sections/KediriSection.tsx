@@ -153,11 +153,11 @@ export default function KediriSection() {
 
       {/* Konten */}
       <div
-        className="relative flex flex-col items-center justify-center text-center px-6"
+        className="relative flex flex-col items-center justify-center text-center px-5 sm:px-6"
         style={{
-          minHeight: "100vh",
-          paddingTop: "10vh",
-          paddingBottom: "10vh",
+          minHeight: "100dvh",
+          paddingTop: "clamp(6vh, 10vh, 12vh)",
+          paddingBottom: "clamp(8vh, 10vh, 12vh)",
           zIndex: 10,
         }}
       >
@@ -201,13 +201,13 @@ export default function KediriSection() {
         {/* Heading */}
         <div
           ref={headingRef}
-          className="flex flex-wrap items-center justify-center gap-3 lg:gap-5 mb-2"
+          className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-5 mb-2"
           style={{ opacity: 0 }}
         >
           <h2
             style={{
               fontFamily: "var(--font-cinzel)",
-              fontSize: "clamp(2.2rem, 6vw, 5rem)",
+              fontSize: "clamp(1.9rem, 7vw, 5rem)",
               fontWeight: 900,
               letterSpacing: "0.06em",
               lineHeight: 1.1,
@@ -221,7 +221,7 @@ export default function KediriSection() {
           <h2
             style={{
               fontFamily: "var(--font-cinzel)",
-              fontSize: "clamp(2.2rem, 6vw, 5rem)",
+              fontSize: "clamp(1.9rem, 7vw, 5rem)",
               fontWeight: 900,
               letterSpacing: "0.06em",
               lineHeight: 1.1,
@@ -253,14 +253,13 @@ export default function KediriSection() {
           style={{
             fontFamily: "var(--font-lato)",
             color: "rgba(255,255,255,0.82)",
-            fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
-            fontWeight: 700,
-            maxWidth: "34rem",
-            lineHeight: 1.9,
-            letterSpacing: "0.05em",
+            fontSize: "clamp(0.78rem, 1.5vw, 1rem)",
+            fontWeight: 600,
+            maxWidth: "min(34rem, 92vw)",
+            lineHeight: 1.85,
+            letterSpacing: "0.04em",
             textShadow: "0 2px 8px rgba(0,0,0,0.8)",
             opacity: 0,
-            
           }}
         >
           Lebih dari sekadar titik di peta Jawa Timur, Kediri adalah perpaduan

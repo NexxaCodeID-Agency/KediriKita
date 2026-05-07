@@ -56,7 +56,7 @@ export default function Carauser() {
     <div ref={sectionRef} className="relative w-full" style={{ height: "120vh" }}>
       <div
         className="sticky overflow-hidden top-0 w-full"
-        style={{ height: "100vh" }}
+        style={{ height: "100dvh" }}
       >
         {/* Background */}
         <div
@@ -253,19 +253,15 @@ export default function Carauser() {
 
         {/* Scroll hint — button */}
         <button
-          className="absolute"
+          className="carauser-scroll-hint absolute"
           style={{
-            bottom: "1.5rem",
             left: "50%",
             transform: "translateX(-50%)",
             fontFamily: "var(--font-lato)",
-            fontSize: "0.6rem",
-            letterSpacing: "0.35em",
             textTransform: "uppercase",
             color: "rgba(255,255,255,0.45)",
             background: "transparent",
             border: "1px solid rgba(212,160,23,0.25)",
-            padding: "0.5rem 1.4rem",
             borderRadius: "999px",
             cursor: "pointer",
             whiteSpace: "nowrap",

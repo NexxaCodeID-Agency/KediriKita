@@ -252,7 +252,6 @@ export default function HeroSection() {
       <div
         className="sticky top-0 w-full overflow-hidden"
         style={{
-          height: "100vh",
           height: "100dvh", // dynamic viewport height — fix mobile browser
         }}
       >
@@ -452,21 +451,20 @@ export default function HeroSection() {
         {/* z10 — Teks konten */}
         <div
           ref={teksRef}
-          className="absolute inset-0 flex flex-col items-center justify-center"
+          className="absolute inset-0 flex flex-col items-center justify-center px-5"
           style={{ willChange: "transform, filter", zIndex: 10, opacity: 0 }}
         >
           <p
+            className="hero-subtitle"
             style={{
               fontFamily: "var(--font-playfair)",
               color: "var(--color-emas-muda)",
-              fontSize: "0.85rem",
               fontWeight: 600,
-              letterSpacing: "0.38em",
               textTransform: "uppercase",
               textShadow:
                 "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9), 0 0 15px rgba(240,192,64,0.4)",
-              marginBottom: "1.1rem",
               opacity: 1,
+              textAlign: "center",
             }}
           >
             ✦ Selamat Datang di ✦
@@ -475,7 +473,7 @@ export default function HeroSection() {
           <h1
             style={{
               fontFamily: "var(--font-cinzel)",
-              fontSize: "clamp(3.6rem, 10vw, 6.8rem)",
+              fontSize: "clamp(2.6rem, 11vw, 6.8rem)",
               fontWeight: 900,
               letterSpacing: "0.08em",
               textAlign: "center",
@@ -514,14 +512,12 @@ export default function HeroSection() {
           />
 
           <p
+            className="hero-desc"
             style={{
               fontFamily: "var(--font-lato)",
               color: "#FFFFFF",
-              fontSize: "0.85rem",
               fontWeight: 400,
               textAlign: "center",
-              maxWidth: "min(26rem, 88vw)",
-              letterSpacing: "0.12em",
               textShadow:
                 "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
               lineHeight: 1.9,
@@ -534,7 +530,7 @@ export default function HeroSection() {
 
           {/* Scroll indicator */}
           <div
-            className="absolute bottom-8 flex flex-col items-center gap-2"
+            className="hero-scroll-indicator absolute flex flex-col items-center gap-2"
             style={{
               color: "rgba(255,255,255,0.4)",
               fontSize: "0.62rem",

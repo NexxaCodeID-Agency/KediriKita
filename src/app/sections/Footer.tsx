@@ -90,11 +90,11 @@ export default function Footer() {
       />
 
       <div
-        className="relative mx-auto"
-        style={{ maxWidth: "1200px", padding: "6rem 2rem 0" }}
+        className="relative mx-auto footer-inner"
+        style={{ maxWidth: "1200px" }}
       >
         {/* Branding */}
-        <div className="flex flex-col items-center mb-14">
+        <div className="flex flex-col items-center mb-10 sm:mb-14">
           <p
             style={{
               fontFamily: "var(--font-lato)",
@@ -147,8 +147,8 @@ export default function Footer() {
 
         {/* Links grid */}
         <div
-          className="grid gap-10"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", marginBottom: "4rem" }}
+          className="grid footer-links-grid"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}
         >
           {LINKS.map((col) => (
             <div key={col.heading}>

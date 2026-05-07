@@ -73,7 +73,7 @@ return (
   <PageTransition>
     <main className="min-h-screen text-white" style={{ background: "#070712" }}>
       {/* Hero Foto */}
-      <div className="relative w-full h-[75vh]">
+      <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
         <Image
           src={destination.image}
         alt={destination.name}
@@ -91,7 +91,7 @@ return (
 
       <Link
         href="/destinasi"
-        className="absolute top-6 left-6 inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full backdrop-blur-sm transition-all hover:opacity-80"
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full backdrop-blur-sm transition-all hover:opacity-80"
         style={{
           color: "#d4a017",
           border: "1px solid rgba(212,160,23,0.4)",
@@ -103,9 +103,9 @@ return (
         Kembali
       </Link>
 
-      <div className="absolute bottom-10 left-8 right-8">
+      <div className="absolute bottom-6 sm:bottom-10 left-5 right-5 sm:left-8 sm:right-8">
         <span
-          className="text-xs uppercase tracking-widest px-3 py-1 rounded-full"
+          className="text-[10px] sm:text-xs uppercase tracking-widest px-2.5 sm:px-3 py-1 rounded-full inline-block"
           style={{
             background: "rgba(212,160,23,0.85)",
             color: "#1A1A2E",
@@ -115,13 +115,13 @@ return (
           {destination.category}
         </span>
         <h1
-          className="text-4xl md:text-6xl font-bold mt-3 leading-tight"
+          className="text-2xl sm:text-4xl md:text-6xl font-bold mt-2 sm:mt-3 leading-tight"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
           {destination.name}
         </h1>
         <p
-          className="mt-2 text-sm"
+          className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
           style={{
             color: "rgba(255,255,255,0.6)",
             fontFamily: "var(--font-lato)",
@@ -133,7 +133,7 @@ return (
     </div>
 
     {/* Konten */}
-    <div className="max-w-3xl mx-auto px-6 py-16 space-y-16">
+    <div className="max-w-3xl mx-auto px-5 sm:px-6 py-12 sm:py-16 space-y-12 sm:space-y-16">
       {/* Deskripsi */}
       <div>
         <p
@@ -166,18 +166,17 @@ return (
       {destination.gallery && destination.gallery.length > 0 && (
         <div>
           <p
-            className="text-xs uppercase tracking-[0.3em] mb-6"
+            className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6"
             style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
           >
             ✦ Galeri Foto
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {destination.gallery.map((url, i) => (
               <div
                 key={i}
-                className="relative rounded-xl overflow-hidden"
+                className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
                 style={{
-                  height: "200px",
                   border: "1px solid rgba(212,160,23,0.2)",
                 }}
               >
@@ -196,7 +195,7 @@ return (
       {/* Tips */}
       {destination.tips && (
         <div
-          className="rounded-2xl p-8"
+          className="rounded-2xl p-6 sm:p-8"
           style={{
             background: "rgba(212,160,23,0.05)",
             border: "1px solid rgba(212,160,23,0.2)",

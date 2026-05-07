@@ -251,7 +251,10 @@ export default function HeroSection() {
     <div ref={wrapperRef} className="relative hero-wrapper">
       <div
         className="sticky top-0 w-full overflow-hidden"
-        style={{ height: "100vh" }}
+        style={{
+          height: "100vh",
+          height: "100dvh", // dynamic viewport height — fix mobile browser
+        }}
       >
         {/* z0 — Sky gradient */}
         <div

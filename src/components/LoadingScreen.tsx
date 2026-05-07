@@ -88,6 +88,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         transition: fading ? `opacity ${FADE_MS}ms ease` : "none",
         pointerEvents: fading ? "none" : "auto",
         cursor: "pointer",
+        minHeight: "100dvh", // pastikan tutup seluruh viewport, termasuk di mobile dengan dynamic viewport height
       }}
     >
       <video

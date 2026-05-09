@@ -17,6 +17,7 @@ const GALLERY_ITEMS = [
   { image: "/assets/images/gethukpisang.avif", text: "Getuk Pisang" },
   { image: "/assets/images/Gkelud.webp", text: "Gunung Kelud" },
   { image: "/assets/images/jaranan.jpg", text: "Jaranan" },
+
   { image: "/assets/images/airlanga.jpeg", text: "Museum Airlangga" },
   {
     image: "/assets/images/simpang-lima-gumul.webp",
@@ -243,7 +244,7 @@ export default function Carauser() {
           className="relative w-full h-full"
           style={{ zIndex: 10, paddingTop: "clamp(5rem, 14vh, 9rem)" }}
         >
-          {/* View Desktop: Menggunakan CircularGallery */}
+          {/* Desktop — CircularGallery (OGL) */}
           <div className="hidden md:block w-full h-full">
             <CircularGallery
               items={GALLERY_ITEMS}
@@ -256,7 +257,7 @@ export default function Carauser() {
             />
           </div>
 
-          {/* View Mobile: 3D coverflow Three.js */}
+          {/* Mobile — MobileGallery3D (Three.js + R3F) bend curve circular */}
           <div className="md:hidden w-full h-full">
             <MobileGallery3D items={GALLERY_ITEMS} />
           </div>

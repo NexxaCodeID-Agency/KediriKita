@@ -6,9 +6,14 @@ import * as THREE from "three";
 
 type Item = { image: string; text: string };
 
+// Mobile-tuned dimensions (world units)
 const CARD_W = 1.55;
-const CARD_H = 2.25;
-const SLOT_GAP = 1.55;
+const CARD_H = 2.15;
+const SLOT_GAP = 1.7;
+
+// Circular arc params — chord-based bend (sama seperti CircularGallery OGL)
+const ARC_H = 2.6; // chord half-length: x dimana arc menyentuh y=-ARC_B
+const ARC_B = 0.7; // sagitta — seberapa dalam tepi arc menukik
 
 const VERTEX = /* glsl */ `
   varying vec2 vUv;
@@ -44,19 +49,19 @@ const FRAGMENT = /* glsl */ `
     );
     vec3 col = texture2D(uTex, uv).rgb;
 
-    // gradient gelap di bawah supaya teks ovrlay terbaca
-    float bottomFade = smoothstep(0.0, 0.42, vUv.y);
-    col *= mix(0.42, 1.0, bottomFade);
-
-    // dim non-active cards
+    // Dim non-active
     col *= mix(0.55, 1.0, uActive);
 
-    // gold inner border glow (active only)
+    // Gold inner border glow (active only)
     float borderDist = abs(sdRound(vUv - 0.5, vec2(0.5 - uRadius), uRadius));
-    float borderGlow = (1.0 - smoothstep(0.0, 0.045, borderDist)) * uActive * 0.55;
+    float borderGlow = (1.0 - smoothstep(0.0, 0.04, borderDist)) * uActive * 0.6;
     col += vec3(0.94, 0.75, 0.25) * borderGlow;
 
-    // rounded mask
+    // Vignette gelap di bawah supaya lebih sinematik
+    float bottomFade = smoothstep(0.0, 0.35, vUv.y);
+    col *= mix(0.55, 1.0, bottomFade);
+
+    // Rounded mask
     float d = sdRound(vUv - 0.5, vec2(0.5 - uRadius), uRadius);
     float mask = 1.0 - smoothstep(-0.003, 0.003, d);
 
@@ -92,40 +97,48 @@ function Card({ idx, total, texture, imgRes, progressRef }: CardProps) {
     const m = meshRef.current;
     if (!m) return;
 
-    // Wrap offset ke range [-total/2, total/2] — pakai modulo proper
-    // supaya tahan terhadap progress berapapun (momentum jauh, swipe terus, dst)
+    // Wrap offset ke [-half, half) — modulo proper supaya tahan progress berapapun
     const half = total / 2;
     const raw = idx - progressRef.current;
     const off = ((raw + half) % total + total) % total - half;
-
     const absO = Math.abs(off);
 
-    const activeAmount = Math.max(0, 1 - absO * 0.55);
+    // X mengikuti slot
+    const x = off * SLOT_GAP;
 
-    const tx = off * SLOT_GAP;
+    // Bend arc circular (chord formula — sama dengan CircularGallery)
+    const R = (ARC_H * ARC_H + ARC_B * ARC_B) / (2 * ARC_B);
+    const eff = Math.min(Math.abs(x), ARC_H);
+    const arc = R - Math.sqrt(R * R - eff * eff);
+    const y = -arc;
+    const rotZ = -Math.sign(x) * Math.asin(eff / R);
+
+    // Z-depth halus untuk feel 3D
+    const z = -absO * 0.25;
+
+    const activeAmount = Math.max(0, 1 - absO * 0.6);
+
+    // Bobbing halus saat jadi pusat
     const bob =
-      activeAmount > 0.7
-        ? Math.sin(state.clock.elapsedTime * 1.4) * 0.035 * activeAmount
+      activeAmount > 0.6
+        ? Math.sin(state.clock.elapsedTime * 1.4) * 0.03 * activeAmount
         : 0;
-    const ty = bob - absO * 0.04;
-    const tz = -absO * 0.85;
-    const trY = -off * 0.55;
-    const ts = absO < 0.5 ? 1.08 : 0.86 - Math.min(absO * 0.04, 0.16);
 
-    // Assign langsung — progressRef sudah di-lerp di SceneController,
-    // sehingga transisinya halus tanpa double-lerp yang bikin kartu
-    // "terbang lewat tengah" saat wrap.
-    m.position.x = tx;
-    m.position.y = ty;
-    m.position.z = tz;
-    m.rotation.y = trY;
-    m.scale.x = m.scale.y = ts;
+    // Scale active sedikit lebih besar
+    const scale =
+      absO < 0.5 ? 1.06 : 0.92 - Math.min(absO * 0.04, 0.15);
+
+    // Assign langsung — progressRef sudah di-lerp di SceneController.
+    m.position.x = x;
+    m.position.y = y + bob;
+    m.position.z = z;
+    m.rotation.z = rotZ;
+    m.scale.setScalar(scale);
 
     const mat = matRef.current;
     if (mat) {
       mat.uniforms.uActive.value = activeAmount;
-      // Fade rapat di dekat batas wrap (half - 0.3 .. half) supaya teleport
-      // posisi pas wrap nggak terlihat. Untuk total=5, fade dari 2.2 → 2.5.
+      // Fade rapat di dekat batas wrap supaya teleport pas wrap nggak terlihat
       const fadeStart = Math.max(half - 0.3, 1.6);
       const fadeRange = half - fadeStart;
       const targetOpacity =
@@ -153,9 +166,8 @@ function Card({ idx, total, texture, imgRes, progressRef }: CardProps) {
   );
 }
 
-function GoldDust({ count = 55 }: { count?: number }) {
+function GoldDust({ count = 50 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null!);
-  // Lazy init — Math.random() hanya boleh dipanggil sekali di luar render path.
   const [positions] = useState(() => {
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -184,10 +196,7 @@ function GoldDust({ count = 55 }: { count?: number }) {
   return (
     <points ref={ref} renderOrder={-100}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
         size={0.045}
@@ -268,7 +277,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
   const [imgResolutions, setImgResolutions] = useState<[number, number][]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Lazy init — baca preference langsung saat mount, hindari setState dalam effect body.
+  // Lazy init — baca preference langsung saat mount
   const [reducedMotion, setReducedMotion] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -281,7 +290,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
-  // Preload semua tekstur sekali
+  // Preload semua texture sekali
   useEffect(() => {
     let cancelled = false;
     const loader = new THREE.TextureLoader();
@@ -321,7 +330,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     };
   }, [items]);
 
-  // Sinkronisasi state aktif untuk overlay DOM (throttled)
+  // Sync state untuk DOM overlay (throttled)
   useEffect(() => {
     let prev = -1;
     const id = window.setInterval(() => {
@@ -331,9 +340,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
       if (i !== prev) {
         prev = i;
         setActiveIndex(i);
-        if ("vibrate" in navigator) {
-          navigator.vibrate?.(8);
-        }
+        if ("vibrate" in navigator) navigator.vibrate?.(8);
       }
     }, 90);
     return () => window.clearInterval(id);
@@ -344,7 +351,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     lastInteractionRef.current = Date.now();
   };
 
-  // Pointer-based handlers (single source untuk mouse + touch + pen)
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const now = performance.now();
@@ -393,7 +399,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     const w = wrapperRef.current?.clientWidth ?? 360;
     const slotPx = Math.max(120, w * 0.55);
 
-    // Tap detection — pendek & hampir tanpa pergerakan
+    // Tap detection — gerakan minim & durasi pendek → navigasi side
     if (s.totalDist < 8 && duration < 260) {
       const rect = wrapperRef.current?.getBoundingClientRect();
       if (rect) {
@@ -406,7 +412,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
       return;
     }
 
-    // Momentum dari kecepatan akhir (px/ms → slot)
+    // Momentum dari kecepatan akhir
     const flick = (-s.vel * 220) / slotPx;
     targetRef.current = Math.round(targetRef.current + flick);
     lastInteractionRef.current = Date.now();
@@ -430,9 +436,13 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
       onPointerCancel={onPointerUp}
     >
       <Canvas
-        camera={{ position: [0, 0, 4.6], fov: 40 }}
+        camera={{ position: [0, 0.15, 5], fov: 40 }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+        }}
         style={{ background: "transparent" }}
       >
         <ambientLight intensity={1} />
@@ -443,7 +453,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
           lastInteractionRef={lastInteractionRef}
           reducedMotion={reducedMotion}
         />
-        {!reducedMotion && <GoldDust count={50} />}
+        {!reducedMotion && <GoldDust count={45} />}
         {ready &&
           items.map((_, i) => (
             <Card
@@ -457,7 +467,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
           ))}
       </Canvas>
 
-      {/* Overlay: judul aktif + dots + hint */}
+      {/* Overlay: counter + judul aktif + dots */}
       <div
         className="absolute left-0 right-0 pointer-events-none flex flex-col items-center"
         style={{
@@ -474,7 +484,8 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
             marginBottom: "0.4rem",
           }}
         >
-          {String(activeIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+          {String(activeIndex + 1).padStart(2, "0")} /{" "}
+          {String(items.length).padStart(2, "0")}
         </span>
         <h3
           key={activeIndex}
@@ -483,7 +494,8 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
             fontFamily: "'Playfair Display', serif",
             fontSize: "1.5rem",
             color: "#f0d080",
-            textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 0 28px rgba(212,160,23,0.18)",
+            textShadow:
+              "0 2px 14px rgba(0,0,0,0.85), 0 0 28px rgba(212,160,23,0.18)",
             margin: 0,
             textAlign: "center",
           }}

@@ -294,7 +294,7 @@ export default function HeroSection() {
             alt="Gapura Kota Kediri sisi kanan"
             fill
             priority
-            style={{ objectFit: "contain", objectPosition: "bottom right" }}
+            style={{ objectFit: "contain", transform: "scale(1.07)",transformOrigin: "bottom right", objectPosition: "bottom right" }}
           />
         </div>
 

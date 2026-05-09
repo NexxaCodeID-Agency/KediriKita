@@ -74,13 +74,23 @@ return (
     <main className="min-h-screen text-white" style={{ background: "#070712" }}>
       {/* Hero Foto */}
       <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
-        <Image
-          src={destination.image}
-        alt={destination.name}
-        fill
-        className="object-cover"
-        priority
-      />
+        {destination.image ? (
+          <Image
+            src={destination.image}
+            alt={destination.name ?? ""}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, #1A1A2E 0%, #070712 100%)",
+            }}
+          />
+        )}
       <div
         className="absolute inset-0"
         style={{
@@ -143,7 +153,7 @@ return (
           ✦ Tentang Tempat Ini
         </p>
         <div className="space-y-4">
-          {(destination.description || destination.short_desc)
+          {(destination.description || destination.short_desc || "")
             .split("\n")
             .filter(Boolean)
             .map((paragraph, i) => (

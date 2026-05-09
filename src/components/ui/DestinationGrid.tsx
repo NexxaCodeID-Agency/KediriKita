@@ -13,9 +13,10 @@ type Destination = {
   category: string;
   short_desc: string;
   image: string;
+  rating: number;
 };
 
-const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya"];
+const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Caffe"];
 
 export default function DestinationGrid({
   destinations,
@@ -221,6 +222,30 @@ export default function DestinationGrid({
                     >
                       {item.category}
                     </span>
+                    {item.rating > 0 && (
+                      <div
+                        className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
+                        style={{
+                          background: "rgba(10,10,26,0.75)",
+                          border: "1px solid rgba(212,160,23,0.4)",
+                          backdropFilter: "blur(4px)",
+                        }}
+                      >
+                        <span style={{ color: "#f0c040", fontSize: "11px" }}>
+                          ★
+                        </span>
+                        <span
+                          style={{
+                            color: "#f0c040",
+                            fontSize: "11px",
+                            fontFamily: "var(--font-lato)",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.rating.toFixed(1)}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Info */}

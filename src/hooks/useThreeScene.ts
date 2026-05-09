@@ -33,7 +33,7 @@ export function useThreeScene() {
       if (!renderer.getContext()) {
         return;
       }
-    } catch (e) {
+    } catch {
       return; // Batalkan animasi 3D, kembali ke mode polos
     }
 

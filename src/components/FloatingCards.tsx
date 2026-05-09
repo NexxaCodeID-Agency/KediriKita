@@ -202,7 +202,7 @@ export default function FloatingCards() {
 
     // ── Animation loop ────────────────────────────────────────────────────
     let raf: number;
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     const animate = () => {
       raf = requestAnimationFrame(animate);

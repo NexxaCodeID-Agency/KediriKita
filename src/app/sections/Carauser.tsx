@@ -4,16 +4,24 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CircularGallery from "../../components/CircularGallery";
+import MobileGallery3D from "../../components/three/MobileGallery3D";
 
-const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({ key: i, cx: 60 + i * 132 }));
+const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({
+  key: i,
+  cx: 60 + i * 132,
+}));
 
 gsap.registerPlugin(ScrollTrigger);
 
 const GALLERY_ITEMS = [
   { image: "/assets/images/gethukpisang.avif", text: "Getuk Pisang" },
-  { image: "/assets/images/Gkelud.webp",       text: "Gunung Kelud" },
-  { image: "/assets/images/jaranan.jpg",        text: "Jaranan"      },
-  { image: "/assets/images/airlanga.jpeg",      text: "Airlangga"    },
+  { image: "/assets/images/Gkelud.webp", text: "Gunung Kelud" },
+  { image: "/assets/images/jaranan.jpg", text: "Jaranan" },
+  { image: "/assets/images/airlanga.jpeg", text: "Museum Airlangga" },
+  {
+    image: "/assets/images/simpang-lima-gumul.webp",
+    text: "Simpang Lima Gumul",
+  },
 ];
 
 export default function Carauser() {
@@ -101,11 +109,40 @@ export default function Carauser() {
               fill="var(--color-ornamen)"
               opacity="0.22"
             />
-            <line x1="0" y1="36" x2="660" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
-            <line x1="780" y1="36" x2="1440" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
-            <rect x="714" y="30" width="12" height="12" fill="var(--color-emas)" opacity="0.65" transform="rotate(45 720 36)" />
+            <line
+              x1="0"
+              y1="36"
+              x2="660"
+              y2="36"
+              stroke="rgba(212,160,23,0.22)"
+              strokeWidth="0.5"
+            />
+            <line
+              x1="780"
+              y1="36"
+              x2="1440"
+              y2="36"
+              stroke="rgba(212,160,23,0.22)"
+              strokeWidth="0.5"
+            />
+            <rect
+              x="714"
+              y="30"
+              width="12"
+              height="12"
+              fill="var(--color-emas)"
+              opacity="0.65"
+              transform="rotate(45 720 36)"
+            />
             {ORNAMEN_DOTS.map(({ key, cx }) => (
-              <circle key={key} cx={cx} cy={36} r={2} fill="var(--color-emas-muda)" opacity="0.35" />
+              <circle
+                key={key}
+                cx={cx}
+                cy={36}
+                r={2}
+                fill="var(--color-emas-muda)"
+                opacity="0.35"
+              />
             ))}
           </svg>
         </div>
@@ -206,15 +243,23 @@ export default function Carauser() {
           className="relative w-full h-full"
           style={{ zIndex: 10, paddingTop: "clamp(5rem, 14vh, 9rem)" }}
         >
-          <CircularGallery
-            items={GALLERY_ITEMS}
-            bend={3}
-            textColor="#f0d080"
-            borderRadius={0.05}
-            scrollSpeed={3}
-            scrollEase={0.07}
-            font="bold 26px 'Playfair Display', serif"
-          />
+          {/* View Desktop: Menggunakan CircularGallery */}
+          <div className="hidden md:block w-full h-full">
+            <CircularGallery
+              items={GALLERY_ITEMS}
+              bend={3}
+              textColor="#f0d080"
+              borderRadius={0.05}
+              scrollSpeed={2}
+              scrollEase={0.07}
+              font="bold 26px 'Playfair Display', serif"
+            />
+          </div>
+
+          {/* View Mobile: 3D coverflow Three.js */}
+          <div className="md:hidden w-full h-full">
+            <MobileGallery3D items={GALLERY_ITEMS} />
+          </div>
         </div>
 
         {/* Ornamen pembatas bawah */}
@@ -239,11 +284,40 @@ export default function Carauser() {
               fill="var(--color-ornamen)"
               opacity="0.28"
             />
-            <line x1="0" y1="36" x2="660" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
-            <line x1="780" y1="36" x2="1440" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
-            <rect x="714" y="30" width="12" height="12" fill="var(--color-emas)" opacity="0.65" transform="rotate(45 720 36)" />
+            <line
+              x1="0"
+              y1="36"
+              x2="660"
+              y2="36"
+              stroke="rgba(212,160,23,0.22)"
+              strokeWidth="0.5"
+            />
+            <line
+              x1="780"
+              y1="36"
+              x2="1440"
+              y2="36"
+              stroke="rgba(212,160,23,0.22)"
+              strokeWidth="0.5"
+            />
+            <rect
+              x="714"
+              y="30"
+              width="12"
+              height="12"
+              fill="var(--color-emas)"
+              opacity="0.65"
+              transform="rotate(45 720 36)"
+            />
             {ORNAMEN_DOTS.map(({ key, cx }) => (
-              <circle key={key} cx={cx} cy={36} r={2} fill="var(--color-emas-muda)" opacity="0.38" />
+              <circle
+                key={key}
+                cx={cx}
+                cy={36}
+                r={2}
+                fill="var(--color-emas-muda)"
+                opacity="0.38"
+              />
             ))}
           </svg>
         </div>
@@ -265,13 +339,13 @@ export default function Carauser() {
             zIndex: 20,
             transition: "all 0.3s ease",
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             const el = e.currentTarget;
             el.style.color = "rgba(240,192,64,0.9)";
             el.style.borderColor = "rgba(212,160,23,0.6)";
             el.style.background = "rgba(212,160,23,0.06)";
           }}
-          onMouseLeave={e => {
+          onMouseLeave={(e) => {
             const el = e.currentTarget;
             el.style.color = "rgba(255,255,255,0.45)";
             el.style.borderColor = "rgba(212,160,23,0.25)";
@@ -281,7 +355,6 @@ export default function Carauser() {
           ← Geser untuk Jelajahi →
         </button>
       </div>
-
     </div>
   );
 }

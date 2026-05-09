@@ -16,6 +16,15 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Sembunyikan scrollbar untuk galeri geser */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -29,14 +38,28 @@ body {
 
 /* Scroll chevron animation */
 @keyframes chevronDrop {
-  0%   { opacity: 0; transform: translateY(-6px); }
-  50%  { opacity: 1; }
-  100% { opacity: 0; transform: translateY(4px); }
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 }
 
-.chevron-1 { animation: chevronDrop 1.8s ease-in-out infinite 0s; }
-.chevron-2 { animation: chevronDrop 1.8s ease-in-out infinite 0.3s; }
-.chevron-3 { animation: chevronDrop 1.8s ease-in-out infinite 0.6s; }
+.chevron-1 {
+  animation: chevronDrop 1.8s ease-in-out infinite 0s;
+}
+.chevron-2 {
+  animation: chevronDrop 1.8s ease-in-out infinite 0.3s;
+}
+.chevron-3 {
+  animation: chevronDrop 1.8s ease-in-out infinite 0.6s;
+}
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -163,23 +186,45 @@ body {
 }
 
 /* ─── Section wrappers — semua section = 1 layar penuh, scroll smooth tanpa parallax gap */
-.hero-wrapper { height: 100vh; height: 100dvh; }
-.card-section-wrapper { height: 100vh; }
-.card-section-sticky { height: 100vh; height: 100dvh; }
-.carauser-wrapper { height: 100vh; }
-.carauser-sticky { height: 100vh; height: 100dvh; }
+.hero-wrapper {
+  height: 100vh;
+  height: 100dvh;
+}
+.card-section-wrapper {
+  height: 100vh;
+}
+.card-section-sticky {
+  height: 100vh;
+  height: 100dvh;
+}
+.carauser-wrapper {
+  height: 100vh;
+}
+.carauser-sticky {
+  height: 100vh;
+  height: 100dvh;
+}
 
 @media (max-width: 767px) {
   /* Setiap section = 1 layar penuh, scroll natural (tanpa sticky parallax yang bikin "loncat") */
-  .hero-wrapper { height: 100vh; height: 100dvh; }
-  .card-section-wrapper { height: 100vh; height: 100dvh; }
+  .hero-wrapper {
+    height: 100vh;
+    height: 100dvh;
+  }
+  .card-section-wrapper {
+    height: 100vh;
+    height: 100dvh;
+  }
   .card-section-sticky {
     position: relative !important;
     top: auto !important;
     height: 100vh;
     height: 100dvh;
   }
-  .carauser-wrapper { height: 100vh; height: 100dvh; }
+  .carauser-wrapper {
+    height: 100vh;
+    height: 100dvh;
+  }
   .carauser-sticky {
     position: relative !important;
     top: auto !important;
@@ -222,6 +267,23 @@ body {
     font-size: 0.55rem !important;
     letter-spacing: 0.18em !important;
   }
+}
+
+/* ─── MobileGallery3D active title animation ─────────────── */
+@keyframes mg3dTitleFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.mg3d-active-title {
+  animation: mg3dTitleFade 0.5s ease-out;
 }
 
 /* ─── Carauser scroll hint button ────────────────────────── */
@@ -282,7 +344,8 @@ body {
   display: none !important;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100vw;
 }

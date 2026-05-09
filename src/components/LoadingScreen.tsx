@@ -29,7 +29,6 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
     let finished = false;
     let fadeTimer: ReturnType<typeof setTimeout>;
-    let maxTimer: ReturnType<typeof setTimeout>;
 
     const finish = () => {
       if (finished) return;
@@ -45,7 +44,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     };
 
     // Paksa selesai setelah MAX_WAIT_MS (network lambat / video gagal total)
-    maxTimer = setTimeout(finish, MAX_WAIT_MS);
+    const maxTimer: ReturnType<typeof setTimeout> = setTimeout(finish, MAX_WAIT_MS);
 
     video.addEventListener("ended", finish, { once: true });
 

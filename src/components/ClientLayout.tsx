@@ -16,9 +16,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan
+    // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
+    // Pola "lazy client-only sync" yang disengaja: state awal harus false di server
+    // agar HTML cocok, lalu di-sync ke true di client kalau session menandai.
     if (sessionStorage.getItem(SESSION_KEY) === '1') {
-      setReady(true); // langsung skip loader, tanpa render LoadingScreen
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setReady(true);
     }
   }, []);
 

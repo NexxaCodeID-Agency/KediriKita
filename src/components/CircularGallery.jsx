@@ -228,14 +228,17 @@ class Media {
       transparent: true,
     });
     const img = new Image();
-    img.crossOrigin = "anonymous";
     img.src = this.image;
+    img.decoding = "async";
     img.onload = () => {
       texture.image = img;
       this.program.uniforms.uImageSizes.value = [
         img.naturalWidth,
         img.naturalHeight,
       ];
+    };
+    img.onerror = () => {
+      console.warn("CircularGallery: gagal load image", this.image);
     };
   }
   createMesh() {

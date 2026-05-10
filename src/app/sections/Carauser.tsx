@@ -41,18 +41,31 @@ export default function Carauser() {
     const section = sectionRef.current;
     if (!section) return;
 
+    let triggered = false;
+    const trigger = () => {
+      if (triggered) return;
+      triggered = true;
+      setShowGallery(true);
+      io.disconnect();
+      clearTimeout(fallback);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setShowGallery(true);
-          io.disconnect();
-        }
+        if (entry.isIntersecting) trigger();
       },
-      { rootMargin: "300px 0px" },
+      { rootMargin: "1200px 0px" },
     );
     io.observe(section);
 
-    return () => io.disconnect();
+    // Fallback — pastikan gallery mount paling lambat 2s setelah hydrate,
+    // jaga-jaga kalau IO callback tidak fire (misal user sudah scroll lewat)
+    const fallback = setTimeout(trigger, 2000);
+
+    return () => {
+      io.disconnect();
+      clearTimeout(fallback);
+    };
   }, []);
 
   useEffect(() => {

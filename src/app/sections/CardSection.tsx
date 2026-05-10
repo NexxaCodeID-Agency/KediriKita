@@ -40,18 +40,29 @@ export default function CardSection() {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
+    let triggered = false;
+    const trigger = () => {
+      if (triggered) return;
+      triggered = true;
+      setShowFloating(true);
+      io.disconnect();
+      clearTimeout(fallback);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setShowFloating(true);
-          io.disconnect();
-        }
+        if (entry.isIntersecting) trigger();
       },
-      { rootMargin: "300px 0px" },
+      { rootMargin: "1200px 0px" },
     );
     io.observe(wrapper);
 
-    return () => io.disconnect();
+    const fallback = setTimeout(trigger, 2000);
+
+    return () => {
+      io.disconnect();
+      clearTimeout(fallback);
+    };
   }, []);
 
   return (

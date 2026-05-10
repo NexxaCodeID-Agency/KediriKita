@@ -290,11 +290,12 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
-  // Preload semua texture sekali
+  // Preload semua texture sekali — pakai allSettled supaya 1 gambar gagal
+  // tidak membatalkan seluruh galeri
   useEffect(() => {
     let cancelled = false;
     const loader = new THREE.TextureLoader();
-    Promise.all(
+    Promise.allSettled(
       items.map(
         (item) =>
           new Promise<{ tex: THREE.Texture; res: [number, number] }>(
@@ -315,15 +316,26 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
                   });
                 },
                 undefined,
-                reject,
+                (err) => {
+                  console.warn(
+                    "MobileGallery3D: gagal load",
+                    item.image,
+                    err,
+                  );
+                  reject(err);
+                },
               );
             },
           ),
       ),
     ).then((results) => {
       if (cancelled) return;
-      setTextures(results.map((r) => r.tex));
-      setImgResolutions(results.map((r) => r.res));
+      const fulfilled = results.flatMap((r) =>
+        r.status === "fulfilled" ? [r.value] : [],
+      );
+      if (fulfilled.length === 0) return;
+      setTextures(fulfilled.map((r) => r.tex));
+      setImgResolutions(fulfilled.map((r) => r.res));
     });
     return () => {
       cancelled = true;

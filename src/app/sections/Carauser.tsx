@@ -16,9 +16,9 @@ gsap.registerPlugin(ScrollTrigger);
 const GALLERY_ITEMS = [
   { image: "/assets/images/gethukpisang.avif", text: "Getuk Pisang" },
   { image: "/assets/images/Gkelud.webp", text: "Gunung Kelud" },
-  { image: "/assets/images/jaranan.jpg", text: "Jaranan" },
+  { image: "/assets/images/jaranan.avif", text: "Jaranan" },
 
-  { image: "/assets/images/airlanga.jpeg", text: "Museum Airlangga" },
+  { image: "/assets/images/airlanga.avif", text: "Museum Airlangga" },
   {
     image: "/assets/images/simpang-lima-gumul.webp",
     text: "Simpang Lima Gumul",

@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import FloatingCards from "../../components/FloatingCards";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
+
+const FloatingCards = dynamic(() => import("../../components/FloatingCards"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({
   key: i,
@@ -27,8 +33,29 @@ const poinData = [
 ];
 
 export default function CardSection() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [showFloating, setShowFloating] = useState(false);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowFloating(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(wrapper);
+
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="card-section-wrapper relative w-full">
+    <div ref={wrapperRef} className="card-section-wrapper relative w-full">
       <div className="card-section-sticky sticky top-0 w-full overflow-hidden">
         {/* Background */}
         <div
@@ -53,9 +80,9 @@ export default function CardSection() {
           }}
         />
 
-        {/* Floating 3D Cards di background */}
+        {/* Floating 3D Cards di background — lazy mount saat section dekat viewport */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <FloatingCards />
+          {showFloating && <FloatingCards />}
         </div>
 
         {/* Ornamen pembatas ATAS — sambungan dari KediriSection */}

@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import CircularGallery from "../../components/CircularGallery";
-import MobileGallery3D from "../../components/three/MobileGallery3D";
+
+const CircularGallery = dynamic(
+  () => import("../../components/CircularGallery"),
+  { ssr: false, loading: () => null },
+);
+const MobileGallery3D = dynamic(
+  () => import("../../components/three/MobileGallery3D"),
+  { ssr: false, loading: () => null },
+);
 
 const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({
   key: i,
@@ -15,12 +23,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 const GALLERY_ITEMS = [
   { image: "/assets/images/gethukpisang.avif", text: "Getuk Pisang" },
-  { image: "/assets/images/Gkelud.webp", text: "Gunung Kelud" },
+  { image: "/assets/images/Gkelud.avif", text: "Gunung Kelud" },
   { image: "/assets/images/jaranan.avif", text: "Jaranan" },
-
   { image: "/assets/images/airlanga.avif", text: "Museum Airlangga" },
   {
-    image: "/assets/images/simpang-lima-gumul.webp",
+    image: "/assets/images/Simpang-lima-gumul.avif",
     text: "Simpang Lima Gumul",
   },
 ];
@@ -28,6 +35,25 @@ const GALLERY_ITEMS = [
 export default function Carauser() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const [showGallery, setShowGallery] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowGallery(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(section);
+
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const heading = headingRef.current;
@@ -244,22 +270,24 @@ export default function Carauser() {
           className="relative w-full h-full"
           style={{ zIndex: 10, paddingTop: "clamp(5rem, 14vh, 9rem)" }}
         >
-          {/* Desktop — CircularGallery (OGL) */}
+          {/* Desktop — CircularGallery (OGL), lazy mount saat section dekat viewport */}
           <div className="hidden md:block w-full h-full">
-            <CircularGallery
-              items={GALLERY_ITEMS}
-              bend={3}
-              textColor="#f0d080"
-              borderRadius={0.05}
-              scrollSpeed={2}
-              scrollEase={0.07}
-              font="bold 26px 'Playfair Display', serif"
-            />
+            {showGallery && (
+              <CircularGallery
+                items={GALLERY_ITEMS}
+                bend={3}
+                textColor="#f0d080"
+                borderRadius={0.05}
+                scrollSpeed={2}
+                scrollEase={0.07}
+                font="bold 26px 'Playfair Display', serif"
+              />
+            )}
           </div>
 
           {/* Mobile — MobileGallery3D (Three.js + R3F) bend curve circular */}
           <div className="md:hidden w-full h-full">
-            <MobileGallery3D items={GALLERY_ITEMS} />
+            {showGallery && <MobileGallery3D items={GALLERY_ITEMS} />}
           </div>
         </div>
 

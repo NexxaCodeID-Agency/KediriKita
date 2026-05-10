@@ -48,20 +48,20 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
     video.addEventListener("ended", finish, { once: true });
 
-    // HAVE_CURRENT_DATA (2) = sudah cukup untuk mulai putar 1 frame
-    // Lebih cepat dari HAVE_ENOUGH_DATA (4) yang tunggu buffer penuh
-    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      tryPlay();
-    } else {
-      video.addEventListener("canplay", tryPlay, { once: true });
-    }
+    // Dengan preload="metadata", play() sendiri yang akan trigger buffering.
+    // playing event = video sudah benar-benar mulai diputar → sembunyikan spinner
+    const onPlaying = () => setBuffering(false);
+    video.addEventListener("playing", onPlaying, { once: true });
+
+    // Langsung coba play — browser akan auto-fetch chunk yang dibutuhkan
+    tryPlay();
 
     return () => {
       finished = true;
       clearTimeout(fadeTimer);
       clearTimeout(maxTimer);
       video.removeEventListener("ended", finish);
-      video.removeEventListener("canplay", tryPlay);
+      video.removeEventListener("playing", onPlaying);
     };
   }, []);
 
@@ -97,7 +97,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         ref={videoRef}
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
         style={{
           position: "absolute",
           inset: 0,

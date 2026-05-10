@@ -230,7 +230,7 @@ export default function HeroSection() {
           style={{ willChange: "transform", zIndex: 3, opacity: 0 }}
         >
           <Image
-            src="/assets/images/mega.png"
+            src="/assets/images/mega.avif"
             alt=""
             fill
             style={{ objectFit: "cover", mixBlendMode: "overlay" }}
@@ -244,7 +244,7 @@ export default function HeroSection() {
           style={{ willChange: "transform", zIndex: 4, opacity: 0 }}
         >
           <Image
-            src="/assets/images/awan-putih.png"
+            src="/assets/images/awan-putih.avif"
             alt=""
             fill
             style={{ objectFit: "contain", objectPosition: "top center" }}
@@ -264,7 +264,7 @@ export default function HeroSection() {
           }}
         >
           <Image
-            src="/assets/images/gapura-kiri.png"
+            src="/assets/images/gapura-kiri.avif"
             alt="Gapura Kota Kediri sisi kiri"
             fill
             priority
@@ -290,7 +290,7 @@ export default function HeroSection() {
           }}
         >
           <Image
-            src="/assets/images/gapura-kanan.png"
+            src="/assets/images/gapura-kanan.avif"
             alt="Gapura Kota Kediri sisi kanan"
             fill
             priority

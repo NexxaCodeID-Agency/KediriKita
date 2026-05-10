@@ -19,6 +19,32 @@ export default function KediriSection() {
   const dividerRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
 
+  // Lazy load video — baru fetch + play saat section dekat viewport
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const video = videoRef.current;
+    if (!wrapper || !video) return;
+
+    const VIDEO_SRC = "/assets/videos/slg.mp4";
+    let loaded = false;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loaded) {
+          loaded = true;
+          video.src = VIDEO_SRC;
+          video.load();
+          video.play().catch(() => {});
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(wrapper);
+
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -115,12 +141,10 @@ export default function KediriSection() {
       >
         <video
           ref={videoRef}
-          src="/assets/videos/slg.mp4"
-          autoPlay
           muted
           loop
           playsInline
-
+          preload="none"
           style={{
             width: "100%",
             height: "100%",

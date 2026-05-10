@@ -1,28 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Playfair_Display, Lato, Geist } from "next/font/google";
+import { Cinzel, Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
 const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  weight: ["700", "900"],
+  display: "swap",
 });
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "600"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 const lato = Lato({
   variable: "--font-lato",
   subsets: ["latin"],
   weight: ["300", "400"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -52,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans", geist.variable)}
+      className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
     >
       <body className="min-h-full">
         <ClientLayout>{children}</ClientLayout>

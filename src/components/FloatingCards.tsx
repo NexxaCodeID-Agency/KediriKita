@@ -5,9 +5,9 @@ import * as THREE from "three";
 
 const PHOTOS = [
   { src: "/assets/images/gethukpisang.avif", label: "Getuk Pisang" },
-  { src: "/assets/images/Gkelud.webp", label: "Gunung Kelud" },
-  { src: "/assets/images/jaranan.jpg", label: "Jaranan" },
-  { src: "/assets/images/airlanga.jpeg", label: "Airlangga" },
+  { src: "/assets/images/Gkelud.avif", label: "Gunung Kelud" },
+  { src: "/assets/images/jaranan.avif", label: "Jaranan" },
+  { src: "/assets/images/airlanga.avif", label: "Airlangga" },
 ];
 
 // Posisi digeser ke kanan (+1.0) supaya tidak bertabrakan dengan card info di kiri

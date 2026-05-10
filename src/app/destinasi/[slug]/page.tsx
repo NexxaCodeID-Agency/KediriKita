@@ -83,6 +83,8 @@ export default async function DestinationDetailPage({
               src={destination.image}
               alt={destination.name ?? ""}
               fill
+              sizes="100vw"
+              quality={90}
               className="object-cover"
               priority
             />
@@ -197,6 +199,8 @@ export default async function DestinationDetailPage({
                       src={url}
                       alt={`${destination.name} ${i + 1}`}
                       fill
+                      sizes="(min-width: 768px) 33vw, 50vw"
+                      quality={85}
                       className="object-cover hover:scale-105 transition-transform duration-500"
                     />
                   </div>

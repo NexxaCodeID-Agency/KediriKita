@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "Kota Kediri",
     description:
       "Temukan keindahan, sejarah, dan kehangatan Kota Kediri — kota yang selalu punya cerita untukmu.",
-    images: ["/og-image.jpg"],
+    images: ["/favicon.ico"],
   },
 };
 

@@ -8,6 +8,9 @@ import PageTransition from "@/components/ui/PageTransition";
 import StreetView from "@/components/ui/StreetView";
 import RouteButton from "@/components/ui/RouteButton";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
 type Destination = {
   id: number;
   slug: string;

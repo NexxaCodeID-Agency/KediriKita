@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import DestinationGrid from "@/components/ui/DestinationGrid";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Destinasi Wisata Kediri",
   description: "Jelajahi wisata alam, kuliner, dan sejarah Kota Kediri",

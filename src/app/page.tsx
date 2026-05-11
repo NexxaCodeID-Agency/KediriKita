@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 
 const HeroSection = dynamic(() => import("./sections/HeroSection"), {
-  ssr: false,
   loading: () => null,
 });
 const KediriSection = dynamic(() => import("./sections/KediriSection"));

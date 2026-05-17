@@ -9,14 +9,14 @@ const MapCanvas = dynamic(() => import("@/components/three/MapCanvas"), {
 export default function MapPage() {
   return (
     <main className="w-full h-screen relative bg-[#060610] overflow-hidden">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 mb-8 sm:mb-10 text-sm transition-colors duration-200"
-              style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
-            >
-              <ArrowLeft size={16} />
-              Kembali ke Beranda
-            </Link>
+      <Link
+        href="/"
+        className="absolute top-6 left-6 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors duration-200 backdrop-blur-md bg-black/40 hover:bg-black/60 border border-white/10"
+        style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
+      >
+        <ArrowLeft size={16} />
+        Kembali ke Beranda
+      </Link>
       <MapCanvas />
     </main>
   );

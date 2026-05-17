@@ -1,6 +1,17 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
-import MapCanvas from "@/components/three/MapCanvas"
+import dynamic from "next/dynamic"
+
+const MapCanvas = dynamic(() => import("@/components/three/MapCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-[#1A1A2E]">
+      <p className="text-yellow-400/50 text-xs tracking-[0.4em] animate-pulse">
+        ✦ MEMUAT PETA ✦
+      </p>
+    </div>
+  ),
+})
 
 export default function PetaSection() {
     const [showCanvas, setShowCanvas] = useState(false)

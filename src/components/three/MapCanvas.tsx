@@ -20,6 +20,28 @@ type Props = {
   showMarkers?: boolean;
 };
 
+const CATEGORY_COLORS: Record<string, { base: string; glow: string }> = {
+  "wisata alam":      { base: "#22c55e", glow: "#86efac" },
+  "kuliner":          { base: "#f97316", glow: "#fdba74" },
+  "sejarah & budaya": { base: "#d4a017", glow: "#f0c040" },
+  "ruang publik":     { base: "#06b6d4", glow: "#67e8f9" },
+  "ikon kota":        { base: "#a855f7", glow: "#d8b4fe" },
+  "caffe":            { base: "#ec4899", glow: "#f9a8d4" },
+};
+const DEFAULT_COLOR = { base: "#d4a017", glow: "#f0c040" };
+
+function getCategoryColor(category: string) {
+  return CATEGORY_COLORS[category.toLowerCase().trim()] ?? DEFAULT_COLOR;
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarkers = true}: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -112,18 +134,22 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
   
           data.forEach((dest: Destination) => {
             if (!dest.latitude || !dest.longitude) return;
-  
-            // Custom marker emas
+
+            const { base, glow } = getCategoryColor(dest.category);
+            const baseRgba = hexToRgba(base, 1);
+            const baseRgbaSoft = hexToRgba(base, 0.5);
+
+            // Custom marker per kategori
             const icon = L.divIcon({
               className: "",
               html: `
     <div style="
       width: 18px;
       height: 18px;
-      background: radial-gradient(circle, #f0c040, #d4a017);
-      border: 2px solid #f0c040;
+      background: radial-gradient(circle, ${glow}, ${base});
+      border: 2px solid ${glow};
       border-radius: 50%;
-      box-shadow: 0 0 12px rgba(212,160,23,1), 0 0 24px rgba(212,160,23,0.5);
+      box-shadow: 0 0 12px ${baseRgba}, 0 0 24px ${baseRgbaSoft};
       cursor: pointer;
       transition: transform 0.2s;
     "></div>
@@ -131,16 +157,16 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
               iconSize: [18, 18],
               iconAnchor: [9, 9],
             });
-  
+
             // Popup konten
             const popupContent = `
-    <div style="width:200px;background:#0a0a1a;border:1px solid rgba(212,160,23,0.4);border-radius:12px;overflow:hidden;font-family:sans-serif;">
+    <div style="width:200px;background:#0a0a1a;border:1px solid ${hexToRgba(base, 0.4)};border-radius:12px;overflow:hidden;font-family:sans-serif;">
       <img src="${dest.image}" alt="${dest.name}" style="width:100%;height:110px;object-fit:cover;display:block;" />
       <div style="padding:10px 12px;">
-        <p style="font-size:10px;color:#d4a017;text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category}</p>
+        <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category}</p>
         <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
         <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
-        <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:#d4a017;padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>
+        <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:${base};padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>
       </div>
     </div>
   `;
@@ -162,13 +188,70 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
   }, []);
 
   return (
-    <div
-      ref={mountRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        filter: "brightness(0.95) saturate(0.9)",
-      }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div
+        ref={mountRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          filter: "brightness(0.95) saturate(0.9)",
+        }}
+      />
+      {showMarkers && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+            zIndex: 1000,
+            background: "rgba(10,10,26,0.75)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 12,
+            padding: "10px 12px",
+            fontFamily: "sans-serif",
+            color: "white",
+            fontSize: 11,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.5)",
+              marginBottom: 8,
+            }}
+          >
+            Kategori
+          </div>
+          {Object.entries(CATEGORY_COLORS).map(([key, { base, glow }]) => (
+            <div
+              key={key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 4,
+              }}
+            >
+              <span
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: `radial-gradient(circle, ${glow}, ${base})`,
+                  border: `1.5px solid ${glow}`,
+                  boxShadow: `0 0 6px ${hexToRgba(base, 0.8)}`,
+                  display: "inline-block",
+                }}
+              />
+              <span style={{ textTransform: "capitalize" }}>{key}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

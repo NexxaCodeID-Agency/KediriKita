@@ -14,8 +14,13 @@ type Destination = {
   latitude: number;
   longitude: number;
 };
+type Props = {
+  scrollZoom?: boolean;
+  fitPadding?: number;
+  showMarkers?: boolean;
+};
 
-export default function MapCanvas() {
+export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarkers = true}: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,12 +35,16 @@ export default function MapCanvas() {
 
     // Init map — center di Kediri
     const map = L.map(el, {
-      center: [-7.82, 112.08],
-      zoom: 10,
       zoomControl: true,
-      scrollWheelZoom: true,
+      scrollWheelZoom: scrollZoom,
       attributionControl: false,
     });
+
+    const kediriBounds = L.latLngBounds(
+        [-8.0500, 111.9000],
+        [-7.6500, 112.2000],
+    )
+    map.fitBounds(kediriBounds, { padding: [fitPadding, fitPadding] });
 
     // Tile layer gelap
     L.tileLayer(
@@ -94,56 +103,58 @@ export default function MapCanvas() {
       }),
     }).addTo(map);
 
-    // Fetch destinasi dari Supabase → tambahin marker
-    supabase
-      .from("destinations")
-      .select("slug, name, category, short_desc, image, latitude, longitude")
-      .then(({ data }) => {
-        if (!data) return;
-
-        data.forEach((dest: Destination) => {
-          if (!dest.latitude || !dest.longitude) return;
-
-          // Custom marker emas
-          const icon = L.divIcon({
-            className: "",
-            html: `
-  <div style="
-    width: 18px;
-    height: 18px;
-    background: radial-gradient(circle, #f0c040, #d4a017);
-    border: 2px solid #f0c040;
-    border-radius: 50%;
-    box-shadow: 0 0 12px rgba(212,160,23,1), 0 0 24px rgba(212,160,23,0.5);
-    cursor: pointer;
-    transition: transform 0.2s;
-  "></div>
-`,
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
-          });
-
-          // Popup konten
-          const popupContent = `
-  <div style="width:200px;background:#0a0a1a;border:1px solid rgba(212,160,23,0.4);border-radius:12px;overflow:hidden;font-family:sans-serif;">
-    <img src="${dest.image}" alt="${dest.name}" style="width:100%;height:110px;object-fit:cover;display:block;" />
-    <div style="padding:10px 12px;">
-      <p style="font-size:10px;color:#d4a017;text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category}</p>
-      <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
-      <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
-      <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:#d4a017;padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>
-    </div>
-  </div>
-`;
-
-          L.marker([dest.latitude, dest.longitude], { icon })
-            .addTo(map)
-            .bindPopup(popupContent, {
-              maxWidth: 220,
-              className: "custom-popup",
+    if (showMarkers) {
+      supabase
+        .from("destinations")
+        .select("slug, name, category, short_desc, image, latitude, longitude")
+        .then(({ data }) => {
+          if (!data) return;
+  
+          data.forEach((dest: Destination) => {
+            if (!dest.latitude || !dest.longitude) return;
+  
+            // Custom marker emas
+            const icon = L.divIcon({
+              className: "",
+              html: `
+    <div style="
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #f0c040, #d4a017);
+      border: 2px solid #f0c040;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(212,160,23,1), 0 0 24px rgba(212,160,23,0.5);
+      cursor: pointer;
+      transition: transform 0.2s;
+    "></div>
+  `,
+              iconSize: [18, 18],
+              iconAnchor: [9, 9],
             });
+  
+            // Popup konten
+            const popupContent = `
+    <div style="width:200px;background:#0a0a1a;border:1px solid rgba(212,160,23,0.4);border-radius:12px;overflow:hidden;font-family:sans-serif;">
+      <img src="${dest.image}" alt="${dest.name}" style="width:100%;height:110px;object-fit:cover;display:block;" />
+      <div style="padding:10px 12px;">
+        <p style="font-size:10px;color:#d4a017;text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category}</p>
+        <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
+        <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
+        <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:#d4a017;padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>
+      </div>
+    </div>
+  `;
+  
+            L.marker([dest.latitude, dest.longitude], { icon })
+              .addTo(map)
+              .bindPopup(popupContent, {
+                maxWidth: 220,
+                className: "custom-popup",
+              });
+          });
         });
-      });
+    }
+
 
     return () => {
       map.remove();

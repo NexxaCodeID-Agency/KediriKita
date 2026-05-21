@@ -79,6 +79,7 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
       .then((res) => res.json())
       .then((geoData) => {
         L.geoJSON(geoData, {
+          filter: (feature) => feature.geometry.type !== "Point",
           style: (feature) => {
             const isKota = feature?.properties?.name?.includes("Kota");
             return {

@@ -30,7 +30,7 @@ type Destination = {
   rating: number;
 };
 
-const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Caffe"];
+const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
 
 export default function DestinationGrid({
   destinations,

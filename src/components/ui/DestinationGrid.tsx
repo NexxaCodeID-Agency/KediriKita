@@ -6,6 +6,20 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
+const PLACEHOLDER_IMG =
+  "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%231A1A2E' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23d4a017' font-family='serif' font-size='14' text-anchor='middle' dominant-baseline='middle'%3EKediri%3C/text%3E%3C/svg%3E";
+
+function isValidImageSrc(src: string | null | undefined): src is string {
+  if (!src) return false;
+  if (src.startsWith("/") || src.startsWith("data:")) return true;
+  try {
+    const u = new URL(src);
+    return u.protocol === "https:" || u.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 type Destination = {
   id: number;
   slug: string;
@@ -26,18 +40,21 @@ export default function DestinationGrid({
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [search, setSearch] = useState("");
 
+  const query = search.trim().toLowerCase();
+  const activeCat = activeCategory.toLowerCase();
+
   const filtered = destinations
     .filter((d) =>
       activeCategory === "Semua"
         ? true
-        : d.category.toLowerCase() === activeCategory.toLowerCase(),
+        : (d.category ?? "").toLowerCase() === activeCat,
     )
-    .filter((d) =>
-      search.trim() === ""
-        ? true
-        : d.name.toLowerCase().includes(search.toLowerCase()) ||
-          d.short_desc.toLowerCase().includes(search.toLowerCase()),
-    );
+    .filter((d) => {
+      if (query === "") return true;
+      const name = (d.name ?? "").toLowerCase();
+      const desc = (d.short_desc ?? "").toLowerCase();
+      return name.includes(query) || desc.includes(query);
+    });
 
   return (
     <section className="min-h-screen px-4 sm:px-6 pt-8 sm:pt-10 pb-20 sm:pb-24 max-w-7xl mx-auto">
@@ -176,7 +193,10 @@ export default function DestinationGrid({
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
-              <Link href={`/destinasi/${item.slug}`} className="group block">
+              <Link
+                href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
+                className="group block"
+              >
                 <div
                   className="relative rounded-2xl overflow-hidden border transition-all duration-300"
                   style={{
@@ -200,9 +220,17 @@ export default function DestinationGrid({
                   {/* Gambar */}
                   <div className="relative w-full h-48 sm:h-56 overflow-hidden">
                     <Image
-                      src={item.image}
-                      alt={item.name}
+                      src={
+                        isValidImageSrc(item.image)
+                          ? item.image
+                          : PLACEHOLDER_IMG
+                      }
+                      alt={item.name ?? "Destinasi"}
                       fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      unoptimized={
+                        !!item.image && !item.image.includes(".supabase.co")
+                      }
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div
@@ -222,7 +250,7 @@ export default function DestinationGrid({
                     >
                       {item.category}
                     </span>
-                    {item.rating > 0 && (
+                    {typeof item.rating === "number" && item.rating > 0 && (
                       <div
                         className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
                         style={{

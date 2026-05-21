@@ -185,7 +185,7 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
     return () => {
       map.remove();
     };
-  }, []);
+  }, [scrollZoom, fitPadding, showMarkers]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>

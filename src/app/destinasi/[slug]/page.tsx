@@ -8,6 +8,21 @@ import PageTransition from "@/components/ui/PageTransition";
 import StreetView from "@/components/ui/StreetView";
 import RouteButton from "@/components/ui/RouteButton";
 
+function isValidImageSrc(src: string | null | undefined): src is string {
+  if (!src) return false;
+  if (src.startsWith("/") || src.startsWith("data:")) return true;
+  try {
+    const u = new URL(src);
+    return u.protocol === "https:" || u.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function isSupabaseHosted(src: string) {
+  return src.includes(".supabase.co");
+}
+
 export const revalidate = 60;
 export const dynamicParams = true;
 
@@ -81,13 +96,14 @@ export default async function DestinationDetailPage({
       >
         {/* Hero Foto */}
         <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
-          {destination.image ? (
+          {isValidImageSrc(destination.image) ? (
             <Image
               src={destination.image}
               alt={destination.name ?? ""}
               fill
               sizes="100vw"
               quality={90}
+              unoptimized={!isSupabaseHosted(destination.image)}
               className="object-cover"
               priority
             />
@@ -190,24 +206,27 @@ export default async function DestinationDetailPage({
                 ✦ Galeri Foto
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                {destination.gallery.map((url, i) => (
-                  <div
-                    key={i}
-                    className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
-                    style={{
-                      border: "1px solid rgba(212,160,23,0.2)",
-                    }}
-                  >
-                    <Image
-                      src={url}
-                      alt={`${destination.name} ${i + 1}`}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 50vw"
-                      quality={85}
-                      className="object-cover hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                ))}
+                {destination.gallery
+                  .filter(isValidImageSrc)
+                  .map((url, i) => (
+                    <div
+                      key={i}
+                      className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
+                      style={{
+                        border: "1px solid rgba(212,160,23,0.2)",
+                      }}
+                    >
+                      <Image
+                        src={url}
+                        alt={`${destination.name} ${i + 1}`}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                        quality={85}
+                        unoptimized={!isSupabaseHosted(url)}
+                        className="object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           )}

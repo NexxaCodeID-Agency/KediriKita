@@ -75,11 +75,12 @@ export default function KediriSection() {
         {
           scale: 1,
           ease: "none",
+          force3D: true,
           scrollTrigger: {
             trigger: wrapper,
             start: "top bottom",
             end: "center center",
-            scrub: 1.5,
+            scrub: 0.8,
           },
         },
       );
@@ -91,11 +92,12 @@ export default function KediriSection() {
         {
           opacity: 0.72,
           ease: "none",
+          force3D: true,
           scrollTrigger: {
             trigger: wrapper,
             start: "top bottom",
             end: "center center",
-            scrub: 1,
+            scrub: 0.8,
           },
         },
       );
@@ -137,7 +139,6 @@ export default function KediriSection() {
       {/* Video background */}
       <div
         className="absolute inset-0 w-full h-full overflow-hidden"
-        style={{ willChange: "transform" }}
       >
         <video
           ref={videoRef}
@@ -151,6 +152,8 @@ export default function KediriSection() {
             objectFit: "cover",
             objectPosition: "center",
             willChange: "transform",
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden",
           }}
         />
       </div>

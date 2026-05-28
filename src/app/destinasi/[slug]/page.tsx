@@ -50,9 +50,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const resolveParams = await params;
+  const slug = resolveParams.slug;
+  if (!slug) notFound();
 
   const { data } = await supabase
     .from("destinations")
@@ -67,243 +69,247 @@ export async function generateMetadata({
 }
 
 async function getDestination(slug: string): Promise<Destination | null> {
+  console.log(`Fetching destination for slug: "${slug}"`);
   const { data, error } = await supabase
     .from("destinations")
     .select("*")
     .eq("slug", slug)
     .single();
 
-  if (error) return null;
+  if (error) {
+    console.error(`Supabase error for slug "${slug}":`, error.message);
+    return null;
+  }
+  if (!data) {
+    console.log(`No data returned for slug: "${slug}"`);
+  }
   return data;
 }
 
 export default async function DestinationDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const resolveParams = await params;
+  const slug = resolveParams.slug;
+  if (!slug) notFound();
   const destination = await getDestination(slug);
 
   if (!destination) notFound();
 
   return (
-      <main
-        className="min-h-screen text-white"
-        style={{ background: "#070712" }}
-      >
-        {/* Hero Foto */}
-        <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
-          {isValidImageSrc(destination.image) ? (
-            <Image
-              src={destination.image}
-              alt={destination.name ?? ""}
-              fill
-              sizes="100vw"
-              quality={90}
-              unoptimized={!isSupabaseHosted(destination.image)}
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "linear-gradient(180deg, #1A1A2E 0%, #070712 100%)",
-              }}
-            />
-          )}
+    <main className="min-h-screen text-white" style={{ background: "#070712" }}>
+      {/* Hero Foto */}
+      <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
+        {isValidImageSrc(destination.image) ? (
+          <Image
+            src={destination.image}
+            alt={destination.name ?? ""}
+            fill
+            sizes="100vw"
+            quality={90}
+            unoptimized={true}
+            className="object-cover"
+            priority
+          />
+        ) : (
           <div
             className="absolute inset-0"
             style={{
-              background:
-                "linear-gradient(to top, #070712 5%, rgba(7,7,18,0.25) 50%, transparent 100%)",
+              background: "linear-gradient(180deg, #1A1A2E 0%, #070712 100%)",
             }}
           />
+        )}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to top, #070712 5%, rgba(7,7,18,0.25) 50%, transparent 100%)",
+          }}
+        />
 
-          <Link
-            href="/destinasi"
-            className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full backdrop-blur-sm transition-all hover:opacity-80"
+        <Link
+          href="/destinasi"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full backdrop-blur-sm transition-all hover:opacity-80"
+          style={{
+            color: "#d4a017",
+            border: "1px solid rgba(212,160,23,0.4)",
+            background: "rgba(0,0,0,0.35)",
+            fontFamily: "var(--font-lato)",
+          }}
+        >
+          <ArrowLeft size={14} />
+          Kembali
+        </Link>
+
+        <div className="absolute bottom-6 sm:bottom-10 left-5 right-5 sm:left-8 sm:right-8">
+          <span
+            className="text-[10px] sm:text-xs uppercase tracking-widest px-2.5 sm:px-3 py-1 rounded-full inline-block"
             style={{
-              color: "#d4a017",
-              border: "1px solid rgba(212,160,23,0.4)",
-              background: "rgba(0,0,0,0.35)",
+              background: "rgba(212,160,23,0.85)",
+              color: "#1A1A2E",
               fontFamily: "var(--font-lato)",
             }}
           >
-            <ArrowLeft size={14} />
-            Kembali
-          </Link>
+            {destination.category}
+          </span>
+          <h1
+            className="text-2xl sm:text-4xl md:text-6xl font-bold mt-2 sm:mt-3 leading-tight"
+            style={{ fontFamily: "var(--font-cinzel)" }}
+          >
+            {destination.name}
+          </h1>
+          <p
+            className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
+            style={{
+              color: "rgba(255,255,255,0.6)",
+              fontFamily: "var(--font-lato)",
+            }}
+          >
+            📍 {destination.location}
+          </p>
+        </div>
+      </div>
 
-          <div className="absolute bottom-6 sm:bottom-10 left-5 right-5 sm:left-8 sm:right-8">
-            <span
-              className="text-[10px] sm:text-xs uppercase tracking-widest px-2.5 sm:px-3 py-1 rounded-full inline-block"
-              style={{
-                background: "rgba(212,160,23,0.85)",
-                color: "#1A1A2E",
-                fontFamily: "var(--font-lato)",
-              }}
-            >
-              {destination.category}
-            </span>
-            <h1
-              className="text-2xl sm:text-4xl md:text-6xl font-bold mt-2 sm:mt-3 leading-tight"
-              style={{ fontFamily: "var(--font-cinzel)" }}
-            >
-              {destination.name}
-            </h1>
-            <p
-              className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                fontFamily: "var(--font-lato)",
-              }}
-            >
-              📍 {destination.location}
-            </p>
+      {/* Konten */}
+      <div className="max-w-3xl mx-auto px-5 sm:px-6 py-12 sm:py-16 space-y-12 sm:space-y-16">
+        {/* Deskripsi */}
+        <div>
+          <p
+            className="text-xs uppercase tracking-[0.3em] mb-6"
+            style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
+          >
+            ✦ Tentang Tempat Ini
+          </p>
+          <div className="space-y-4">
+            {(destination.description || destination.short_desc || "")
+              .split("\n")
+              .filter(Boolean)
+              .map((paragraph, i) => (
+                <p
+                  key={i}
+                  className="leading-relaxed text-base"
+                  style={{
+                    color: "rgba(255,255,255,0.72)",
+                    fontFamily: "var(--font-lato)",
+                    lineHeight: "1.9",
+                  }}
+                >
+                  {paragraph}
+                </p>
+              ))}
           </div>
         </div>
 
-        {/* Konten */}
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 py-12 sm:py-16 space-y-12 sm:space-y-16">
-          {/* Deskripsi */}
+        {/* Galeri */}
+        {destination.gallery && destination.gallery.length > 0 && (
+          <div>
+            <p
+              className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6"
+              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
+            >
+              ✦ Galeri Foto
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+              {destination.gallery.filter(isValidImageSrc).map((url, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
+                  style={{
+                    border: "1px solid rgba(212,160,23,0.2)",
+                  }}
+                >
+                  <Image
+                    src={url}
+                    alt={`${destination.name} ${i + 1}`}
+                    fill
+                    sizes="(min-width: 768px) 33vw, 50vw"
+                    quality={85}
+                    unoptimized={!isSupabaseHosted(url)}
+                    className="object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tips */}
+        {destination.tips && (
+          <div
+            className="rounded-2xl p-6 sm:p-8"
+            style={{
+              background: "rgba(212,160,23,0.05)",
+              border: "1px solid rgba(212,160,23,0.2)",
+            }}
+          >
+            <p
+              className="text-xs uppercase tracking-[0.3em] mb-6"
+              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
+            >
+              💡 Tips Berkunjung
+            </p>
+            <div className="space-y-3">
+              {destination.tips
+                .split("\n")
+                .filter(Boolean)
+                .map((tip, i) => (
+                  <p
+                    key={i}
+                    className="leading-relaxed"
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontFamily: "var(--font-lato)",
+                      lineHeight: "1.8",
+                    }}
+                  >
+                    {tip}
+                  </p>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* Street View */}
+        {destination.street_view_url && (
           <div>
             <p
               className="text-xs uppercase tracking-[0.3em] mb-6"
               style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
-              ✦ Tentang Tempat Ini
+              ✦ Jelajahi 360°
             </p>
-            <div className="space-y-4">
-              {(destination.description || destination.short_desc || "")
-                .split("\n")
-                .filter(Boolean)
-                .map((paragraph, i) => (
-                  <p
-                    key={i}
-                    className="leading-relaxed text-base"
-                    style={{
-                      color: "rgba(255,255,255,0.72)",
-                      fontFamily: "var(--font-lato)",
-                      lineHeight: "1.9",
-                    }}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
+            <StreetView
+              url={destination.street_view_url}
+              name={destination.name}
+            />
           </div>
+        )}
 
-          {/* Galeri */}
-          {destination.gallery && destination.gallery.length > 0 && (
-            <div>
-              <p
-                className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6"
-                style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-              >
-                ✦ Galeri Foto
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                {destination.gallery
-                  .filter(isValidImageSrc)
-                  .map((url, i) => (
-                    <div
-                      key={i}
-                      className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
-                      style={{
-                        border: "1px solid rgba(212,160,23,0.2)",
-                      }}
-                    >
-                      <Image
-                        src={url}
-                        alt={`${destination.name} ${i + 1}`}
-                        fill
-                        sizes="(min-width: 768px) 33vw, 50vw"
-                        quality={85}
-                        unoptimized={!isSupabaseHosted(url)}
-                        className="object-cover hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* Tips */}
-          {destination.tips && (
-            <div
-              className="rounded-2xl p-6 sm:p-8"
-              style={{
-                background: "rgba(212,160,23,0.05)",
-                border: "1px solid rgba(212,160,23,0.2)",
-              }}
+        {/* Peta */}
+        {destination.latitude && destination.longitude && (
+          <div>
+            <p
+              className="text-xs uppercase tracking-[0.3em] mb-6"
+              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
-              <p
-                className="text-xs uppercase tracking-[0.3em] mb-6"
-                style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-              >
-                💡 Tips Berkunjung
-              </p>
-              <div className="space-y-3">
-                {destination.tips
-                  .split("\n")
-                  .filter(Boolean)
-                  .map((tip, i) => (
-                    <p
-                      key={i}
-                      className="leading-relaxed"
-                      style={{
-                        color: "rgba(255,255,255,0.65)",
-                        fontFamily: "var(--font-lato)",
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      {tip}
-                    </p>
-                  ))}
-              </div>
-            </div>
-          )}
+              ✦ Lokasi
+            </p>
+            <MapWrapper
+              latitude={destination.latitude}
+              longitude={destination.longitude}
+              name={destination.name}
+            />
 
-          {/* Street View */}
-          {destination.street_view_url && (
-            <div>
-              <p
-                className="text-xs uppercase tracking-[0.3em] mb-6"
-                style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-              >
-                ✦ Jelajahi 360°
-              </p>
-              <StreetView
-                url={destination.street_view_url}
-                name={destination.name}
-              />
-            </div>
-          )}
-
-          {/* Peta */}
-          {destination.latitude && destination.longitude && (
-            <div>
-              <p
-                className="text-xs uppercase tracking-[0.3em] mb-6"
-                style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-              >
-                ✦ Lokasi
-              </p>
-              <MapWrapper
-                latitude={destination.latitude}
-                longitude={destination.longitude}
-                name={destination.name}
-              />
-
-              {/* Tombol Rute */}
-              <RouteButton
-                latitude={destination.latitude}
-                longitude={destination.longitude}
-              />
-            </div>
-          )}
-        </div>
-      </main>
+            {/* Tombol Rute */}
+            <RouteButton
+              latitude={destination.latitude}
+              longitude={destination.longitude}
+            />
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

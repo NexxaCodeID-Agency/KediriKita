@@ -35,7 +35,8 @@ const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruan
 
 function DestinationCard({ item, index }: { item: Destination; index: number }) {
   const ref = useIntersectionObserverAnimation<HTMLDivElement>({
-    delay: index * 80,
+    delay: index * 50,
+    rootMargin: '400px',
   });
 
   return (
@@ -172,6 +173,7 @@ export default function DestinationGrid({
   const activeCat = activeCategory.toLowerCase();
 
   const filtered = destinations
+    .filter((d) => d.slug)
     .filter((d) =>
       activeCategory === "Semua"
         ? true

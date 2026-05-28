@@ -4,7 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import MapWrapper from "@/components/ui/MapWrapper";
-import PageTransition from "@/components/ui/PageTransition";
 import StreetView from "@/components/ui/StreetView";
 import RouteButton from "@/components/ui/RouteButton";
 
@@ -89,7 +88,6 @@ export default async function DestinationDetailPage({
   if (!destination) notFound();
 
   return (
-    <PageTransition>
       <main
         className="min-h-screen text-white"
         style={{ background: "#070712" }}
@@ -307,6 +305,5 @@ export default async function DestinationDetailPage({
           )}
         </div>
       </main>
-    </PageTransition>
   );
 }

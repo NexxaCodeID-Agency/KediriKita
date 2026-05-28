@@ -148,11 +148,11 @@ export default function KediriSection() {
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video
           ref={videoRef}
-          src="/assets/videos/slg.mp4"
+          src="/videos/slg.mp4"
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           style={{
             width: "100%",
             height: "100%",

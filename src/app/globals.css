@@ -21,7 +21,7 @@ body {
   display: none;
 }
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE, Edge */
+  -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
@@ -31,28 +31,24 @@ body {
 
 @media (max-width: 767px) {
   html {
+    /* native momentum scroll handles smoothness; CSS smooth-scroll on mobile feels laggy with parallax */
     scroll-behavior: auto;
   }
 }
 
-
+/* Scroll chevron animation */
 @keyframes chevronDrop {
   0% {
     opacity: 0;
-    transform: translate3d(0, -6px, 0);
+    transform: translateY(-6px);
   }
   50% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate3d(0, 4px, 0);
+    transform: translateY(4px);
   }
-}
-
-
-.chevron-1, .chevron-2, .chevron-3 {
-  will-change: transform, opacity;
 }
 
 .chevron-1 {
@@ -189,7 +185,7 @@ body {
   }
 }
 
-
+/* ─── Section wrappers — semua section = 1 layar penuh, scroll smooth tanpa parallax gap */
 .hero-wrapper {
   height: 100vh;
   height: 100dvh;
@@ -210,6 +206,7 @@ body {
 }
 
 @media (max-width: 767px) {
+  /* Setiap section = 1 layar penuh, scroll natural (tanpa sticky parallax yang bikin "loncat") */
   .hero-wrapper {
     height: 100vh;
     height: 100dvh;
@@ -236,7 +233,7 @@ body {
   }
 }
 
-
+/* ─── Hero responsive typography ─────────────────────────── */
 .hero-subtitle {
   font-size: 0.85rem;
   letter-spacing: 0.38em;
@@ -272,22 +269,24 @@ body {
   }
 }
 
+/* ─── MobileGallery3D active title animation ─────────────── */
 @keyframes mg3dTitleFade {
   from {
     opacity: 0;
-    transform: translate3d(0, 10px, 0); /* Menggunakan 3D render */
+    transform: translateY(10px);
+    filter: blur(4px);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 .mg3d-active-title {
-  will-change: transform, opacity;
   animation: mg3dTitleFade 0.5s ease-out;
 }
 
-
+/* ─── Carauser scroll hint button ────────────────────────── */
 .carauser-scroll-hint {
   bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
   font-size: 0.6rem;
@@ -304,7 +303,7 @@ body {
   }
 }
 
-
+/* ─── Footer responsive padding ──────────────────────────── */
 .footer-inner {
   padding: 6rem 2rem 0;
 }

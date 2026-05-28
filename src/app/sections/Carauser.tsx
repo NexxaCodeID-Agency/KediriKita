@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import { useDeviceMode } from "@/components/ClientLayout";
 
 const CircularGallery = dynamic(
   () => import("../../components/CircularGallery"),
@@ -38,8 +36,6 @@ export default function Carauser() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const [showGallery, setShowGallery] = useState(false);
-  const { isBot, isMobile } = useDeviceMode();
-  const isLiteMode = isBot || isMobile;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -77,12 +73,6 @@ export default function Carauser() {
     const section = sectionRef.current;
     if (!heading || !section) return;
 
-    if (isLiteMode) {
-      const targets = heading.querySelectorAll(".gsap-heading-target");
-      gsap.set(targets, { y: 0, opacity: 1 });
-      return;
-    }
-
     const targets = heading.querySelectorAll(".gsap-heading-target");
 
     gsap.set(targets, { y: 30, opacity: 0 });
@@ -108,7 +98,7 @@ export default function Carauser() {
         if (st.vars.trigger === section) st.kill();
       });
     };
-  }, [isLiteMode]);
+  }, []);
 
   return (
     <div ref={sectionRef} className="carauser-wrapper relative w-full">
@@ -293,25 +283,25 @@ export default function Carauser() {
           className="relative w-full h-full"
           style={{ zIndex: 10, paddingTop: "clamp(5rem, 14vh, 9rem)" }}
         >
-          {isMobile ? (
-            <div className="md:hidden w-full h-full">
-              {showGallery && <MobileGallery3D items={GALLERY_ITEMS} />}
-            </div>
-          ) : (
-            <div className="hidden md:block w-full h-full">
-              {showGallery && (
-                <CircularGallery
-                  items={GALLERY_ITEMS}
-                  bend={3}
-                  textColor="#f0d080"
-                  borderRadius={0.05}
-                  scrollSpeed={2}
-                  scrollEase={0.07}
-                  font="bold 26px 'Playfair Display', serif"
-                />
-              )}
-            </div>
-          )}
+          {/* Desktop — CircularGallery (OGL), lazy mount saat section dekat viewport */}
+          <div className="hidden md:block w-full h-full">
+            {showGallery && (
+              <CircularGallery
+                items={GALLERY_ITEMS}
+                bend={3}
+                textColor="#f0d080"
+                borderRadius={0.05}
+                scrollSpeed={2}
+                scrollEase={0.07}
+                font="bold 26px 'Playfair Display', serif"
+              />
+            )}
+          </div>
+
+          {/* Mobile — MobileGallery3D (Three.js + R3F) bend curve circular */}
+          <div className="md:hidden w-full h-full">
+            {showGallery && <MobileGallery3D items={GALLERY_ITEMS} />}
+          </div>
         </div>
 
         {/* Ornamen pembatas bawah */}

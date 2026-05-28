@@ -453,7 +453,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
         gl={{
           antialias: true,
           alpha: true,
-          powerPreference: "default",
+          powerPreference: "high-performance",
         }}
         style={{ background: "transparent" }}
       >
@@ -465,6 +465,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
           lastInteractionRef={lastInteractionRef}
           reducedMotion={reducedMotion}
         />
+        {!reducedMotion && <GoldDust count={45} />}
         {ready &&
           items.map((_, i) => (
             <Card

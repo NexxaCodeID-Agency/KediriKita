@@ -5,15 +5,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LihatDestinasiButton from "@/components/LihatDestinasiButton";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useDeviceMode } from "@/components/ClientLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function KediriSection() {
   const router = useRouter();
-  const { isBot, isMobile } = useDeviceMode();
-  const useStaticMedia = isBot || isMobile;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -25,8 +21,6 @@ export default function KediriSection() {
 
   // Lazy load video — baru fetch + play saat section dekat viewport
   useEffect(() => {
-    if (useStaticMedia) return;
-
     const wrapper = wrapperRef.current;
     const video = videoRef.current;
     if (!wrapper || !video) return;
@@ -49,7 +43,7 @@ export default function KediriSection() {
     io.observe(wrapper);
 
     return () => io.disconnect();
-  }, [useStaticMedia]);
+  }, []);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -58,23 +52,6 @@ export default function KediriSection() {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
-    if (useStaticMedia || prefersReduced) {
-      gsap.set(
-        [
-          badgeRef.current,
-          headingRef.current,
-          descRef.current,
-          dividerRef.current,
-          statsRef.current,
-        ],
-        { opacity: 1, y: 0 },
-      );
-      if (overlayRef.current) {
-        overlayRef.current.style.opacity = "0.72";
-      }
-      return;
-    }
 
     if (prefersReduced) {
       gsap.set(
@@ -155,41 +132,30 @@ export default function KediriSection() {
     });
 
     return () => ctx.revert();
-  }, [useStaticMedia]);
+  }, []);
 
   return (
     <div ref={wrapperRef} className="relative w-full overflow-hidden">
       {/* Video background */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
-        {useStaticMedia ? (
-          <Image
-            src="/assets/images/Simpang-lima-gumul.avif"
-            alt="Simpang Lima Gumul"
-            fill
-            priority
-            style={{
-              objectFit: "cover",
-              objectPosition: "center",
-            }}
-          />
-        ) : (
-          <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="none"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              willChange: "transform",
-              transform: "translateZ(0)",
-              backfaceVisibility: "hidden",
-            }}
-          />
-        )}
+      <div
+        className="absolute inset-0 w-full h-full overflow-hidden"
+      >
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="none"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+            willChange: "transform",
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden",
+          }}
+        />
       </div>
 
       {/* Overlay gelap + gradient bawah */}

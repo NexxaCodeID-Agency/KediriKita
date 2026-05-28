@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useParallax } from "@/hooks/useParallax";
 import { useThreeScene } from "@/hooks/useThreeScene";
-import { useDeviceMode, useReady } from "@/components/ClientLayout";
+import { useReady } from "@/components/ClientLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,9 +35,7 @@ export default function HeroSection() {
   const glowRef = useRef<HTMLDivElement>(null);
   const teksRef = useRef<HTMLDivElement>(null);
   const particlesMountRef = useThreeScene();
-  const { isBot, isMobile } = useDeviceMode();
   const ready = useReady();
-  const useStaticHero = isBot || isMobile;
 
   const parallaxLayers = useMemo(
     () => [
@@ -70,23 +68,17 @@ export default function HeroSection() {
   );
 
   useParallax(
-    !useStaticHero
-      ? (wrapperRef as React.RefObject<HTMLElement | null>)
-      : { current: null },
+    wrapperRef as React.RefObject<HTMLElement | null>,
     parallaxLayers,
   );
 
   // ─── Entrance animation ───────────────────────────────────────────────────
   useEffect(() => {
     if (!ready) return;
-
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
-    const isInstant = useStaticHero || prefersReduced;
-
-    if (useStaticHero || prefersReduced) {
+    if (prefersReduced) {
       gsap.set(
         [
           megaRef.current,
@@ -96,9 +88,8 @@ export default function HeroSection() {
           ornamenRef.current,
           teksRef.current,
           glowRef.current,
-          gateRevealRef.current,
         ],
-        { opacity: 1, y: 0, scale: 1 },
+        { opacity: 1 },
       );
       return;
     }
@@ -107,82 +98,56 @@ export default function HeroSection() {
       gsap.fromTo(
         megaRef.current,
         { opacity: 0 },
-        { opacity: 0.7, duration: isInstant ? 0 : 1.6, ease: "power1.out" },
+        { opacity: 0.7, duration: 1.6, ease: "power1.out" },
       );
       gsap.fromTo(
         awanRef.current,
         { opacity: 0 },
-        {
-          opacity: 0.95,
-          duration: isInstant ? 0 : 2,
-          ease: "power1.out",
-          delay: isInstant ? 0 : 0.25,
-        },
+        { opacity: 0.95, duration: 2, ease: "power1.out", delay: 0.25 },
       );
-
       gsap.fromTo(
         gapuraKiriRef.current,
-        { y: isInstant ? 0 : 130, opacity: 0, scale: isInstant ? 1 : 0.97 },
+        { y: 130, opacity: 0, scale: 0.97 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: isInstant ? 0 : 2,
+          duration: 2,
           ease: "power4.out",
-          delay: isInstant ? 0 : 0.3,
+          delay: 0.3,
         },
       );
-
       gsap.fromTo(
         gapuraKananRef.current,
-        { y: isInstant ? 0 : 130, opacity: 0, scale: isInstant ? 1 : 0.97 },
+        { y: 130, opacity: 0, scale: 0.97 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: isInstant ? 0 : 2,
+          duration: 2,
           ease: "power4.out",
-          delay: isInstant ? 0 : 0.48,
+          delay: 0.48,
         },
       );
-
       gsap.fromTo(
         ornamenRef.current,
-        { y: isInstant ? 0 : 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: isInstant ? 0 : 1.4,
-          ease: "power3.out",
-          delay: isInstant ? 0 : 0.75,
-        },
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.4, ease: "power3.out", delay: 0.75 },
       );
       gsap.fromTo(
         glowRef.current,
-        { opacity: 0, scale: isInstant ? 1 : 0.7 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: isInstant ? 0 : 2.5,
-          ease: "power1.out",
-          delay: isInstant ? 0 : 0.9,
-        },
+        { opacity: 0, scale: 0.7 },
+        { opacity: 1, scale: 1, duration: 2.5, ease: "power1.out", delay: 0.9 },
       );
       gsap.fromTo(
         teksRef.current,
-        { y: isInstant ? 0 : 45, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: isInstant ? 0 : 1.4,
-          ease: "power3.out",
-          delay: isInstant ? 0 : 1.0,
-        },
+        { y: 45, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.4, ease: "power3.out", delay: 1.0 },
       );
     });
 
     return () => ctx.revert();
-  }, [ready, useStaticHero]);
+  }, [ready]);
 
   // Scroll story dihilangkan: hero = 100vh full screen, scroll langsung ke section berikutnya
   // tanpa "gap" parallax. Entrance animation (gapura rising, awan fade, text appear) tetap ada
@@ -190,7 +155,7 @@ export default function HeroSection() {
 
   // ─── Mouse parallax ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (useStaticHero || window.innerWidth < 768) return;
+    if (window.innerWidth < 768) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const layers = [
@@ -220,16 +185,17 @@ export default function HeroSection() {
         if (el) gsap.to(el, { x: 0, duration: 0.6 });
       });
     };
-  }, [useStaticHero]);
+  }, []);
 
   return (
     <div ref={wrapperRef} className="relative hero-wrapper">
       <div
         className="sticky top-0 w-full overflow-hidden"
         style={{
-          height: "100dvh",
+          height: "100dvh", // dynamic viewport height — fix mobile browser
         }}
       >
+        {/* z0 — Sky gradient */}
         <div
           className="absolute inset-0"
           style={{
@@ -238,6 +204,7 @@ export default function HeroSection() {
           }}
         />
 
+        {/* z1 — Sky darkening overlay */}
         <div
           ref={skyOverlayRef}
           className="absolute inset-0 pointer-events-none"
@@ -249,117 +216,89 @@ export default function HeroSection() {
           }}
         />
 
-        {!useStaticHero && (
-          <div
-            ref={particlesMountRef}
-            className="absolute inset-0 pointer-events-none"
-            style={{ zIndex: 2 }}
+        {/* z2 — Three.js partikel emas */}
+        <div
+          ref={particlesMountRef}
+          className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 2 }}
+        />
+
+        {/* z3 — Mega */}
+        <div
+          ref={megaRef}
+          className="absolute inset-0"
+          style={{ willChange: "transform", zIndex: 3, opacity: 0 }}
+        >
+          <Image
+            src="/assets/images/mega.avif"
+            alt=""
+            fill
+            style={{ objectFit: "cover", mixBlendMode: "overlay" }}
           />
-        )}
+        </div>
 
-        {useStaticHero ? (
-          <div className="absolute inset-0" style={{ zIndex: 3, opacity: 1 }}>
-            <Image
-              src="/loadingMobile-poster.avif"
-              alt="Latar Kota Kediri"
-              fill
-              priority
-              fetchPriority="high"
-              style={{ objectFit: "cover", objectPosition: "center" }}
-            />
-          </div>
-        ) : (
-          <>
-            <div
-              ref={megaRef}
-              className="absolute inset-0"
-              style={{
-                willChange: "transform",
-                zIndex: 3,
-                opacity: 0,
-              }}
-            >
-              <Image
-                src="/assets/images/mega.avif"
-                alt="Latar Langit Mega"
-                fill
-                priority
-                fetchPriority="high"
-                style={{ objectFit: "cover", mixBlendMode: "overlay" }}
-              />
-            </div>
+        {/* z4 — Awan putih */}
+        <div
+          ref={awanRef}
+          className="absolute inset-0"
+          style={{ willChange: "transform", zIndex: 4, opacity: 0 }}
+        >
+          <Image
+            src="/assets/images/awan-putih.avif"
+            alt=""
+            fill
+            style={{ objectFit: "contain", objectPosition: "top center" }}
+          />
+        </div>
 
-            <div
-              ref={awanRef}
-              className="absolute inset-0"
-              style={{
-                willChange: "transform",
-                zIndex: 4,
-                opacity: 0,
-              }}
-            >
-              <Image
-                src="/assets/images/awan-putih.avif"
-                alt="Latar Langit Awan Putih"
-                fill
-                priority
-                fetchPriority="high"
-                style={{ objectFit: "contain", objectPosition: "top center" }}
-              />
-            </div>
+        {/* z5 — Gapura kiri */}
+        <div
+          ref={gapuraKiriRef}
+          className="absolute bottom-0 left-0"
+          style={{
+            willChange: "transform",
+            zIndex: 5,
+            width: "clamp(180px, 48%, 520px)",
+            height: "clamp(65%, 80%, 88%)",
+            opacity: 0,
+          }}
+        >
+          <Image
+            src="/assets/images/gapura-kiri.avif"
+            alt="Gapura Kota Kediri sisi kiri"
+            fill
+            priority
+            style={{
+              objectFit: "contain",
+              objectPosition: "bottom left",
+              transform: "scale(1.07)",
+              transformOrigin: "bottom left",
+            }}
+          />
+        </div>
 
-            <div
-              ref={gapuraKiriRef}
-              className="absolute bottom-0 left-0"
-              style={{
-                willChange: "transform",
-                zIndex: 5,
-                width: "clamp(180px, 48%, 520px)",
-                height: "clamp(65%, 80%, 88%)",
-                opacity: 0,
-              }}
-            >
-              <Image
-                src="/assets/images/gapura-kiri.avif"
-                alt="Gapura Kota Kediri sisi kiri"
-                fill
-                priority
-                style={{
-                  objectFit: "contain",
-                  objectPosition: "bottom left",
-                  transform: "scale(1.07)",
-                  transformOrigin: "bottom left",
-                }}
-              />
-            </div>
+        {/* z5 — Gapura kanan */}
+        <div
+          ref={gapuraKananRef}
+          className="absolute bottom-0 right-0"
+          style={{
+            willChange: "transform",
+            zIndex: 5,
+            width: "clamp(180px, 48%, 520px)",
+            height: "clamp(65%, 80%, 88%)",
+            opacity: 0,
+          }}
+        >
+          <Image
+            src="/assets/images/gapura-kanan.avif"
+            alt="Gapura Kota Kediri sisi kanan"
+            fill
+            priority
+            style={{ objectFit: "contain", transform: "scale(1.07)",transformOrigin: "bottom right", objectPosition: "bottom right" }}
+          />
+        </div>
 
-            <div
-              ref={gapuraKananRef}
-              className="absolute bottom-0 right-0"
-              style={{
-                willChange: "transform",
-                zIndex: 5,
-                width: "clamp(180px, 48%, 520px)",
-                height: "clamp(65%, 80%, 88%)",
-                opacity: 0,
-              }}
-            >
-              <Image
-                src="/assets/images/gapura-kanan.avif"
-                alt="Gapura Kota Kediri sisi kanan"
-                fill
-                priority
-                style={{
-                  objectFit: "contain",
-                  transform: "scale(1.07)",
-                  transformOrigin: "bottom right",
-                  objectPosition: "bottom right",
-                }}
-              />
-            </div>
-          </>
-        )}
-
+        {/* z6 — Ornamen bawah */}
         <div
           ref={ornamenRef}
           className="absolute bottom-0 left-0 right-0"
@@ -367,7 +306,7 @@ export default function HeroSection() {
             willChange: "transform",
             zIndex: 6,
             height: "80px",
-            opacity: useStaticHero ? 1 : 0,
+            opacity: 0,
           }}
         >
           <svg
@@ -400,6 +339,7 @@ export default function HeroSection() {
           </svg>
         </div>
 
+        {/* z7 — Gate reveal: cahaya yang muncul di balik gapura yang terbuka */}
         <div
           ref={gateRevealRef}
           className="absolute pointer-events-none"
@@ -419,6 +359,7 @@ export default function HeroSection() {
           }}
         />
 
+        {/* z8 — Glow di balik judul */}
         <div
           ref={glowRef}
           className="absolute pointer-events-none"
@@ -431,12 +372,13 @@ export default function HeroSection() {
             height: "clamp(200px, 30vh, 320px)",
             background:
               "radial-gradient(ellipse, rgba(212,160,23,0.18) 0%, rgba(212,160,23,0.05) 40%, transparent 68%)",
-            opacity: isBot ? 1 : 0,
+            opacity: 0,
             filter: "blur(2px)",
             willChange: "transform, opacity",
           }}
         />
 
+        {/* z9 — Vignette */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -446,14 +388,11 @@ export default function HeroSection() {
           }}
         />
 
+        {/* z10 — Teks konten */}
         <div
           ref={teksRef}
           className="absolute inset-0 flex flex-col items-center justify-center px-5"
-          style={{
-            willChange: "transform, filter",
-            zIndex: 10,
-            opacity: useStaticHero ? 1 : 0,
-          }}
+          style={{ willChange: "transform, filter", zIndex: 10, opacity: 0 }}
         >
           <p
             className="hero-subtitle"
@@ -529,44 +468,43 @@ export default function HeroSection() {
             selalu punya cerita untukmu.
           </p>
 
-          {!isBot && (
-            <div
-              className="hero-scroll-indicator absolute flex flex-col items-center gap-2"
-              style={{
-                color: "rgba(255,255,255,0.4)",
-                fontSize: "0.62rem",
-                letterSpacing: "0.22em",
-              }}
-            >
-              <span style={{ textTransform: "uppercase" }}>Scroll</span>
-              <svg width="16" height="30" viewBox="0 0 16 30" fill="none">
-                <path
-                  d="M1 2 L8 9 L15 2"
-                  stroke="rgba(255,255,255,0.6)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="chevron-1"
-                />
-                <path
-                  d="M1 11 L8 18 L15 11"
-                  stroke="rgba(255,255,255,0.35)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="chevron-2"
-                />
-                <path
-                  d="M1 20 L8 27 L15 20"
-                  stroke="rgba(255,255,255,0.15)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="chevron-3"
-                />
-              </svg>
-            </div>
-          )}
+          {/* Scroll indicator */}
+          <div
+            className="hero-scroll-indicator absolute flex flex-col items-center gap-2"
+            style={{
+              color: "rgba(255,255,255,0.4)",
+              fontSize: "0.62rem",
+              letterSpacing: "0.22em",
+            }}
+          >
+            <span style={{ textTransform: "uppercase" }}>Scroll</span>
+            <svg width="16" height="30" viewBox="0 0 16 30" fill="none">
+              <path
+                d="M1 2 L8 9 L15 2"
+                stroke="rgba(255,255,255,0.6)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="chevron-1"
+              />
+              <path
+                d="M1 11 L8 18 L15 11"
+                stroke="rgba(255,255,255,0.35)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="chevron-2"
+              />
+              <path
+                d="M1 20 L8 27 L15 20"
+                stroke="rgba(255,255,255,0.15)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="chevron-3"
+              />
+            </svg>
+          </div>
         </div>
       </div>
     </div>

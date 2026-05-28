@@ -3,7 +3,6 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { useDeviceMode } from "@/components/ClientLayout";
 
 const FloatingCards = dynamic(() => import("../../components/FloatingCards"), {
   ssr: false,
@@ -36,12 +35,8 @@ const poinData = [
 export default function CardSection() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [showFloating, setShowFloating] = useState(false);
-  const { isBot, isMobile } = useDeviceMode();
-  const isLiteMode = isBot || isMobile;
 
   useEffect(() => {
-    if (isLiteMode) return;
-
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -68,7 +63,7 @@ export default function CardSection() {
       io.disconnect();
       clearTimeout(fallback);
     };
-  }, [isLiteMode]);
+  }, []);
 
   return (
     <div ref={wrapperRef} className="card-section-wrapper relative w-full">
@@ -98,7 +93,7 @@ export default function CardSection() {
 
         {/* Floating 3D Cards di background — lazy mount saat section dekat viewport */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          {showFloating && !isLiteMode && <FloatingCards />}
+          {showFloating && <FloatingCards />}
         </div>
 
         {/* Ornamen pembatas ATAS — sambungan dari KediriSection */}
@@ -227,7 +222,7 @@ export default function CardSection() {
           style={{ paddingTop: "clamp(3vh, 5vh, 6vh)" }}
         >
           {/* Card wrapper */}
-          <div className="relative w-[min(340px,90vw)] md:w-90">
+          <div className="relative w-[min(340px,90vw)] md:w-[22.5rem]">
             {/* Glow di belakang card */}
             <div
               className="absolute inset-0 pointer-events-none"

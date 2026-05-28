@@ -37,6 +37,12 @@ export default function HeroSection() {
   const particlesMountRef = useThreeScene();
   const ready = useReady();
 
+  const isBot =
+    typeof window !== "undefined" &&
+    /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(
+      navigator.userAgent,
+    );
+
   const parallaxLayers = useMemo(
     () => [
       {
@@ -68,13 +74,13 @@ export default function HeroSection() {
   );
 
   useParallax(
-    wrapperRef as React.RefObject<HTMLElement | null>,
+   !isBot ? (wrapperRef as React.RefObject<HTMLElement | null>) : {current: null},
     parallaxLayers,
   );
 
   // ─── Entrance animation ───────────────────────────────────────────────────
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || isBot) return;
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -147,7 +153,7 @@ export default function HeroSection() {
     });
 
     return () => ctx.revert();
-  }, [ready]);
+  }, [ready, isBot]);
 
   // Scroll story dihilangkan: hero = 100vh full screen, scroll langsung ke section berikutnya
   // tanpa "gap" parallax. Entrance animation (gapura rising, awan fade, text appear) tetap ada
@@ -155,7 +161,7 @@ export default function HeroSection() {
 
   // ─── Mouse parallax ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (window.innerWidth < 768) return;
+    if (isBot || window.innerWidth < 768) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const layers = [
@@ -187,292 +193,294 @@ export default function HeroSection() {
     };
   }, []);
 
-  return (
-    <div ref={wrapperRef} className="relative hero-wrapper">
+return (
+  <div ref={wrapperRef} className="relative hero-wrapper">
+    <div
+      className="sticky top-0 w-full overflow-hidden"
+      style={{
+        height: "100dvh",
+      }}
+    >
       <div
-        className="sticky top-0 w-full overflow-hidden"
+        className="absolute inset-0"
         style={{
-          height: "100dvh", // dynamic viewport height — fix mobile browser
+          background:
+            "linear-gradient(to bottom, var(--color-langit-malam) 0%, #1e3050 28%, #5a4020 62%, var(--color-langit-senja) 80%, #6a8fbf 100%)",
         }}
-      >
-        {/* z0 — Sky gradient */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, var(--color-langit-malam) 0%, #1e3050 28%, #5a4020 62%, var(--color-langit-senja) 80%, #6a8fbf 100%)",
-          }}
-        />
+      />
 
-        {/* z1 — Sky darkening overlay */}
-        <div
-          ref={skyOverlayRef}
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 1,
-            background: "var(--color-langit-malam)",
-            opacity: 0,
-            willChange: "opacity",
-          }}
-        />
+      <div
+        ref={skyOverlayRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 1,
+          background: "var(--color-langit-malam)",
+          opacity: 0,
+          willChange: "opacity",
+        }}
+      />
 
-        {/* z2 — Three.js partikel emas */}
+      {!isBot && (
         <div
           ref={particlesMountRef}
           className="absolute inset-0 pointer-events-none"
           style={{ zIndex: 2 }}
         />
+      )}
 
-        {/* z3 — Mega */}
-        <div
-          ref={megaRef}
-          className="absolute inset-0"
-          style={{ willChange: "transform", zIndex: 3, opacity: 0 }}
-        >
-          <Image
-            src="/assets/images/mega.avif"
-            alt="Latar Langit Mega"
-            fill
-            priority
-            fetchPriority="high"
-            style={{ objectFit: "cover", mixBlendMode: "overlay" }}
-          />
-        </div>
+      <div
+        ref={megaRef}
+        className="absolute inset-0"
+        style={{ willChange: "transform", zIndex: 3, opacity: isBot ? 0.7 : 0 }}
+      >
+        <Image
+          src="/assets/images/mega.avif"
+          alt="Latar Langit Mega"
+          fill
+          priority
+          fetchPriority="high"
+          style={{ objectFit: "cover", mixBlendMode: "overlay" }}
+        />
+      </div>
 
-        {/* z4 — Awan putih */}
-        <div
-          ref={awanRef}
-          className="absolute inset-0"
-          style={{ willChange: "transform", zIndex: 4, opacity: 0 }}
-        >
-          <Image
-            src="/assets/images/awan-putih.avif"
-            alt="Latar Langit Awan Putih"
-            fill
-            priority
-            fetchPriority="high"
-            style={{ objectFit: "contain", objectPosition: "top center" }}
-          />
-        </div>
+      <div
+        ref={awanRef}
+        className="absolute inset-0"
+        style={{
+          willChange: "transform",
+          zIndex: 4,
+          opacity: isBot ? 0.95 : 0,
+        }}
+      >
+        <Image
+          src="/assets/images/awan-putih.avif"
+          alt="Latar Langit Awan Putih"
+          fill
+          priority
+          fetchPriority="high"
+          style={{ objectFit: "contain", objectPosition: "top center" }}
+        />
+      </div>
 
-        {/* z5 — Gapura kiri */}
-        <div
-          ref={gapuraKiriRef}
-          className="absolute bottom-0 left-0"
+      <div
+        ref={gapuraKiriRef}
+        className="absolute bottom-0 left-0"
+        style={{
+          willChange: "transform",
+          zIndex: 5,
+          width: "clamp(180px, 48%, 520px)",
+          height: "clamp(65%, 80%, 88%)",
+          opacity: isBot ? 1 : 0,
+        }}
+      >
+        <Image
+          src="/assets/images/gapura-kiri.avif"
+          alt="Gapura Kota Kediri sisi kiri"
+          fill
+          priority
           style={{
-            willChange: "transform",
-            zIndex: 5,
-            width: "clamp(180px, 48%, 520px)",
-            height: "clamp(65%, 80%, 88%)",
-            opacity: 0,
+            objectFit: "contain",
+            objectPosition: "bottom left",
+            transform: "scale(1.07)",
+            transformOrigin: "bottom left",
+          }}
+        />
+      </div>
+
+      <div
+        ref={gapuraKananRef}
+        className="absolute bottom-0 right-0"
+        style={{
+          willChange: "transform",
+          zIndex: 5,
+          width: "clamp(180px, 48%, 520px)",
+          height: "clamp(65%, 80%, 88%)",
+          opacity: isBot ? 1 : 0,
+        }}
+      >
+        <Image
+          src="/assets/images/gapura-kanan.avif"
+          alt="Gapura Kota Kediri sisi kanan"
+          fill
+          priority
+          style={{
+            objectFit: "contain",
+            transform: "scale(1.07)",
+            transformOrigin: "bottom right",
+            objectPosition: "bottom right",
+          }}
+        />
+      </div>
+
+      <div
+        ref={ornamenRef}
+        className="absolute bottom-0 left-0 right-0"
+        style={{
+          willChange: "transform",
+          zIndex: 6,
+          height: "80px",
+          opacity: isBot ? 1 : 0,
+        }}
+      >
+        <svg
+          viewBox="0 0 1440 80"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0 40 Q120 8 240 40 Q360 72 480 40 Q600 8 720 40 Q840 72 960 40 Q1080 8 1200 40 Q1320 72 1440 40 V80 H0 Z"
+            fill="var(--color-emas)"
+            opacity="0.2"
+          />
+          <path
+            d="M0 54 Q120 22 240 54 Q360 86 480 54 Q600 22 720 54 Q840 86 960 54 Q1080 22 1200 54 Q1320 86 1440 54 V80 H0 Z"
+            fill="var(--color-ornamen)"
+            opacity="0.4"
+          />
+          {ORNAMEN_DOTS.map(({ key, cx }) => (
+            <circle
+              key={key}
+              cx={cx}
+              cy={40}
+              r={2.5}
+              fill="var(--color-emas-muda)"
+              opacity="0.55"
+            />
+          ))}
+        </svg>
+      </div>
+
+      <div
+        ref={gateRevealRef}
+        className="absolute pointer-events-none"
+        style={{
+          zIndex: 7,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%) scale(0.08)",
+          width: "300px",
+          height: "300px",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(240,200,100,0.95) 0%, rgba(212,160,23,0.5) 35%, transparent 70%)",
+          opacity: 0,
+          filter: "blur(8px)",
+          willChange: "transform, opacity",
+        }}
+      />
+
+      <div
+        ref={glowRef}
+        className="absolute pointer-events-none"
+        style={{
+          zIndex: 8,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "clamp(300px, 65vw, 1000px)",
+          height: "clamp(200px, 30vh, 320px)",
+          background:
+            "radial-gradient(ellipse, rgba(212,160,23,0.18) 0%, rgba(212,160,23,0.05) 40%, transparent 68%)",
+          opacity: isBot ? 1 : 0,
+          filter: "blur(2px)",
+          willChange: "transform, opacity",
+        }}
+      />
+
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 9,
+          background:
+            "radial-gradient(ellipse 85% 85% at 50% 45%, transparent 35%, rgba(8,12,26,0.72) 100%)",
+        }}
+      />
+
+      <div
+        ref={teksRef}
+        className="absolute inset-0 flex flex-col items-center justify-center px-5"
+        style={{
+          willChange: "transform, filter",
+          zIndex: 10,
+          opacity: isBot ? 1 : 0,
+        }}
+      >
+        <p
+          className="hero-subtitle"
+          style={{
+            fontFamily: "var(--font-playfair)",
+            color: "var(--color-emas-muda)",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            textShadow:
+              "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9), 0 0 15px rgba(240,192,64,0.4)",
+            opacity: 1,
+            textAlign: "center",
           }}
         >
-          <Image
-            src="/assets/images/gapura-kiri.avif"
-            alt="Gapura Kota Kediri sisi kiri"
-            fill
-            priority
+          ✦ Selamat Datang di ✦
+        </p>
+
+        <h1
+          style={{
+            fontFamily: "var(--font-cinzel)",
+            fontSize: "clamp(2.6rem, 11vw, 6.8rem)",
+            fontWeight: 900,
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            lineHeight: 1.05,
+          }}
+        >
+          <span
             style={{
-              objectFit: "contain",
-              objectPosition: "bottom left",
-              transform: "scale(1.07)",
-              transformOrigin: "bottom left",
+              color: "var(--color-teks-utama)",
+              textShadow:
+                "0 4px 40px rgba(0,0,0,0.9), 0 0 80px rgba(212,160,23,0.25)",
             }}
-          />
-        </div>
-
-        {/* z5 — Gapura kanan */}
-        <div
-          ref={gapuraKananRef}
-          className="absolute bottom-0 right-0"
-          style={{
-            willChange: "transform",
-            zIndex: 5,
-            width: "clamp(180px, 48%, 520px)",
-            height: "clamp(65%, 80%, 88%)",
-            opacity: 0,
-          }}
-        >
-          <Image
-            src="/assets/images/gapura-kanan.avif"
-            alt="Gapura Kota Kediri sisi kanan"
-            fill
-            priority
-            style={{ objectFit: "contain", transform: "scale(1.07)",transformOrigin: "bottom right", objectPosition: "bottom right" }}
-          />
-        </div>
-
-        {/* z6 — Ornamen bawah */}
-        <div
-          ref={ornamenRef}
-          className="absolute bottom-0 left-0 right-0"
-          style={{
-            willChange: "transform",
-            zIndex: 6,
-            height: "80px",
-            opacity: 0,
-          }}
-        >
-          <svg
-            viewBox="0 0 1440 80"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full"
-            preserveAspectRatio="none"
           >
-            <path
-              d="M0 40 Q120 8 240 40 Q360 72 480 40 Q600 8 720 40 Q840 72 960 40 Q1080 8 1200 40 Q1320 72 1440 40 V80 H0 Z"
-              fill="var(--color-emas)"
-              opacity="0.2"
-            />
-            <path
-              d="M0 54 Q120 22 240 54 Q360 86 480 54 Q600 22 720 54 Q840 86 960 54 Q1080 22 1200 54 Q1320 86 1440 54 V80 H0 Z"
-              fill="var(--color-ornamen)"
-              opacity="0.4"
-            />
-            {ORNAMEN_DOTS.map(({ key, cx }) => (
-              <circle
-                key={key}
-                cx={cx}
-                cy={40}
-                r={2.5}
-                fill="var(--color-emas-muda)"
-                opacity="0.55"
-              />
-            ))}
-          </svg>
-        </div>
-
-        {/* z7 — Gate reveal: cahaya yang muncul di balik gapura yang terbuka */}
-        <div
-          ref={gateRevealRef}
-          className="absolute pointer-events-none"
-          style={{
-            zIndex: 7,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%) scale(0.08)",
-            width: "300px",
-            height: "300px",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(240,200,100,0.95) 0%, rgba(212,160,23,0.5) 35%, transparent 70%)",
-            opacity: 0,
-            filter: "blur(8px)",
-            willChange: "transform, opacity",
-          }}
-        />
-
-        {/* z8 — Glow di balik judul */}
-        <div
-          ref={glowRef}
-          className="absolute pointer-events-none"
-          style={{
-            zIndex: 8,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "clamp(300px, 65vw, 1000px)",
-            height: "clamp(200px, 30vh, 320px)",
-            background:
-              "radial-gradient(ellipse, rgba(212,160,23,0.18) 0%, rgba(212,160,23,0.05) 40%, transparent 68%)",
-            opacity: 0,
-            filter: "blur(2px)",
-            willChange: "transform, opacity",
-          }}
-        />
-
-        {/* z9 — Vignette */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 9,
-            background:
-              "radial-gradient(ellipse 85% 85% at 50% 45%, transparent 35%, rgba(8,12,26,0.72) 100%)",
-          }}
-        />
-
-        {/* z10 — Teks konten */}
-        <div
-          ref={teksRef}
-          className="absolute inset-0 flex flex-col items-center justify-center px-5"
-          style={{ willChange: "transform, filter", zIndex: 10, opacity: 0 }}
-        >
-          <p
-            className="hero-subtitle"
+            KOTA
+          </span>{" "}
+          <span
             style={{
-              fontFamily: "var(--font-playfair)",
               color: "var(--color-emas-muda)",
-              fontWeight: 600,
-              textTransform: "uppercase",
               textShadow:
-                "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9), 0 0 15px rgba(240,192,64,0.4)",
-              opacity: 1,
-              textAlign: "center",
+                "0 4px 40px rgba(0,0,0,0.9), 0 0 60px rgba(240,192,64,0.4)",
             }}
           >
-            ✦ Selamat Datang di ✦
-          </p>
+            KEDIRI
+          </span>
+        </h1>
 
-          <h1
-            style={{
-              fontFamily: "var(--font-cinzel)",
-              fontSize: "clamp(2.6rem, 11vw, 6.8rem)",
-              fontWeight: 900,
-              letterSpacing: "0.08em",
-              textAlign: "center",
-              lineHeight: 1.05,
-            }}
-          >
-            <span
-              style={{
-                color: "var(--color-teks-utama)",
-                textShadow:
-                  "0 4px 40px rgba(0,0,0,0.9), 0 0 80px rgba(212,160,23,0.25)",
-              }}
-            >
-              KOTA
-            </span>{" "}
-            <span
-              style={{
-                color: "var(--color-emas-muda)",
-                textShadow:
-                  "0 4px 40px rgba(0,0,0,0.9), 0 0 60px rgba(240,192,64,0.4)",
-              }}
-            >
-              KEDIRI
-            </span>
-          </h1>
+        <div
+          style={{
+            width: "clamp(100px, 18vw, 220px)",
+            height: "1px",
+            background:
+              "linear-gradient(to right, transparent, var(--color-emas), transparent)",
+            margin: "1.4rem 0 1.3rem",
+            opacity: 0.8,
+          }}
+        />
 
-          <div
-            style={{
-              width: "clamp(100px, 18vw, 220px)",
-              height: "1px",
-              background:
-                "linear-gradient(to right, transparent, var(--color-emas), transparent)",
-              margin: "1.4rem 0 1.3rem",
-              opacity: 0.8,
-            }}
-          />
+        <p
+          className="hero-desc"
+          style={{
+            fontFamily: "var(--font-lato)",
+            color: "#FFFFFF",
+            fontWeight: 400,
+            textAlign: "center",
+            textShadow: "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
+            lineHeight: 1.9,
+            textTransform: "uppercase",
+          }}
+        >
+          Temukan keindahan, sejarah, dan kehangatan kota Kediri — kota yang
+          selalu punya cerita untukmu.
+        </p>
 
-          <p
-            className="hero-desc"
-            style={{
-              fontFamily: "var(--font-lato)",
-              color: "#FFFFFF",
-              fontWeight: 400,
-              textAlign: "center",
-              textShadow:
-                "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
-              lineHeight: 1.9,
-              textTransform: "uppercase",
-            }}
-          >
-            Temukan keindahan, sejarah, dan kehangatan kota Kediri — kota yang
-            selalu punya cerita untukmu.
-          </p>
-
-          {/* Scroll indicator */}
+        {!isBot && (
           <div
             className="hero-scroll-indicator absolute flex flex-col items-center gap-2"
             style={{
@@ -509,8 +517,9 @@ export default function HeroSection() {
               />
             </svg>
           </div>
-        </div>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }

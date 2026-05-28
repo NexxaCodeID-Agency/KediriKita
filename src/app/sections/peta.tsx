@@ -162,6 +162,7 @@ export default function PetaSection() {
             <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-10" />
 
             {/* Map Canvas atau Loading */}
+            <div className="w-full h-full pointer-events-none">
             {showCanvas ? (
               <MapCanvas scrollZoom={false} fitPadding={20} showMarkers={false}/>
             ) : (
@@ -171,6 +172,7 @@ export default function PetaSection() {
                 </p>
               </div>
             )}
+            </div>
           </div>
         </div>
 

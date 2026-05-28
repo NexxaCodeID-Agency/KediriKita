@@ -51,9 +51,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
 
   const { data } = await supabase
     .from("destinations")
@@ -81,9 +81,9 @@ async function getDestination(slug: string): Promise<Destination | null> {
 export default async function DestinationDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   const destination = await getDestination(slug);
 
   if (!destination) notFound();

@@ -42,8 +42,6 @@ export default function Carauser() {
   const isLiteMode = isBot || isMobile;
 
   useEffect(() => {
-    if (isLiteMode) return;
-
     const section = sectionRef.current;
     if (!section) return;
 
@@ -72,7 +70,7 @@ export default function Carauser() {
       io.disconnect();
       clearTimeout(fallback);
     };
-  }, [isLiteMode]);
+  }, []);
 
   useEffect(() => {
     const heading = headingRef.current;
@@ -295,62 +293,24 @@ export default function Carauser() {
           className="relative w-full h-full"
           style={{ zIndex: 10, paddingTop: "clamp(5rem, 14vh, 9rem)" }}
         >
-          {isLiteMode ? (
-            <div className="grid grid-cols-2 gap-3 px-4 sm:px-8">
-              {GALLERY_ITEMS.map((item) => (
-                <div
-                  key={item.text}
-                  className="overflow-hidden rounded-2xl border border-yellow-600/20 bg-[#0b0b12] shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
-                >
-                  <div className="relative" style={{ aspectRatio: "4 / 5" }}>
-                    <Image
-                      src={item.image}
-                      alt={item.text}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 45%, transparent 100%)",
-                      }}
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <p className="text-[0.65rem] tracking-[0.25em] uppercase text-yellow-300/70">
-                        Pesona
-                      </p>
-                      <p className="text-sm font-semibold text-white drop-shadow">
-                        {item.text}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {isMobile ? (
+            <div className="md:hidden w-full h-full">
+              {showGallery && <MobileGallery3D items={GALLERY_ITEMS} />}
             </div>
           ) : (
-            <>
-              {/* Desktop — CircularGallery (OGL), lazy mount saat section dekat viewport */}
-              <div className="hidden md:block w-full h-full">
-                {showGallery && (
-                  <CircularGallery
-                    items={GALLERY_ITEMS}
-                    bend={3}
-                    textColor="#f0d080"
-                    borderRadius={0.05}
-                    scrollSpeed={2}
-                    scrollEase={0.07}
-                    font="bold 26px 'Playfair Display', serif"
-                  />
-                )}
-              </div>
-
-              {/* Mobile — MobileGallery3D (Three.js + R3F) bend curve circular */}
-              <div className="md:hidden w-full h-full">
-                {showGallery && <MobileGallery3D items={GALLERY_ITEMS} />}
-              </div>
-            </>
+            <div className="hidden md:block w-full h-full">
+              {showGallery && (
+                <CircularGallery
+                  items={GALLERY_ITEMS}
+                  bend={3}
+                  textColor="#f0d080"
+                  borderRadius={0.05}
+                  scrollSpeed={2}
+                  scrollEase={0.07}
+                  font="bold 26px 'Playfair Display', serif"
+                />
+              )}
+            </div>
           )}
         </div>
 

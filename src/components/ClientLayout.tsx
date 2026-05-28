@@ -30,10 +30,13 @@ export default function ClientLayout({
   isMobile: boolean;
 }) {
   // Selalu mulai false agar server & client HTML cocok (tidak ada hydration mismatch)
-  const [ready, setReady] = useState(isBot);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (isBot) return;
+    if (isBot) {
+      setReady(true);
+      return;
+    }
     // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
     // Pola "lazy client-only sync" yang disengaja: state awal harus false di server
     // agar HTML cocok, lalu di-sync ke true di client kalau session menandai.

@@ -90,7 +90,8 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
             };
           },
         }).addTo(map);
-      });
+      })
+      .catch(console.error);
 
     // Label Kabupaten
     L.marker([-7.72, 112.08], {
@@ -130,7 +131,11 @@ export default function MapCanvas({scrollZoom = true, fitPadding = 30, showMarke
       supabase
         .from("destinations")
         .select("slug, name, category, short_desc, image, latitude, longitude")
-        .then(({ data }) => {
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Error fetching destinations:", error);
+            return;
+          }
           if (!data) return;
   
           data.forEach((dest: Destination) => {

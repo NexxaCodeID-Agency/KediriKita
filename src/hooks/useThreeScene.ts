@@ -4,10 +4,11 @@ import * as THREE from 'three';
 
 const PARTICLE_COUNT = 320;
 
-export function useThreeScene() {
+export function useThreeScene(ready: boolean = true) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!ready) return;
     const mount = mountRef.current;
     if (!mount) return;
 

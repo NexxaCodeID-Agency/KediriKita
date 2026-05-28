@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-
+import LazySection from "@/components/ui/LazySection";
 
 const HeroSection = dynamic(() => import("./sections/HeroSection"), {
   loading: () => null,
@@ -14,10 +14,23 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <KediriSection />
-      <CardSection />
-      <Carauser />
-      <PetaSection />
+
+      <LazySection minHeight="100dvh">
+        <KediriSection />
+      </LazySection>
+
+      <LazySection minHeight="100dvh">
+        <CardSection />
+      </LazySection>
+
+      <LazySection minHeight="100dvh">
+        <Carauser />
+      </LazySection>
+
+      <LazySection minHeight="800px">
+        <PetaSection />
+      </LazySection>
+
       <Footer />
     </main>
   );

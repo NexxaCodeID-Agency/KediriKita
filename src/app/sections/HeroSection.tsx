@@ -34,8 +34,8 @@ export default function HeroSection() {
   const gateRevealRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const teksRef = useRef<HTMLDivElement>(null);
-  const particlesMountRef = useThreeScene();
   const ready = useReady();
+  const particlesMountRef = useThreeScene(ready);
 
   const parallaxLayers = useMemo(
     () => [
@@ -233,6 +233,7 @@ export default function HeroSection() {
             src="/assets/images/mega.avif"
             alt=""
             fill
+            priority
             style={{ objectFit: "cover", mixBlendMode: "overlay" }}
           />
         </div>
@@ -247,6 +248,7 @@ export default function HeroSection() {
             src="/assets/images/awan-putih.avif"
             alt=""
             fill
+            priority
             style={{ objectFit: "contain", objectPosition: "top center" }}
           />
         </div>

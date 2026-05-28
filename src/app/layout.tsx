@@ -29,7 +29,9 @@ const lato = Lato({
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -58,15 +60,29 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
-  const isBot = /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(userAgent);
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i.test(userAgent);
+  const isBot =
+    /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(
+      userAgent,
+    );
+  const isMobile =
+    /Mobi|Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i.test(
+      userAgent,
+    );
   return (
     <html
       lang="id"
-      className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
+      className={cn(
+        "h-full",
+        cinzel.variable,
+        playfair.variable,
+        lato.variable,
+        "font-sans",
+      )}
     >
       <body className="min-h-full">
-        <ClientLayout isBot={isBot} isMobile={isMobile}>{children}</ClientLayout>
+        <ClientLayout isBot={isBot} isMobile={isMobile}>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

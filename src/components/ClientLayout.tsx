@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, createContext, useContext } from 'react';
-import LoadingScreen from './LoadingScreen';
+import { useState, useEffect, createContext, useContext } from "react";
+import LoadingScreen from "./LoadingScreen";
 
 export const ReadyContext = createContext(false);
 
@@ -18,7 +18,7 @@ export function useDeviceMode() {
   return useContext(DeviceContext);
 }
 
-const SESSION_KEY = 'kediri_intro_played';
+const SESSION_KEY = "kediri_intro_played";
 
 export default function ClientLayout({
   children,
@@ -37,14 +37,14 @@ export default function ClientLayout({
     // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
     // Pola "lazy client-only sync" yang disengaja: state awal harus false di server
     // agar HTML cocok, lalu di-sync ke true di client kalau session menandai.
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    if (sessionStorage.getItem(SESSION_KEY) === "1") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setReady(true);
     }
   }, [isBot]);
 
   const handleDone = () => {
-    sessionStorage.setItem(SESSION_KEY, '1');
+    sessionStorage.setItem(SESSION_KEY, "1");
     setReady(true);
   };
 
@@ -52,9 +52,7 @@ export default function ClientLayout({
     <>
       {!ready && !isBot && <LoadingScreen onDone={handleDone} />}
       <DeviceContext.Provider value={{ isBot, isMobile }}>
-        <ReadyContext.Provider value={ready}>
-          {children}
-        </ReadyContext.Provider>
+        <ReadyContext.Provider value={ready}>{children}</ReadyContext.Provider>
       </DeviceContext.Provider>
     </>
   );

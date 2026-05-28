@@ -258,10 +258,7 @@ export default function HeroSection() {
         )}
 
         {useStaticHero ? (
-          <div
-            className="absolute inset-0"
-            style={{ zIndex: 3, opacity: 1 }}
-          >
+          <div className="absolute inset-0" style={{ zIndex: 3, opacity: 1 }}>
             <Image
               src="/loadingMobile-poster.avif"
               alt="Latar Kota Kediri"
@@ -455,7 +452,7 @@ export default function HeroSection() {
           style={{
             willChange: "transform, filter",
             zIndex: 10,
-              opacity: useStaticHero ? 1 : 0,
+            opacity: useStaticHero ? 1 : 0,
           }}
         >
           <p

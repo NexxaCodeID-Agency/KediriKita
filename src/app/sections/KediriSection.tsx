@@ -160,9 +160,7 @@ export default function KediriSection() {
   return (
     <div ref={wrapperRef} className="relative w-full overflow-hidden">
       {/* Video background */}
-      <div
-        className="absolute inset-0 w-full h-full overflow-hidden"
-      >
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
         {useStaticMedia ? (
           <Image
             src="/assets/images/Simpang-lima-gumul.avif"

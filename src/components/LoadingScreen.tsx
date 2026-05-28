@@ -18,11 +18,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   }, [onDone]);
 
   useEffect(() => {
-    const isBot = /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(navigator.userAgent);
-    if (isBot) {
-      onDoneRef.current();
-      return;
-    }
+  
 
     const video = videoRef.current;
     if (!video) return;

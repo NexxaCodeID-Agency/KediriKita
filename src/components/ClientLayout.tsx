@@ -11,11 +11,12 @@ export function useReady() {
 
 const SESSION_KEY = 'kediri_intro_played';
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({ children, isBot = false }: { children: React.ReactNode; isBot: boolean }) {
   // Selalu mulai false agar server & client HTML cocok (tidak ada hydration mismatch)
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(isBot);
 
   useEffect(() => {
+    if (isBot) return;
     // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
     // Pola "lazy client-only sync" yang disengaja: state awal harus false di server
     // agar HTML cocok, lalu di-sync ke true di client kalau session menandai.
@@ -23,7 +24,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setReady(true);
     }
-  }, []);
+  }, [isBot]);
 
   const handleDone = () => {
     sessionStorage.setItem(SESSION_KEY, '1');
@@ -32,7 +33,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <>
-      {!ready && <LoadingScreen onDone={handleDone} />}
+      {!ready && !isBot && <LoadingScreen onDone={handleDone} />}
       <ReadyContext.Provider value={ready}>
         {children}
       </ReadyContext.Provider>

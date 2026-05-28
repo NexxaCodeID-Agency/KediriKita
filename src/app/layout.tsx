@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Playfair_Display, Lato } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
     title: "Kota Kediri",
     description:
       "Temukan keindahan, sejarah, dan kehangatan Kota Kediri — kota yang selalu punya cerita untukmu.",
-    images: ["/favicon.ico"],
+    images: ["/assets/images/og-kediri.jpg"],
   },
 };
 
@@ -50,18 +51,21 @@ export const viewport: Viewport = {
   themeColor: "#1A1A2E",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isBot = /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(userAgent);
   return (
     <html
       lang="id"
       className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
     >
       <body className="min-h-full">
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout isBot={isBot}>{children}</ClientLayout>
       </body>
     </html>
   );

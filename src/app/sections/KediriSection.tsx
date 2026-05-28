@@ -152,7 +152,7 @@ export default function KediriSection() {
           muted
           loop
           playsInline
-          preload="none"
+          preload="auto"
           style={{
             width: "100%",
             height: "100%",

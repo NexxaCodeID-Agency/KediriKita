@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useParallax } from "@/hooks/useParallax";
 import { useThreeScene } from "@/hooks/useThreeScene";
-import { useReady } from "@/components/ClientLayout";
+import { useDeviceMode, useReady } from "@/components/ClientLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,13 +35,9 @@ export default function HeroSection() {
   const glowRef = useRef<HTMLDivElement>(null);
   const teksRef = useRef<HTMLDivElement>(null);
   const particlesMountRef = useThreeScene();
+  const { isBot, isMobile } = useDeviceMode();
   const ready = useReady();
-
-  const isBot =
-    typeof window !== "undefined" &&
-    /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(
-      navigator.userAgent,
-    );
+  const useStaticHero = isBot || isMobile;
 
   const parallaxLayers = useMemo(
     () => [
@@ -74,7 +70,7 @@ export default function HeroSection() {
   );
 
   useParallax(
-    !isBot
+    !useStaticHero
       ? (wrapperRef as React.RefObject<HTMLElement | null>)
       : { current: null },
     parallaxLayers,
@@ -88,9 +84,9 @@ export default function HeroSection() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const isInstant = isBot || prefersReduced;
+    const isInstant = useStaticHero || prefersReduced;
 
-    if (prefersReduced && !isBot) {
+    if (useStaticHero || prefersReduced) {
       gsap.set(
         [
           megaRef.current,
@@ -100,8 +96,9 @@ export default function HeroSection() {
           ornamenRef.current,
           teksRef.current,
           glowRef.current,
+          gateRevealRef.current,
         ],
-        { opacity: 1 },
+        { opacity: 1, y: 0, scale: 1 },
       );
       return;
     }
@@ -185,7 +182,7 @@ export default function HeroSection() {
     });
 
     return () => ctx.revert();
-  }, [ready, isBot]);
+  }, [ready, useStaticHero]);
 
   // Scroll story dihilangkan: hero = 100vh full screen, scroll langsung ke section berikutnya
   // tanpa "gap" parallax. Entrance animation (gapura rising, awan fade, text appear) tetap ada
@@ -193,7 +190,7 @@ export default function HeroSection() {
 
   // ─── Mouse parallax ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (isBot || window.innerWidth < 768) return;
+    if (useStaticHero || window.innerWidth < 768) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const layers = [
@@ -223,7 +220,7 @@ export default function HeroSection() {
         if (el) gsap.to(el, { x: 0, duration: 0.6 });
       });
     };
-  }, []);
+  }, [useStaticHero]);
 
   return (
     <div ref={wrapperRef} className="relative hero-wrapper">
@@ -252,7 +249,7 @@ export default function HeroSection() {
           }}
         />
 
-        {!isBot && (
+        {!useStaticHero && (
           <div
             ref={particlesMountRef}
             className="absolute inset-0 pointer-events-none"
@@ -260,93 +257,111 @@ export default function HeroSection() {
           />
         )}
 
-        <div
-          ref={megaRef}
-          className="absolute inset-0"
-          style={{
-            willChange: "transform",
-            zIndex: 3,
-            opacity: isBot ? 0.7 : 0,
-          }}
-        >
-          <Image
-            src="/assets/images/mega.avif"
-            alt="Latar Langit Mega"
-            fill
-            priority
-            fetchPriority="high"
-            style={{ objectFit: "cover", mixBlendMode: "overlay" }}
-          />
-        </div>
+        {useStaticHero ? (
+          <div
+            className="absolute inset-0"
+            style={{ zIndex: 3, opacity: 1 }}
+          >
+            <Image
+              src="/loadingMobile-poster.avif"
+              alt="Latar Kota Kediri"
+              fill
+              priority
+              fetchPriority="high"
+              style={{ objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
+        ) : (
+          <>
+            <div
+              ref={megaRef}
+              className="absolute inset-0"
+              style={{
+                willChange: "transform",
+                zIndex: 3,
+                opacity: 0,
+              }}
+            >
+              <Image
+                src="/assets/images/mega.avif"
+                alt="Latar Langit Mega"
+                fill
+                priority
+                fetchPriority="high"
+                style={{ objectFit: "cover", mixBlendMode: "overlay" }}
+              />
+            </div>
 
-        <div
-          ref={awanRef}
-          className="absolute inset-0"
-          style={{
-            willChange: "transform",
-            zIndex: 4,
-            opacity: isBot ? 0.95 : 0,
-          }}
-        >
-          <Image
-            src="/assets/images/awan-putih.avif"
-            alt="Latar Langit Awan Putih"
-            fill
-            priority
-            fetchPriority="high"
-            style={{ objectFit: "contain", objectPosition: "top center" }}
-          />
-        </div>
+            <div
+              ref={awanRef}
+              className="absolute inset-0"
+              style={{
+                willChange: "transform",
+                zIndex: 4,
+                opacity: 0,
+              }}
+            >
+              <Image
+                src="/assets/images/awan-putih.avif"
+                alt="Latar Langit Awan Putih"
+                fill
+                priority
+                fetchPriority="high"
+                style={{ objectFit: "contain", objectPosition: "top center" }}
+              />
+            </div>
 
-        <div
-          ref={gapuraKiriRef}
-          className="absolute bottom-0 left-0"
-          style={{
-            willChange: "transform",
-            zIndex: 5,
-            width: "clamp(180px, 48%, 520px)",
-            height: "clamp(65%, 80%, 88%)",
-            opacity: isBot ? 1 : 0,
-          }}
-        >
-          <Image
-            src="/assets/images/gapura-kiri.avif"
-            alt="Gapura Kota Kediri sisi kiri"
-            fill
-            priority
-            style={{
-              objectFit: "contain",
-              objectPosition: "bottom left",
-              transform: "scale(1.07)",
-              transformOrigin: "bottom left",
-            }}
-          />
-        </div>
+            <div
+              ref={gapuraKiriRef}
+              className="absolute bottom-0 left-0"
+              style={{
+                willChange: "transform",
+                zIndex: 5,
+                width: "clamp(180px, 48%, 520px)",
+                height: "clamp(65%, 80%, 88%)",
+                opacity: 0,
+              }}
+            >
+              <Image
+                src="/assets/images/gapura-kiri.avif"
+                alt="Gapura Kota Kediri sisi kiri"
+                fill
+                priority
+                style={{
+                  objectFit: "contain",
+                  objectPosition: "bottom left",
+                  transform: "scale(1.07)",
+                  transformOrigin: "bottom left",
+                }}
+              />
+            </div>
 
-        <div
-          ref={gapuraKananRef}
-          className="absolute bottom-0 right-0"
-          style={{
-            willChange: "transform",
-            zIndex: 5,
-            width: "clamp(180px, 48%, 520px)",
-            height: "clamp(65%, 80%, 88%)",
-            opacity: isBot ? 1 : 0,
-          }}
-        >
-          <Image
-            src="/assets/images/gapura-kanan.avif"
-            alt="Gapura Kota Kediri sisi kanan"
-            fill
-            priority
-            style={{
-              objectFit: "contain",
-              transform: "scale(1.07)",
-              transformOrigin: "bottom right",
-              objectPosition: "bottom right",
-            }}
-          />
-        </div>
+            <div
+              ref={gapuraKananRef}
+              className="absolute bottom-0 right-0"
+              style={{
+                willChange: "transform",
+                zIndex: 5,
+                width: "clamp(180px, 48%, 520px)",
+                height: "clamp(65%, 80%, 88%)",
+                opacity: 0,
+              }}
+            >
+              <Image
+                src="/assets/images/gapura-kanan.avif"
+                alt="Gapura Kota Kediri sisi kanan"
+                fill
+                priority
+                style={{
+                  objectFit: "contain",
+                  transform: "scale(1.07)",
+                  transformOrigin: "bottom right",
+                  objectPosition: "bottom right",
+                }}
+              />
+            </div>
+          </>
+        )}
 
         <div
           ref={ornamenRef}
@@ -355,7 +370,7 @@ export default function HeroSection() {
             willChange: "transform",
             zIndex: 6,
             height: "80px",
-            opacity: isBot ? 1 : 0,
+            opacity: useStaticHero ? 1 : 0,
           }}
         >
           <svg
@@ -440,7 +455,7 @@ export default function HeroSection() {
           style={{
             willChange: "transform, filter",
             zIndex: 10,
-            opacity: isBot ? 1 : 0,
+              opacity: useStaticHero ? 1 : 0,
           }}
         >
           <p

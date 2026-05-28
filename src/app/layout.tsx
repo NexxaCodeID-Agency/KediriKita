@@ -59,13 +59,14 @@ export default async function RootLayout({
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
   const isBot = /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(userAgent);
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i.test(userAgent);
   return (
     <html
       lang="id"
       className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
     >
       <body className="min-h-full">
-        <ClientLayout isBot={isBot}>{children}</ClientLayout>
+        <ClientLayout isBot={isBot} isMobile={isMobile}>{children}</ClientLayout>
       </body>
     </html>
   );

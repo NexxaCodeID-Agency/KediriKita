@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
 import dynamic from "next/dynamic"
+import Image from "next/image"
+import { useDeviceMode } from "@/components/ClientLayout"
 
 const MapCanvas = dynamic(() => import("@/components/three/MapCanvas"), {
   ssr: false,
@@ -16,20 +18,26 @@ const MapCanvas = dynamic(() => import("@/components/three/MapCanvas"), {
 export default function PetaSection() {
     const [showCanvas, setShowCanvas] = useState(false)
     const wrapperRef = useRef<HTMLDivElement>(null)
+  const { isBot, isMobile } = useDeviceMode()
+  const isLiteMode = isBot || isMobile
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setShowCanvas(true)
-                    observer.disconnect()
-                }
-            },
-            { threshold: 0.2 }
-        )
-        if (wrapperRef.current) observer.observe(wrapperRef.current)
-        return () => observer.disconnect()
-    }, [])
+  useEffect(() => {
+    if (isLiteMode) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowCanvas(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 },
+    )
+
+    if (wrapperRef.current) observer.observe(wrapperRef.current)
+
+    return () => observer.disconnect()
+  }, [isLiteMode])
 
     return (
       <section
@@ -162,7 +170,30 @@ export default function PetaSection() {
             <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-10" />
 
             {/* Map Canvas atau Loading */}
-            {showCanvas ? (
+            {isLiteMode ? (
+              <div className="relative w-full h-full">
+                <Image
+                  src="/assets/images/og-kediri.avif"
+                  alt="Pratinjau Kediri"
+                  fill
+                  style={{
+                    objectFit: "cover",
+                    filter: "brightness(0.65) saturate(0.9)",
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050509] via-[#050509]/40 to-transparent" />
+                <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                  <div>
+                    <p className="text-[0.65rem] tracking-[0.35em] text-yellow-300/65 uppercase mb-2">
+                      Peta interaktif
+                    </p>
+                    <p className="text-sm sm:text-base text-white/90 max-w-sm leading-7">
+                      Mode ringan menampilkan pratinjau statis agar halaman tetap cepat di perangkat mobile.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : showCanvas ? (
               <MapCanvas scrollZoom={false} fitPadding={20} showMarkers={false}/>
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-[#1A1A2E]">

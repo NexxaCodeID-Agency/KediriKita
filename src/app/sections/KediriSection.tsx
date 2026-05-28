@@ -18,147 +18,154 @@ export default function KediriSection() {
   const descRef = useRef<HTMLParagraphElement>(null);
   const dividerRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const isAnimating = useRef(false);
 
-  // Lazy load video — baru fetch + play saat section dekat viewport
   useEffect(() => {
     const wrapper = wrapperRef.current;
     const video = videoRef.current;
     if (!wrapper || !video) return;
 
-    const VIDEO_SRC = "/assets/videos/slg.mp4";
-    let loaded = false;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
+    const handleCanPlay = () => {
+      if (isAnimating.current) return;
+      isAnimating.current = true;
+      
+      video.play().catch(() => {});
+
+      if (prefersReduced) {
+        gsap.set(
+          [
+            badgeRef.current,
+            headingRef.current,
+            descRef.current,
+            dividerRef.current,
+            statsRef.current,
+            video,
+            overlayRef.current
+          ],
+          { opacity: 1, scale: 1, y: 0 },
+        );
+        return;
+      }
+
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          video,
+          { scale: 1.15, opacity: 0.5 },
+          {
+            scale: 1,
+            opacity: 1,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: wrapper,
+              start: "top bottom",
+              end: "center center",
+              scrub: 0.8,
+            },
+          },
+        );
+
+        gsap.fromTo(
+          overlayRef.current,
+          { opacity: 0.3 },
+          {
+            opacity: 0.72,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: wrapper,
+              start: "top bottom",
+              end: "center center",
+              scrub: 0.8,
+            },
+          },
+        );
+
+        const textEls = [
+          badgeRef.current,
+          headingRef.current,
+          dividerRef.current,
+          descRef.current,
+          statsRef.current,
+        ];
+
+        textEls.forEach((el, i) => {
+          gsap.fromTo(
+            el,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: wrapper,
+                start: "20% bottom",
+                toggleActions: "play none none none",
+              },
+              delay: i * 0.13,
+            },
+          );
+        });
+      }, wrapper);
+      
+      return () => ctx.revert();
+    };
+
+    const init = () => {
+      if (video.readyState >= 3) { // HAVE_FUTURE_DATA
+        handleCanPlay();
+      } else {
+        video.addEventListener("canplay", handleCanPlay, { once: true });
+      }
+    };
+    
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !loaded) {
-          loaded = true;
-          video.src = VIDEO_SRC;
-          video.load();
-          video.play().catch(() => {});
+        if (entry.isIntersecting) {
+          init();
           io.disconnect();
         }
       },
       { rootMargin: "200px 0px" },
     );
+
     io.observe(wrapper);
 
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (prefersReduced) {
-      gsap.set(
-        [
-          badgeRef.current,
-          headingRef.current,
-          descRef.current,
-          dividerRef.current,
-          statsRef.current,
-        ],
-        { opacity: 1, y: 0 },
-      );
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      // Video scale-in saat section masuk viewport
-      gsap.fromTo(
-        videoRef.current,
-        { scale: 1.15 },
-        {
-          scale: 1,
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: wrapper,
-            start: "top bottom",
-            end: "center center",
-            scrub: 0.8,
-          },
-        },
-      );
-
-      // Overlay fade saat scroll masuk
-      gsap.fromTo(
-        overlayRef.current,
-        { opacity: 0.3 },
-        {
-          opacity: 0.72,
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: wrapper,
-            start: "top bottom",
-            end: "center center",
-            scrub: 0.8,
-          },
-        },
-      );
-
-      // Teks masuk satu per satu
-      const textEls = [
-        badgeRef.current,
-        headingRef.current,
-        dividerRef.current,
-        descRef.current,
-        statsRef.current,
-      ];
-
-      textEls.forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: wrapper,
-              start: "20% bottom",
-              toggleActions: "play none none none",
-            },
-            delay: i * 0.13,
-          },
-        );
-      });
-    });
-
-    return () => ctx.revert();
+    return () => {
+      io.disconnect();
+      video.removeEventListener("canplay", handleCanPlay);
+      gsap.killTweensOf(wrapper);
+    };
   }, []);
 
   return (
     <div ref={wrapperRef} className="relative w-full overflow-hidden">
-      {/* Video background */}
-      <div
-        className="absolute inset-0 w-full h-full overflow-hidden"
-      >
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video
           ref={videoRef}
+          src="/assets/videos/slg.mp4"
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           style={{
             width: "100%",
             height: "100%",
             objectFit: "cover",
             objectPosition: "center",
-            willChange: "transform",
+            willChange: "transform, opacity",
             transform: "translateZ(0)",
             backfaceVisibility: "hidden",
+            opacity: 0, 
           }}
         />
       </div>
 
-      {/* Overlay gelap + gradient bawah */}
       <div
         ref={overlayRef}
         className="absolute inset-0 pointer-events-none"
@@ -169,7 +176,6 @@ export default function KediriSection() {
         }}
       />
 
-      {/* Vignette tepi */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -178,7 +184,6 @@ export default function KediriSection() {
         }}
       />
 
-      {/* Konten */}
       <div
         className="relative flex flex-col items-center justify-center text-center px-5 sm:px-6"
         style={{
@@ -188,7 +193,6 @@ export default function KediriSection() {
           zIndex: 10,
         }}
       >
-        {/* Badge */}
         <div
           ref={badgeRef}
           className="-mt-10 lg:-mt-20"
@@ -225,7 +229,6 @@ export default function KediriSection() {
           </span>
         </div>
 
-        {/* Heading */}
         <div
           ref={headingRef}
           className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-5 mb-2"
@@ -261,7 +264,6 @@ export default function KediriSection() {
           </h2>
         </div>
 
-        {/* Divider */}
         <div
           ref={dividerRef}
           style={{
@@ -274,7 +276,6 @@ export default function KediriSection() {
           }}
         />
 
-        {/* Deskripsi */}
         <p
           ref={descRef}
           style={{
@@ -296,13 +297,11 @@ export default function KediriSection() {
           abadi.
         </p>
 
-        {/* Button dipindah ke dalam container konten agar posisinya pas */}
         <div className="relative flex items-center justify-center z-10 mt-8">
           <LihatDestinasiButton onClick={() => router.push("/destinasi")} />
         </div>
       </div>
 
-      {/* Ornamen bawah */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none"
         style={{ zIndex: 11, height: "80px" }}

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Playfair_Display, Lato } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";

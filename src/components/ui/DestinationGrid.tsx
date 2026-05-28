@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { useIntersectionObserverAnimation } from "@/hooks/useIntersectionAnimation";
+import { cn } from "@/lib/utils";
 
 const PLACEHOLDER_IMG =
   "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%231A1A2E' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23d4a017' font-family='serif' font-size='14' text-anchor='middle' dominant-baseline='middle'%3EKediri%3C/text%3E%3C/svg%3E";
@@ -31,6 +32,133 @@ type Destination = {
 };
 
 const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
+
+function DestinationCard({ item, index }: { item: Destination; index: number }) {
+  const ref = useIntersectionObserverAnimation<HTMLDivElement>({
+    delay: index * 80,
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={cn("fade-in-up")}
+      style={{ transitionDelay: `${index * 80}ms` }}
+    >
+      <Link
+        href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
+        className="group block"
+      >
+        <div
+          className="relative rounded-2xl overflow-hidden border transition-all duration-300"
+          style={{
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.03)",
+            willChange: "transform",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.border =
+              "1px solid var(--color-emas)";
+            (e.currentTarget as HTMLDivElement).style.transform =
+              "translateY(-4px)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.border =
+              "1px solid rgba(255,255,255,0.08)";
+            (e.currentTarget as HTMLDivElement).style.transform =
+              "translateY(0)";
+          }}
+        >
+          {/* Gambar */}
+          <div className="relative w-full h-48 sm:h-56 overflow-hidden">
+            <Image
+              src={
+                isValidImageSrc(item.image)
+                  ? item.image
+                  : PLACEHOLDER_IMG
+              }
+              alt={item.name ?? "Destinasi"}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              unoptimized={
+                !!item.image && !item.image.includes(".supabase.co")
+              }
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(26,26,46,0.85) 0%, transparent 60%)",
+              }}
+            />
+            <span
+              className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs uppercase tracking-widest"
+              style={{
+                fontFamily: "var(--font-lato)",
+                background: "rgba(212,160,23,0.85)",
+                color: "#1A1A2E",
+              }}
+            >
+              {item.category}
+            </span>
+            {typeof item.rating === "number" && item.rating > 0 && (
+              <div
+                className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
+                style={{
+                  background: "rgba(10,10,26,0.75)",
+                  border: "1px solid rgba(212,160,23,0.4)",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
+                <span style={{ color: "#f0c040", fontSize: "11px" }}>
+                  ★
+                </span>
+                <span
+                  style={{
+                    color: "#f0c040",
+                    fontSize: "11px",
+                    fontFamily: "var(--font-lato)",
+                    fontWeight: 600,
+                  }}
+                >
+                  {item.rating.toFixed(1)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Info */}
+          <div className="p-4 sm:p-5">
+            <h2
+              className="text-white text-base sm:text-lg font-semibold leading-snug"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              {item.name}
+            </h2>
+            <p
+              className="text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed"
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                fontFamily: "var(--font-lato)",
+              }}
+            >
+              {item.short_desc}
+            </p>
+            <span
+              className="inline-block mt-3 sm:mt-4 text-[10px] sm:text-xs tracking-widest uppercase"
+              style={{
+                color: "var(--color-emas)",
+                fontFamily: "var(--font-lato)",
+              }}
+            >
+              Lihat Detail →
+            </span>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
 
 export default function DestinationGrid({
   destinations,
@@ -182,130 +310,7 @@ export default function DestinationGrid({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {filtered.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.5,
-                delay: i * 0.08,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              <Link
-                href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
-                className="group block"
-              >
-                <div
-                  className="relative rounded-2xl overflow-hidden border transition-all duration-300"
-                  style={{
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.03)",
-                    willChange: "transform",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.border =
-                      "1px solid var(--color-emas)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(-4px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.border =
-                      "1px solid rgba(255,255,255,0.08)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(0)";
-                  }}
-                >
-                  {/* Gambar */}
-                  <div className="relative w-full h-48 sm:h-56 overflow-hidden">
-                    <Image
-                      src={
-                        isValidImageSrc(item.image)
-                          ? item.image
-                          : PLACEHOLDER_IMG
-                      }
-                      alt={item.name ?? "Destinasi"}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      unoptimized={
-                        !!item.image && !item.image.includes(".supabase.co")
-                      }
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(to top, rgba(26,26,46,0.85) 0%, transparent 60%)",
-                      }}
-                    />
-                    <span
-                      className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs uppercase tracking-widest"
-                      style={{
-                        fontFamily: "var(--font-lato)",
-                        background: "rgba(212,160,23,0.85)",
-                        color: "#1A1A2E",
-                      }}
-                    >
-                      {item.category}
-                    </span>
-                    {typeof item.rating === "number" && item.rating > 0 && (
-                      <div
-                        className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
-                        style={{
-                          background: "rgba(10,10,26,0.75)",
-                          border: "1px solid rgba(212,160,23,0.4)",
-                          backdropFilter: "blur(4px)",
-                        }}
-                      >
-                        <span style={{ color: "#f0c040", fontSize: "11px" }}>
-                          ★
-                        </span>
-                        <span
-                          style={{
-                            color: "#f0c040",
-                            fontSize: "11px",
-                            fontFamily: "var(--font-lato)",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {item.rating.toFixed(1)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-4 sm:p-5">
-                    <h2
-                      className="text-white text-base sm:text-lg font-semibold leading-snug"
-                      style={{ fontFamily: "var(--font-cinzel)" }}
-                    >
-                      {item.name}
-                    </h2>
-                    <p
-                      className="text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed"
-                      style={{
-                        color: "rgba(255,255,255,0.5)",
-                        fontFamily: "var(--font-lato)",
-                      }}
-                    >
-                      {item.short_desc}
-                    </p>
-                    <span
-                      className="inline-block mt-3 sm:mt-4 text-[10px] sm:text-xs tracking-widest uppercase"
-                      style={{
-                        color: "var(--color-emas)",
-                        fontFamily: "var(--font-lato)",
-                      }}
-                    >
-                      Lihat Detail →
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
+            <DestinationCard key={item.id} item={item} index={i} />
           ))}
         </div>
       )}

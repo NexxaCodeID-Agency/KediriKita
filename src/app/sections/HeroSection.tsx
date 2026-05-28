@@ -231,8 +231,10 @@ export default function HeroSection() {
         >
           <Image
             src="/assets/images/mega.avif"
-            alt=""
+            alt="Latar Langit Mega"
             fill
+            priority
+            fetchPriority="high"
             style={{ objectFit: "cover", mixBlendMode: "overlay" }}
           />
         </div>
@@ -245,8 +247,10 @@ export default function HeroSection() {
         >
           <Image
             src="/assets/images/awan-putih.avif"
-            alt=""
+            alt="Latar Langit Awan Putih"
             fill
+            priority
+            fetchPriority="high"
             style={{ objectFit: "contain", objectPosition: "top center" }}
           />
         </div>

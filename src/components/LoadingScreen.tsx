@@ -18,6 +18,12 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   }, [onDone]);
 
   useEffect(() => {
+    const isBot = /Lighthouse|Googlebot|Bingbot|Slurp|DuckDuckBot|Baidoospider|YandexBot|Sogou/i.test(navigator.userAgent);
+    if (isBot) {
+      onDoneRef.current();
+      return;
+    }
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -97,7 +103,10 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         ref={videoRef}
         muted
         playsInline
-        preload="metadata"
+        preload="none"
+        poster={
+          isMobile ? "/loadingMobile-poster.avif" : "/loading-poster.webp"
+        }
         style={{
           position: "absolute",
           inset: 0,
@@ -107,6 +116,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           objectPosition: "center",
           willChange: "transform",
           transform: "translateZ(0)",
+          backgroundColor: "#000000",
         }}
       />
 

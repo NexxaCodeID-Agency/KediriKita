@@ -1,14 +1,15 @@
 import dynamic from "next/dynamic";
+import HeroSection from "./sections/HeroSection";
 
-
-const HeroSection = dynamic(() => import("./sections/HeroSection"), {
-  loading: () => null,
+const KediriSection = dynamic(() => import("./sections/KediriSection"), {
+  ssr: true,
 });
-const KediriSection = dynamic(() => import("./sections/KediriSection"));
-const CardSection = dynamic(() => import("./sections/CardSection"));
-const Carauser = dynamic(() => import("./sections/Carauser"));
-const PetaSection = dynamic(() => import("./sections/peta"));
-const Footer = dynamic(() => import("./sections/Footer"));
+const CardSection = dynamic(() => import("./sections/CardSection"), {
+  ssr: true,
+});
+const Carauser = dynamic(() => import("./sections/Carauser"), { ssr: true });
+const PetaSection = dynamic(() => import("./sections/peta"), { ssr: false });
+const Footer = dynamic(() => import("./sections/Footer"), { ssr: true });
 
 export default function Home() {
   return (

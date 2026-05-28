@@ -88,7 +88,6 @@ export default function HeroSection() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    // 🔥 JURUS BARU: Kalau bot atau prefersReduced, set durasi jadi 0 (Instan!)
     const isInstant = isBot || prefersReduced;
 
     if (prefersReduced && !isBot) {
@@ -108,7 +107,6 @@ export default function HeroSection() {
     }
 
     const ctx = gsap.context(() => {
-      // Kita pakai fungsi ternary: kalau bot durasi = 0, kalau manusia durasi normal
       gsap.fromTo(
         megaRef.current,
         { opacity: 0 },

@@ -292,7 +292,7 @@ export default function KediriSection() {
         >
           Lebih dari sekadar titik di peta Jawa Timur, Kediri adalah perpaduan
           harmonis antara kemegahan sejarah kerajaan, kekayaan tradisi yang
-          hidup, hingga geliat modernitas yang terus bertumbuh —sebuah kota yang
+          hidup, hingga geliat modernitas yang terus bertumbuh — sebuah kota yang
           memahat identitasnya dalam setiap sudut kehangatan dan kejayaan yang
           abadi.
         </p>

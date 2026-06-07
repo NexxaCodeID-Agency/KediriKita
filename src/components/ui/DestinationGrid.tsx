@@ -43,7 +43,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
     <div
       ref={ref}
       className={cn("fade-in-up")}
-      style={{ transitionDelay: `${index * 80}ms` }}
+      style={{ transitionDelay: `${index * 1}ms` }}
     >
       <Link
         href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}

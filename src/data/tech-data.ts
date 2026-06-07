@@ -26,8 +26,9 @@ export const bandaraData = [
   { tahun: "2021", penumpang: 0 },
   { tahun: "2022", penumpang: 0 },
   { tahun: "2023", penumpang: 0 },
-  { tahun: "2024", penumpang: 85000 },  
-  { tahun: "2025", penumpang: 250000 }, 
+  { tahun: "2024", penumpang: 10000 },  
+  { tahun: "2025", penumpang: 6789 }, 
+  { tahun: "2026", penumpang: 3375 }, 
 ]
 
 export const chartConfig = {

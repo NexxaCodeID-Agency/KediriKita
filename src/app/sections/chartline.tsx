@@ -167,11 +167,11 @@ const CATS: Record<Category, CategoryData> = {
     },
   },
   potensi: {
-    headline: "Gerbang Aviasi & Jalur Logistik Udara",
-    cardTitle: "Gerbang Aviasi & Jalur Logistik Udara",
-    desc: "Volume mobilitas pasca operasional awal dan penuh Bandara Internasional Dhoho Kediri.",
-    footer: "Peningkatan volume mobilitas penumpang pasca pembukaan rute komersial",
-    statBadge: "250k",
+headline: "Gerbang Aviasi & Jalur Logistik Udara",
+  cardTitle: "Gerbang Aviasi & Jalur Logistik Udara",
+  desc: "Analisis Tren Kunjungan Penumpang Pasca-Operasional Awal Bandara Internasional Dhoho (Data Tahunan).",
+  footer: "Dinamika volume mobilitas penumpang sejak awal pembukaan rute komersial",
+  statBadge: "20k+",
     legend: [{ color: "#22c55e", label: "Penumpang Bandara" }],
     config: {
       type: "bar",

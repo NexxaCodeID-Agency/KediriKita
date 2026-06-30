@@ -373,7 +373,8 @@ export function KediriTechChart() {
         <div className="relative z-10 max-w-[860px] mx-auto">
           <p className="text-center text-[10px] tracking-[0.3em] font-light text-[rgba(201,168,76,0.55)] mb-2">✦ KOTA KEDIRI · DATA &amp; INOVASI ✦</p>
           <h2 className="text-center text-[26px] font-semibold tracking-[0.04em] mb-1 transition-opacity duration-300" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#F0D080" }}>{data.headline}</h2>
-          <p className="text-center text-[11px] tracking-[0.1em] uppercase font-light text-white/30 mb-6">Kota Kediri · Jawa Timur</p>
+          <p className="text-center text-[11px] tracking-[0.1em] uppercase font-light text-white/30 mb-1">Kota Kediri · Jawa Timur</p>
+          <p className="text-center text-[13px] tracking-[0.1em] font-light text-white/70 ">Berdasarkan data yang tercatat secara resmi di PEMKOT KEDIRI</p>
 
           <Divider />
 

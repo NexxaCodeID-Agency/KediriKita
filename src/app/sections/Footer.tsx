@@ -7,9 +7,8 @@ const LINKS = [
     heading: "Jelajahi",
     items: [
       { label: "Beranda", href: "#" },
-      { label: "Simpang Lima Gumul", href: "#" },
-      { label: "Galeri Pesona", href: "#" },
-      { label: "Budaya & Sejarah", href: "#" },
+      { label: "Destinasi", href: "/destinasi" },
+      { label: "Peta Kediri", href: "/map" },
     ],
   },
   {

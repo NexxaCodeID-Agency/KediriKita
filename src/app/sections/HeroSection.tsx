@@ -442,6 +442,16 @@ export default function HeroSection() {
             </span>
           </h1>
 
+          <p className="hero-desc"
+          style={{
+            fontFamily: "var(--font-lato)",
+            color: "#FFFFFF",
+            textShadow:
+                "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
+          }}>
+            Alias Kota Tahu
+          </p>
+
           <div
             style={{
               width: "clamp(100px, 18vw, 220px)",

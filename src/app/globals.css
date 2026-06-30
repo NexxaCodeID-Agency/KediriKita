@@ -191,11 +191,12 @@ body {
   height: 100dvh;
 }
 .card-section-wrapper {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .card-section-sticky {
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .carauser-wrapper {
   height: 100vh;
@@ -206,20 +207,21 @@ body {
 }
 
 @media (max-width: 767px) {
-  /* Setiap section = 1 layar penuh, scroll natural (tanpa sticky parallax yang bikin "loncat") */
   .hero-wrapper {
     height: 100vh;
     height: 100dvh;
   }
   .card-section-wrapper {
-    height: 100vh;
-    height: 100dvh;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .card-section-sticky {
     position: relative !important;
     top: auto !important;
-    height: 100vh;
-    height: 100dvh;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .carauser-wrapper {
     height: 100vh;
@@ -232,6 +234,224 @@ body {
     height: 100dvh;
   }
 }
+
+/* ─── CardSection responsive system ──────────────────────────
+   Semua sizing card diatur lewat CSS agar proporsional di
+   setiap ukuran device tanpa lompatan breakpoint yang kasar.
+   ──────────────────────────────────────────────────────────── */
+
+/* Layout container */
+.card-section-layout {
+  padding: 4rem 1.5rem;
+}
+
+/* Card outer — default (desktop ≥1024) */
+.card-outer {
+  width: 26rem;
+  max-width: 92vw;
+}
+
+/* Card body */
+.card-body {
+  padding: 2.75rem 3rem;
+}
+
+/* Typography */
+.card-label {
+  font-size: 9px;
+  letter-spacing: 5px;
+  margin-bottom: 0.5rem;
+}
+.card-title {
+  font-size: 2.6rem;
+  margin-bottom: 0.5rem;
+}
+.card-tagline {
+  font-size: 10px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+}
+.card-intro {
+  font-size: 12px;
+  margin-bottom: 1.25rem;
+}
+.card-divider {
+  margin-bottom: 1.25rem;
+}
+
+/* Poin list */
+.card-points {
+  gap: 1rem;
+}
+.card-point-item {
+  gap: 0.75rem;
+}
+.card-point-icon {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+}
+.card-point-title {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  margin-bottom: 2px;
+}
+.card-point-desc {
+  font-size: 11.5px;
+}
+
+/* Badge */
+.card-badge-wrap {
+  margin-top: 1.5rem;
+}
+.card-badge {
+  font-size: 8.5px;
+  padding: 0.375rem 1.25rem;
+}
+
+/* ── Tablet (768–1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .card-section-layout {
+    padding: 3rem 2rem 3rem 3.5rem;
+  }
+  .card-outer {
+    width: min(24rem, 55vw);
+  }
+  .card-body {
+    padding: 2.25rem 2.5rem;
+  }
+  .card-title {
+    font-size: 2.2rem;
+  }
+}
+
+/* ── Mobile (≤767px) — card mengisi layar, teks proporsional ── */
+@media (max-width: 767px) {
+  .card-section-layout {
+    padding: 3.5rem 1rem;
+  }
+  .card-outer {
+    width: 88vw;
+    max-width: 22rem;
+  }
+  .card-body {
+    padding: 2rem 1.75rem;
+  }
+  .card-label {
+    font-size: 8px;
+    letter-spacing: 4px;
+    margin-bottom: 0.4rem;
+  }
+  .card-title {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+  }
+  .card-tagline {
+    font-size: 9px;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.75rem;
+  }
+  .card-intro {
+    font-size: 11px;
+    margin-bottom: 0.9rem;
+  }
+  .card-divider {
+    margin-bottom: 0.9rem;
+  }
+  .card-points {
+    gap: 0.75rem;
+  }
+  .card-point-item {
+    gap: 0.6rem;
+  }
+  .card-point-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
+  .card-point-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+  .card-point-desc {
+    font-size: 10.5px;
+  }
+  .card-badge-wrap {
+    margin-top: 1rem;
+  }
+  .card-badge {
+    font-size: 7.5px;
+    padding: 0.3rem 1rem;
+  }
+}
+
+/* ── Small phone (≤374px) — extra compact ── */
+@media (max-width: 374px) {
+  .card-section-layout {
+    padding: 2.5rem 0.5rem;
+  }
+  .card-outer {
+    width: 92vw;
+    max-width: none;
+  }
+  .card-body {
+    padding: 1.5rem 1.25rem;
+  }
+  .card-label {
+    font-size: 7px;
+    letter-spacing: 3px;
+    margin-bottom: 0.3rem;
+  }
+  .card-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+  }
+  .card-tagline {
+    font-size: 8px;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.6rem;
+  }
+  .card-intro {
+    font-size: 10px;
+    margin-bottom: 0.7rem;
+  }
+  .card-divider {
+    margin-bottom: 0.7rem;
+  }
+  .card-points {
+    gap: 0.6rem;
+  }
+  .card-point-item {
+    gap: 0.5rem;
+  }
+  .card-point-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.65rem;
+  }
+  .card-point-title {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+  .card-point-desc {
+    font-size: 9.5px;
+  }
+  .card-badge-wrap {
+    margin-top: 0.75rem;
+  }
+  .card-badge {
+    font-size: 7px;
+    padding: 0.25rem 0.75rem;
+  }
+}
+
+/* ── Large desktop (≥1280px) ── left-anchored with more space ── */
+@media (min-width: 1280px) {
+  .card-section-layout {
+    padding: 4rem 2rem 4rem 6rem;
+  }
+}
+
 
 /* ─── Hero responsive typography ─────────────────────────── */
 .hero-subtitle {

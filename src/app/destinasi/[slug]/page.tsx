@@ -29,7 +29,7 @@ type Destination = {
   id: number;
   slug: string;
   name: string;
-  category: string;
+  category: string[];
   short_desc: string;
   description: string;
   image: string;
@@ -152,7 +152,7 @@ export default async function DestinationDetailPage({
               fontFamily: "var(--font-lato)",
             }}
           >
-            {destination.category}
+            {Array.isArray(destination.category) ? destination.category.join(", ") : destination.category}
           </span>
           <h1
             className="text-2xl sm:text-4xl md:text-6xl font-bold mt-2 sm:mt-3 leading-tight"

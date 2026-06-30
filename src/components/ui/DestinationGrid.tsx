@@ -25,7 +25,7 @@ type Destination = {
   id: number;
   slug: string;
   name: string;
-  category: string;
+  category: string[];
   short_desc: string;
   image: string;
   rating: number;
@@ -33,17 +33,30 @@ type Destination = {
 
 const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
 
+// Helper untuk menormalisasi kategori string/array menjadi Array bersih
+function getNormalizedCategories(categoryData: any): string[] {
+  if (Array.isArray(categoryData)) {
+    return categoryData.map((cat) => String(cat).trim());
+  }
+  if (typeof categoryData === "string" && categoryData.trim() !== "") {
+    return categoryData.split(",").map((cat) => cat.trim());
+  }
+  return [];
+}
+
 function DestinationCard({ item, index }: { item: Destination; index: number }) {
   const ref = useIntersectionObserverAnimation<HTMLDivElement>({
     delay: index * 50,
-    rootMargin: '400px',
+    rootMargin: "400px",
   });
+
+  const itemCategories = getNormalizedCategories(item.category);
 
   return (
     <div
       ref={ref}
       className={cn("fade-in-up")}
-      style={{ transitionDelay: `${index * 1}ms` }}
+      style={{ transitionDelay: `${index * 50}ms` }} // Diperbaiki jadi 50ms biar sinkron bosquu
     >
       <Link
         href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
@@ -92,6 +105,8 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
                   "linear-gradient(to top, rgba(26,26,46,0.85) 0%, transparent 60%)",
               }}
             />
+            
+            {/* Render Kategori Terpisah Tergabung Koma */}
             <span
               className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs uppercase tracking-widest"
               style={{
@@ -100,8 +115,9 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
                 color: "#1A1A2E",
               }}
             >
-              {item.category}
+              {itemCategories.length > 0 ? itemCategories.join(", ") : "Umum"}
             </span>
+
             {typeof item.rating === "number" && item.rating > 0 && (
               <div
                 className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
@@ -174,11 +190,15 @@ export default function DestinationGrid({
 
   const filtered = destinations
     .filter((d) => d.slug)
-    .filter((d) =>
-      activeCategory === "Semua"
-        ? true
-        : (d.category ?? "").toLowerCase() === activeCat,
-    )
+    .filter((d) => {
+      if (activeCategory === "Semua") return true;
+      
+      // Normalisasi kategori per destinasi ke array lowercase untuk dicek teliti
+      const currentCats = getNormalizedCategories(d.category).map(cat => cat.toLowerCase());
+      
+      // Menguji kecocokan elemen secara mandiri
+      return currentCats.includes(activeCat);
+    })
     .filter((d) => {
       if (query === "") return true;
       const name = (d.name ?? "").toLowerCase();

@@ -81,25 +81,25 @@ export default function CardSection() {
         <div
           className="absolute pointer-events-none"
           style={{
-            left: "-10%",
-            bottom: "10%",
-            width: "500px",
-            height: "400px",
+            bottom: 0,
+            left: 0,
+            width: "min(500px, 50vw)",
+            height: "min(400px, 40vw)",
             background:
               "radial-gradient(ellipse, rgba(139,100,20,0.18) 0%, transparent 70%)",
             filter: "blur(40px)",
           }}
         />
 
-        {/* Floating 3D Cards di background — lazy mount saat section dekat viewport */}
+        {/* Floating 3D Cards di background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           {showFloating && <FloatingCards />}
         </div>
 
-        {/* Ornamen pembatas ATAS — sambungan dari KediriSection */}
+        {/* Ornamen pembatas ATAS */}
         <div
           className="absolute top-0 left-0 right-0 pointer-events-none"
-          style={{ zIndex: 15, height: "72px" }}
+          style={{ zIndex: 15, height: "clamp(40px, 5vw, 72px)" }}
         >
           <svg
             viewBox="0 0 1440 72"
@@ -118,48 +118,19 @@ export default function CardSection() {
               fill="var(--color-ornamen)"
               opacity="0.22"
             />
-            <line
-              x1="0"
-              y1="36"
-              x2="660"
-              y2="36"
-              stroke="rgba(212,160,23,0.22)"
-              strokeWidth="0.5"
-            />
-            <line
-              x1="780"
-              y1="36"
-              x2="1440"
-              y2="36"
-              stroke="rgba(212,160,23,0.22)"
-              strokeWidth="0.5"
-            />
-            <rect
-              x="714"
-              y="30"
-              width="12"
-              height="12"
-              fill="var(--color-emas)"
-              opacity="0.65"
-              transform="rotate(45 720 36)"
-            />
+            <line x1="0" y1="36" x2="660" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
+            <line x1="780" y1="36" x2="1440" y2="36" stroke="rgba(212,160,23,0.22)" strokeWidth="0.5" />
+            <rect x="714" y="30" width="12" height="12" fill="var(--color-emas)" opacity="0.65" transform="rotate(45 720 36)" />
             {ORNAMEN_DOTS.map(({ key, cx }) => (
-              <circle
-                key={key}
-                cx={cx}
-                cy={36}
-                r={2}
-                fill="var(--color-emas-muda)"
-                opacity="0.35"
-              />
+              <circle key={key} cx={cx} cy={36} r={2} fill="var(--color-emas-muda)" opacity="0.35" />
             ))}
           </svg>
         </div>
 
-        {/* Ornamen pembatas BAWAH — sambungan ke Carauser */}
+        {/* Ornamen pembatas BAWAH */}
         <div
           className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ zIndex: 15, height: "72px" }}
+          style={{ zIndex: 15, height: "clamp(40px, 5vw, 72px)" }}
         >
           <svg
             viewBox="0 0 1440 72"
@@ -178,87 +149,60 @@ export default function CardSection() {
               fill="var(--color-ornamen)"
               opacity="0.3"
             />
-            <line
-              x1="0"
-              y1="36"
-              x2="660"
-              y2="36"
-              stroke="rgba(212,160,23,0.25)"
-              strokeWidth="0.5"
-            />
-            <line
-              x1="780"
-              y1="36"
-              x2="1440"
-              y2="36"
-              stroke="rgba(212,160,23,0.25)"
-              strokeWidth="0.5"
-            />
-            <rect
-              x="714"
-              y="30"
-              width="12"
-              height="12"
-              fill="var(--color-emas)"
-              opacity="0.7"
-              transform="rotate(45 720 36)"
-            />
+            <line x1="0" y1="36" x2="660" y2="36" stroke="rgba(212,160,23,0.25)" strokeWidth="0.5" />
+            <line x1="780" y1="36" x2="1440" y2="36" stroke="rgba(212,160,23,0.25)" strokeWidth="0.5" />
+            <rect x="714" y="30" width="12" height="12" fill="var(--color-emas)" opacity="0.7" transform="rotate(45 720 36)" />
             {Array.from({ length: 10 }).map((_, i) => (
-              <circle
-                key={i}
-                cx={60 + i * 132}
-                cy={36}
-                r={2}
-                fill="var(--color-emas-muda)"
-                opacity="0.4"
-              />
+              <circle key={i} cx={60 + i * 132} cy={36} r={2} fill="var(--color-emas-muda)" opacity="0.4" />
             ))}
           </svg>
         </div>
 
-        {/* Main layout — centered on mobile, left-anchored on desktop */}
+        {/* ── Main layout ── */}
         <div
-          className="relative z-10 h-full flex items-center justify-center md:justify-start px-4 md:px-0 md:pl-10 lg:pl-24"
-          style={{ paddingTop: "clamp(3vh, 5vh, 6vh)" }}
+          className="card-section-layout relative z-10 flex items-center justify-center md:justify-start w-full"
+          style={{ minHeight: "100dvh" }}
         >
           {/* Card wrapper */}
-          <div className="relative w-[min(340px,90vw)] md:w-[22.5rem]">
+          <div className="card-outer relative" style={{ overflow: "visible" }}>
             {/* Glow di belakang card */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="absolute pointer-events-none"
               style={{
+                inset: "-12%",
                 background:
-                  "radial-gradient(ellipse at center, rgba(180,130,20,0.3) 0%, transparent 65%)",
-                filter: "blur(28px)",
-                transform: "scale(1.25) translateY(4px)",
+                  "radial-gradient(ellipse at center, rgba(180,130,20,0.28) 0%, transparent 65%)",
+                filter: "blur(32px)",
                 zIndex: 0,
               }}
             />
 
-            {/* Frame ornamen ATAS — straddle tepian atas card */}
+            {/* Frame ornamen ATAS */}
             <Image
               src="/assets/images/frameatas.avif"
               alt="ornamen atas"
               width={360}
               height={120}
-              className="absolute left-0 w-full pointer-events-none"
+              sizes="(max-width: 640px) 88vw, (max-width: 1024px) 55vw, 26rem"
+              className="absolute left-0 w-full h-auto pointer-events-none"
               style={{ top: 0, transform: "translateY(-46%)", zIndex: 20 }}
               priority
             />
 
-            {/* Frame ornamen BAWAH — straddle tepian bawah card */}
+            {/* Frame ornamen BAWAH */}
             <Image
               src="/assets/images/framebawah.avif"
               alt="ornamen bawah"
               width={360}
               height={120}
-              className="absolute left-0 w-full pointer-events-none"
+              sizes="(max-width: 640px) 88vw, (max-width: 1024px) 55vw, 26rem"
+              className="absolute left-0 w-full h-auto pointer-events-none"
               style={{ bottom: 0, transform: "translateY(16%)", zIndex: 20 }}
             />
 
-            {/* Body card */}
+            {/* ── Body card ── */}
             <div
-              className="relative rounded-2xl flex flex-col px-6 py-10 sm:px-8 sm:py-14"
+              className="card-body relative rounded-2xl flex flex-col"
               style={{
                 zIndex: 10,
                 background:
@@ -269,8 +213,10 @@ export default function CardSection() {
             >
               {/* Garis highlight atas */}
               <div
-                className="absolute top-0 left-10 right-10 h-px"
+                className="absolute top-0 h-px"
                 style={{
+                  left: "10%",
+                  right: "10%",
                   background:
                     "linear-gradient(to right, transparent, rgba(255,215,80,0.45), transparent)",
                 }}
@@ -278,7 +224,7 @@ export default function CardSection() {
 
               {/* Header label */}
               <p
-                className="text-center text-[9px] tracking-[5px] uppercase mb-2"
+                className="card-label text-center uppercase"
                 style={{
                   color: "rgba(200,168,75,0.75)",
                   fontFamily: "var(--font-lato)",
@@ -290,10 +236,9 @@ export default function CardSection() {
 
               {/* Judul */}
               <h2
-                className="text-center leading-none mb-2"
+                className="card-title text-center leading-none"
                 style={{
                   fontFamily: "var(--font-cinzel)",
-                  fontSize: "2.6rem",
                   fontWeight: 900,
                   letterSpacing: "0.14em",
                   color: "#fff8e0",
@@ -306,7 +251,7 @@ export default function CardSection() {
 
               {/* Tagline */}
               <p
-                className="text-center text-[10px] italic mb-5 pb-4"
+                className="card-tagline text-center italic"
                 style={{
                   fontFamily: "var(--font-playfair)",
                   color: "#c8a030",
@@ -319,7 +264,7 @@ export default function CardSection() {
 
               {/* Intro */}
               <p
-                className="text-center text-[12px] italic leading-relaxed mb-5"
+                className="card-intro text-center italic"
                 style={{
                   fontFamily: "var(--font-playfair)",
                   color: "rgba(245,233,192,0.82)",
@@ -332,32 +277,20 @@ export default function CardSection() {
               </p>
 
               {/* Divider ✦ */}
-              <div className="flex items-center gap-2 mb-5">
-                <div
-                  className="flex-1 h-px"
-                  style={{ background: "rgba(200,168,75,0.28)" }}
-                />
-                <span
-                  style={{
-                    color: "#c8a84b",
-                    fontSize: "7px",
-                    letterSpacing: "6px",
-                  }}
-                >
+              <div className="card-divider flex items-center gap-2">
+                <div className="flex-1 h-px" style={{ background: "rgba(200,168,75,0.28)" }} />
+                <span style={{ color: "#c8a84b", fontSize: "7px", letterSpacing: "6px" }}>
                   ✦✦✦
                 </span>
-                <div
-                  className="flex-1 h-px"
-                  style={{ background: "rgba(200,168,75,0.28)" }}
-                />
+                <div className="flex-1 h-px" style={{ background: "rgba(200,168,75,0.28)" }} />
               </div>
 
               {/* Poin list */}
-              <div className="flex flex-col gap-4">
+              <div className="card-points flex flex-col">
                 {poinData.map((poin) => (
-                  <div key={poin.title} className="flex items-start gap-3">
+                  <div key={poin.title} className="card-point-item flex items-start">
                     <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm"
+                      className="card-point-icon rounded-full flex items-center justify-center shrink-0"
                       style={{
                         background:
                           "linear-gradient(135deg, #4a2e06 0%, #6a4810 100%)",
@@ -367,9 +300,9 @@ export default function CardSection() {
                     >
                       {poin.icon}
                     </div>
-                    <div className="pt-0.5">
+                    <div className="min-w-0">
                       <p
-                        className="text-[10px] tracking-[2.5px] uppercase mb-0.5"
+                        className="card-point-title uppercase"
                         style={{
                           fontFamily: "var(--font-lato)",
                           fontWeight: 700,
@@ -379,7 +312,7 @@ export default function CardSection() {
                         {poin.title}
                       </p>
                       <p
-                        className="text-[11.5px] italic leading-snug"
+                        className="card-point-desc italic leading-snug"
                         style={{
                           fontFamily: "var(--font-playfair)",
                           color: "rgba(245,233,192,0.78)",
@@ -393,18 +326,18 @@ export default function CardSection() {
               </div>
 
               {/* Badge */}
-              <div className="flex justify-center mt-6">
+              <div className="card-badge-wrap flex justify-center">
                 <span
                   onClick={() => (window.location.href = "/map")}
-                  className="text-[8.5px] tracking-[3px] uppercase px-5 py-1.5 cursor-pointer"
+                  className="card-badge cursor-pointer uppercase"
                   style={{
                     fontFamily: "var(--font-lato)",
+                    letterSpacing: "0.28em",
                     background:
                       "linear-gradient(135deg, rgba(74,46,6,0.85) 0%, rgba(106,72,14,0.85) 100%)",
                     color: "#d4a830",
                     border: "1px solid rgba(200,168,75,0.38)",
                     borderRadius: "2px",
-                    letterSpacing: "0.28em",
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
@@ -424,7 +357,7 @@ export default function CardSection() {
 
               {/* Garis highlight bawah */}
               <div
-                className="absolute bottom-0 left-10 right-10 h-px"
+                className="absolute bottom-0 left-6 right-6 sm:left-10 sm:right-10 h-px"
                 style={{
                   background:
                     "linear-gradient(to right, transparent, rgba(180,130,20,0.25), transparent)",

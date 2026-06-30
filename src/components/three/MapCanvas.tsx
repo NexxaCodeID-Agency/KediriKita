@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 type Destination = {
   slug: string;
   name: string;
-  category: string;
+  category: string[];
   short_desc: string;
   image: string;
   latitude: number;
@@ -31,8 +31,13 @@ const CATEGORY_COLORS: Record<string, { base: string; glow: string }> = {
 };
 const DEFAULT_COLOR = { base: "#d4a017", glow: "#f0c040" };
 
-function getCategoryColor(category: string) {
-  return CATEGORY_COLORS[category.toLowerCase().trim()] ?? DEFAULT_COLOR;
+
+function getCategoryColor(category: string[] | null | undefined) {
+  if (!category || !Array.isArray(category) || category.length === 0){
+    return DEFAULT_COLOR;
+  }
+  const primaryCategory = category[0];
+  return CATEGORY_COLORS[primaryCategory.toLocaleLowerCase().trim()] ?? DEFAULT_COLOR;
 }
 
 function hexToRgba(hex: string, alpha: number) {
@@ -58,6 +63,8 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
   useEffect(() => {
     const el = mountRef.current;
     if (!el) return;
+
+    let isMounted = true; 
 
     const container = el as HTMLElement & { _leaflet_id?: number };
     if (container._leaflet_id) {
@@ -87,6 +94,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
     fetch("/data/export.geojson")
       .then((res) => res.json())
       .then((geoData) => {
+        if (!isMounted || !mapRef.current) return;
         L.geoJSON(geoData, {
           filter: (feature) => feature.geometry.type !== "Point",
           style: (feature) => {
@@ -125,6 +133,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
         .from("destinations")
         .select("slug, name, category, short_desc, image, latitude, longitude")
         .then(({ data, error }) => {
+          if (!isMounted) return;
           if (error) {
             console.error("Error fetching destinations:", error);
             return;
@@ -134,6 +143,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
     }
 
     return () => {
+      isMounted = false;
       map.remove();
     };
   }, [scrollZoom, fitPadding, showMarkers]);
@@ -148,7 +158,9 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
 
     // Filter data berdasarkan kategori yang aktif di state
     const filteredDestinations = selectedCategory
-      ? destinations.filter((dest) => dest.category.toLowerCase().trim() === selectedCategory.toLowerCase().trim())
+      ? destinations.filter((dest) => {if (!dest.category || !Array.isArray(dest.category)) return false;
+        return dest.category.some((cat) => cat.toLowerCase().trim() === selectedCategory.toLowerCase().trim());
+      })
       : destinations;
 
     filteredDestinations.forEach((dest) => {
@@ -179,7 +191,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
         <div style="width:200px;background:#0a0a1a;border:1px solid ${hexToRgba(base, 0.4)};border-radius:12px;overflow:hidden;font-family:sans-serif;">
           <img src="${dest.image}" alt="${dest.name}" style="width:100%;height:110px;object-fit:cover;display:block;" />
           <div style="padding:10px 12px;">
-            <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category}</p>
+            <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category.join(',')}</p>
             <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
             <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
             <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:${base};padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>

@@ -449,7 +449,7 @@ export default function HeroSection() {
             textShadow:
                 "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
           }}>
-            Alias Kota Tahu
+            Atau lebih dikenal sebagai Kota Tahu
           </p>
 
           <div

@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import MapWrapper from "@/components/ui/MapWrapper";
 import StreetView from "@/components/ui/StreetView";
 import RouteButton from "@/components/ui/RouteButton";
+import GalleryClient from "@/components/ui/GalleryClient";
 
 function isValidImageSrc(src: string | null | undefined): src is string {
   if (!src) return false;
@@ -16,10 +17,6 @@ function isValidImageSrc(src: string | null | undefined): src is string {
   } catch {
     return false;
   }
-}
-
-function isSupabaseHosted(src: string) {
-  return src.includes(".supabase.co");
 }
 
 export const revalidate = 60;
@@ -211,27 +208,10 @@ export default async function DestinationDetailPage({
             >
               ✦ Galeri Foto
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-              {destination.gallery.filter(isValidImageSrc).map((url, i) => (
-                <div
-                  key={i}
-                  className="relative rounded-xl overflow-hidden h-36 sm:h-48 md:h-[200px]"
-                  style={{
-                    border: "1px solid rgba(212,160,23,0.2)",
-                  }}
-                >
-                  <Image
-                    src={url}
-                    alt={`${destination.name} ${i + 1}`}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                    quality={85}
-                    unoptimized={!isSupabaseHosted(url)}
-                    className="object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              ))}
-            </div>
+            <GalleryClient
+              gallery={destination.gallery.filter(isValidImageSrc)}
+              name={destination.name}
+            />
           </div>
         )}
 

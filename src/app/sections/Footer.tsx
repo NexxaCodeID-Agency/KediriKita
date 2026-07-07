@@ -2,39 +2,63 @@
 
 const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({ key: i, cx: 60 + i * 132 }));
 
-const LINKS = [
-  {
-    heading: "Jelajahi",
-    items: [
-      { label: "Beranda", href: "#" },
-      { label: "Destinasi", href: "/destinasi" },
-      { label: "Peta Kediri", href: "/map" },
-    ],
-  },
-  {
-    heading: "Wisata",
-    items: [
-      { label: "Gunung Kelud", href: "#" },
-      { label: "Gua Selomangleng", href: "#" },
-      { label: "Taman Sekartaji", href: "#" },
-      { label: "Monumen SLG", href: "#" },
-    ],
-  },
-  {
-    heading: "Kuliner",
-    items: [
-      { label: "Tahu Takwa", href: "#" },
-      { label: "Getuk Pisang", href: "#" },
-      { label: "Nasi Pecel Kediri", href: "#" },
-    ],
-  },
-];
-
 const SOSMED = [
   { label: "Instagram", href: "https://www.instagram.com/nexxacodeid?igsh=MTRtdnJ4bXAxaWtodw==", icon: "IG" },
 ];
 
-export default function Footer() {
+// 1. Definisikan tipe data untuk props dari DB
+export interface DestinationLink {
+  name: string;
+  slug: string;
+}
+
+interface FooterProps {
+  dataWisata?: DestinationLink[];
+  dataKuliner?: DestinationLink[];
+}
+
+export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProps) {
+  
+  // 2. Tentukan tipe untuk array LINKS biar strict dan aman
+  interface LinkItem {
+    label: string;
+    href: string;
+  }
+
+  interface LinkGroup {
+    heading: string;
+    items: LinkItem[];
+  }
+
+  const LINKS: LinkGroup[] = [
+    {
+      heading: "Jelajahi",
+      items: [
+        { label: "Beranda", href: "/" },
+        { label: "Destinasi", href: "/destinasi" },
+        { label: "Peta Kediri", href: "/map" },
+      ],
+    },
+    {
+      heading: "Wisata",
+      items: dataWisata.length > 0 
+        ? dataWisata.map((w) => ({ label: w.name, href: `/destinasi/${w.slug}` }))
+        : [
+            { label: "Gunung Kelud", href: "/destinasi/gunung-kelud" },
+            { label: "Gua Selomangleng", href: "/destinasi/goa-selomangleng" },
+          ],
+    },
+    {
+      heading: "Kuliner",
+      items: dataKuliner.length > 0 
+        ? dataKuliner.map((k) => ({ label: k.name, href: `/destinasi/${k.slug}` }))
+        : [
+            { label: "Tahu kuning", href: "/destinasi/tahu-kuning-poo" },
+            { label: "Getuk Pisang", href: "/destinasi/getuk-pisang-ud-rasa-manis" },
+          ],
+    },
+  ];
+
   return (
     <footer
       className="relative w-full"

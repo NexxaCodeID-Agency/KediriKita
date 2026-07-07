@@ -97,7 +97,6 @@ export default async function DestinationDetailPage({
 
   return (
     <main className="min-h-screen text-white" style={{ background: "#070712" }}>
-      {/* Hero Foto */}
       <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[75vh]">
         {isValidImageSrc(destination.image) ? (
           <Image
@@ -128,11 +127,10 @@ export default async function DestinationDetailPage({
 
         <Link
           href="/destinasi"
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full backdrop-blur-sm transition-all hover:opacity-80"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.18)]"
           style={{
             color: "#d4a017",
-            border: "1px solid rgba(212,160,23,0.4)",
-            background: "rgba(0,0,0,0.35)",
+            background: "rgba(8,8,15,0.6)",
             fontFamily: "var(--font-lato)",
           }}
         >
@@ -142,25 +140,27 @@ export default async function DestinationDetailPage({
 
         <div className="absolute bottom-6 sm:bottom-10 left-5 right-5 sm:left-8 sm:right-8">
           <span
-            className="text-[10px] sm:text-xs uppercase tracking-widest px-2.5 sm:px-3 py-1 rounded-full inline-block"
+            className="text-[10px] sm:text-xs uppercase tracking-widest px-3 py-1 rounded-full inline-block font-sans font-bold shadow-[0_0_15px_rgba(212,160,23,0.2)] border border-[rgba(212,160,23,0.4)]"
             style={{
-              background: "rgba(212,160,23,0.85)",
-              color: "#1A1A2E",
+              background: "rgba(212,160,23,0.15)",
+              color: "#fff8e0",
               fontFamily: "var(--font-lato)",
             }}
           >
-            {Array.isArray(destination.category) ? destination.category.join(", ") : destination.category}
+            ✦ {Array.isArray(destination.category) ? destination.category.join(", ") : destination.category}
           </span>
           <h1
-            className="text-2xl sm:text-4xl md:text-6xl font-bold mt-2 sm:mt-3 leading-tight"
-            style={{ fontFamily: "var(--font-cinzel)" }}
+            className="text-3xl sm:text-5xl md:text-6xl font-black mt-2 sm:mt-3 leading-tight text-[#fff8e0]"
+            style={{ 
+              fontFamily: "var(--font-cinzel), serif",
+              textShadow: "0 0 40px rgba(212,160,23,0.25)"
+            }}
           >
             {destination.name}
           </h1>
           <p
-            className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
+            className="mt-2 text-xs sm:text-sm font-medium tracking-wide text-[#c8a84b] opacity-90"
             style={{
-              color: "rgba(255,255,255,0.6)",
               fontFamily: "var(--font-lato)",
             }}
           >
@@ -169,41 +169,56 @@ export default async function DestinationDetailPage({
         </div>
       </div>
 
-      {/* Konten */}
       <div className="max-w-3xl mx-auto px-5 sm:px-6 py-12 sm:py-16 space-y-12 sm:space-y-16">
-        {/* Deskripsi */}
         <div>
           <p
-            className="text-xs uppercase tracking-[0.3em] mb-6"
+            className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
             style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
           >
             ✦ Tentang Tempat Ini
           </p>
-          <div className="space-y-4">
+          <div className="max-w-none text-neutral-300 text-base sm:text-lg leading-relaxed font-sans space-y-6">
             {(destination.description || destination.short_desc || "")
               .split("\n")
-              .filter(Boolean)
-              .map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="leading-relaxed text-base"
-                  style={{
-                    color: "rgba(255,255,255,0.72)",
-                    fontFamily: "var(--font-lato)",
-                    lineHeight: "1.9",
-                  }}
-                >
-                  {paragraph}
-                </p>
-              ))}
+              .map((paragraph, i) => {
+                const cleanText = paragraph.trim();
+                if (!cleanText) return null;
+
+                if (i === 0) {
+                  const firstLetter = cleanText.charAt(0);
+                  const remainingText = cleanText.slice(1);
+                  return (
+                    <p key={i} className="text-justify first-letter:float-left first-letter:text-5xl sm:first-letter:text-6xl first-letter:font-black first-letter:text-[#d4a017] first-letter:mr-3 first-letter:font-serif first-letter:leading-none">
+                      {cleanText}
+                    </p>
+                  );
+                }
+
+                if (cleanText.length < 45 && !cleanText.endsWith('.')) {
+                  return (
+                    <h2 
+                      key={i} 
+                      className="text-xl sm:text-2xl font-bold text-[#fff8e0] pt-4 tracking-wide font-serif"
+                      style={{ textShadow: "0 0 20px rgba(212,160,23,0.15)" }}
+                    >
+                      ✦ {cleanText}
+                    </h2>
+                  );
+                }
+
+                return (
+                  <p key={i} className="text-justify text-neutral-300 opacity-95 indent-4 sm:indent-8">
+                    {cleanText}
+                  </p>
+                );
+              })}
           </div>
         </div>
 
-        {/* Galeri */}
         {destination.gallery && destination.gallery.length > 0 && (
           <div>
             <p
-              className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6"
+              className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6 font-bold"
               style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
               ✦ Galeri Foto
@@ -215,47 +230,42 @@ export default async function DestinationDetailPage({
           </div>
         )}
 
-        {/* Tips */}
         {destination.tips && (
           <div
-            className="rounded-2xl p-6 sm:p-8"
+            className="rounded-2xl p-6 sm:p-8 shadow-[0_0_30px_rgba(212,160,23,0.02)]"
             style={{
-              background: "rgba(212,160,23,0.05)",
-              border: "1px solid rgba(212,160,23,0.2)",
+              background: "rgba(212,160,23,0.04)",
+              border: "1px solid rgba(212,160,23,0.15)",
             }}
           >
             <p
-              className="text-xs uppercase tracking-[0.3em] mb-6"
+              className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
               style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
               💡 Tips Berkunjung
             </p>
-            <div className="space-y-3">
+            <div className="space-y-4 text-neutral-300 text-base sm:text-lg leading-relaxed font-sans">
               {destination.tips
                 .split("\n")
-                .filter(Boolean)
-                .map((tip, i) => (
-                  <p
-                    key={i}
-                    className="leading-relaxed"
-                    style={{
-                      color: "rgba(255,255,255,0.65)",
-                      fontFamily: "var(--font-lato)",
-                      lineHeight: "1.8",
-                    }}
-                  >
-                    {tip}
-                  </p>
-                ))}
+                .map((tip, i) => {
+                  const cleanTip = tip.trim();
+                  if (!cleanTip) return null;
+
+                  return (
+                    <div key={i} className="flex items-start gap-3 text-justify">
+                      <span className="text-[#d4a017] flex-shrink-0 mt-1.5 text-xs sm:text-sm">✦</span>
+                      <p className="opacity-95">{cleanTip}</p>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         )}
 
-        {/* Street View */}
         {destination.street_view_url && (
           <div>
             <p
-              className="text-xs uppercase tracking-[0.3em] mb-6"
+              className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
               style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
               ✦ Jelajahi 360°
@@ -267,14 +277,13 @@ export default async function DestinationDetailPage({
           </div>
         )}
 
-        {/* Peta */}
         {destination.latitude && destination.longitude && (
           <div>
             <p
-              className="text-xs uppercase tracking-[0.3em] mb-6"
+              className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
               style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
             >
-              ✦ Lokasi
+              ✦ Lokasi Peta
             </p>
             <MapWrapper
               latitude={destination.latitude}
@@ -282,7 +291,6 @@ export default async function DestinationDetailPage({
               name={destination.name}
             />
 
-            {/* Tombol Rute */}
             <RouteButton
               latitude={destination.latitude}
               longitude={destination.longitude}

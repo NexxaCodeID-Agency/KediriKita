@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useIntersectionObserverAnimation } from "@/hooks/useIntersectionAnimation";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,6 @@ type Destination = {
 
 const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
 
-// Helper untuk menormalisasi kategori string/array menjadi Array bersih
 function getNormalizedCategories(categoryData: any): string[] {
   if (Array.isArray(categoryData)) {
     return categoryData.map((cat) => String(cat).trim());
@@ -56,7 +56,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
     <div
       ref={ref}
       className={cn("fade-in-up")}
-      style={{ transitionDelay: `${index * 50}ms` }} // Diperbaiki jadi 50ms biar sinkron bosquu
+      style={{ transitionDelay: `${index * 50}ms` }}
     >
       <Link
         href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
@@ -82,7 +82,6 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
               "translateY(0)";
           }}
         >
-          {/* Gambar */}
           <div className="relative w-full h-48 sm:h-56 overflow-hidden">
             <Image
               src={
@@ -105,8 +104,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
                   "linear-gradient(to top, rgba(26,26,46,0.85) 0%, transparent 60%)",
               }}
             />
-            
-            {/* Render Kategori Terpisah Tergabung Koma */}
+
             <span
               className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs uppercase tracking-widest"
               style={{
@@ -144,7 +142,6 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
             )}
           </div>
 
-          {/* Info */}
           <div className="p-4 sm:p-5">
             <h2
               className="text-white text-base sm:text-lg font-semibold leading-snug"
@@ -182,43 +179,72 @@ export default function DestinationGrid({
 }: {
   destinations: Destination[];
 }) {
-  const [activeCategory, setActiveCategory] = useState("Semua");
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const query = search.trim().toLowerCase();
+  const [activeCategory, setActiveCategory] = useState("Semua");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+
+  useEffect(() => {
+    const delayDebounceId = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (search.trim()) {
+        params.set("search", search.trim());
+      } else {
+        params.delete("search");
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, 350);
+
+    return () => clearTimeout(delayDebounceId);
+  }, [search, pathname, router, searchParams]);
+
   const activeCat = activeCategory.toLowerCase();
 
   const filtered = destinations
     .filter((d) => d.slug)
     .filter((d) => {
       if (activeCategory === "Semua") return true;
-      
-      // Normalisasi kategori per destinasi ke array lowercase untuk dicek teliti
       const currentCats = getNormalizedCategories(d.category).map(cat => cat.toLowerCase());
-      
-      // Menguji kecocokan elemen secara mandiri
       return currentCats.includes(activeCat);
     })
     .filter((d) => {
-      if (query === "") return true;
-      const name = (d.name ?? "").toLowerCase();
-      const desc = (d.short_desc ?? "").toLowerCase();
-      return name.includes(query) || desc.includes(query);
+      if (!search.trim()) return true;
+      const queryText = search.toLocaleLowerCase().trim();
+      const nameMatch = (d.name ?? "").toLowerCase().includes(queryText);
+      const descMatch = (d.short_desc ?? "").toLowerCase().includes(queryText);
+      const catMatch = getNormalizedCategories(d.category).some(cat =>
+        cat.toLowerCase().includes(queryText)
+      );
+      return nameMatch || descMatch || catMatch;
     });
 
   return (
     <section className="min-h-screen px-4 sm:px-6 pt-8 sm:pt-10 pb-20 sm:pb-24 max-w-7xl mx-auto">
-      {/* Back nav */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 mb-8 sm:mb-10 text-sm transition-colors duration-200"
-        style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
-      >
-        <ArrowLeft size={16} />
-        Kembali ke Beranda
-      </Link>
+      <div className="w-full flex items-center justify-between gap-4 mb-8 sm:mb-10">
+        {/* Pakai tag <a> murni untuk bypass cache router yang macet */}
+        <a
+          href="/"
+          data-discover="true"
+          className="inline-flex whitespace-nowrap items-center gap-2 text-sm transition-colors duration-200"
+          style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
+        >
+          <ArrowLeft size={16} />
+          Kembali ke Beranda
+        </a>
 
-      {/* Header */}
+        <a
+          href="/sejarah"
+          data-discover="true"
+          className="inline-flex whitespace-nowrap items-center gap-2 text-sm transition-colors duration-200"
+          style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
+        >
+          Lihat Sejarah Kediri
+          <ArrowRight size={16} />
+        </a>
+      </div>
+      
       <div className="text-center mb-10 sm:mb-12 px-2">
         <p
           className="text-[10px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] mb-2 sm:mb-3 uppercase"
@@ -242,12 +268,10 @@ export default function DestinationGrid({
             fontFamily: "var(--font-lato)",
           }}
         >
-          Wisata alam, kuliner khas, dan warisan sejarah menanti di setiap sudut
-          kota.
+          Wisata alam, kuliner khas, dan warisan sejarah menanti di setiap sudut kota.
         </p>
       </div>
 
-      {/* Search bar */}
       <div className="flex justify-center mb-5 sm:mb-6">
         <div className="relative w-full max-w-md">
           <input
@@ -270,7 +294,6 @@ export default function DestinationGrid({
               e.currentTarget.style.border = "1px solid rgba(255,255,255,0.12)";
             }}
           />
-          {/* Icon search */}
           <span
             className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-sm"
             style={{ color: "rgba(255,255,255,0.3)" }}
@@ -280,7 +303,6 @@ export default function DestinationGrid({
         </div>
       </div>
 
-      {/* Category filter */}
       <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10">
         {CATEGORIES.map((cat) => (
           <button
@@ -306,7 +328,6 @@ export default function DestinationGrid({
         ))}
       </div>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 gap-4">
           <p
@@ -319,7 +340,10 @@ export default function DestinationGrid({
             Belum ada destinasi dalam kategori ini.
           </p>
           <button
-            onClick={() => setActiveCategory("Semua")}
+            onClick={() => {
+              setActiveCategory("Semua");
+              setSearch("");
+            }}
             className="text-xs tracking-widest uppercase underline underline-offset-4 transition-opacity hover:opacity-70"
             style={{
               color: "var(--color-emas)",

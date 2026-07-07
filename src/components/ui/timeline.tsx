@@ -71,7 +71,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             textShadow: "0 0 30px rgba(212,160,23,0.2)"
           }}
         >
-          Garis Waktu <span className="text-[#d4a017] shadow-glow">Sejarah Kediri</span>
+        <span className="text-[#d4a017] shadow-glow">Sejarah Kediri</span>
         </h2>
         <p className="text-neutral-400 text-sm md:text-base max-w-sm">
           Menelusuri jejak peradaban, kerajaan purba, hingga perkembangan modern Kota Kediri.

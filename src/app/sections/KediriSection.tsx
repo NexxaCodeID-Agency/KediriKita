@@ -17,7 +17,6 @@ export default function KediriSection() {
   const headingRef = useRef<HTMLDivElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
   const dividerRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export default function KediriSection() {
             headingRef.current,
             descRef.current,
             dividerRef.current,
-            statsRef.current,
             video,
             overlayRef.current
           ],
@@ -90,10 +88,10 @@ export default function KediriSection() {
           headingRef.current,
           dividerRef.current,
           descRef.current,
-          statsRef.current,
         ];
 
         textEls.forEach((el, i) => {
+          if (!el) return;
           gsap.fromTo(
             el,
             { y: 40, opacity: 0 },
@@ -117,7 +115,7 @@ export default function KediriSection() {
     };
 
     const init = () => {
-      if (video.readyState >= 3) { // HAVE_FUTURE_DATA
+      if (video.readyState >= 3) {
         handleCanPlay();
       } else {
         video.addEventListener("canplay", handleCanPlay, { once: true });
@@ -139,7 +137,9 @@ export default function KediriSection() {
     return () => {
       io.disconnect();
       video.removeEventListener("canplay", handleCanPlay);
-      gsap.killTweensOf(wrapper);
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.trigger === wrapper) st.kill();
+      });
     };
   }, []);
 
@@ -290,11 +290,7 @@ export default function KediriSection() {
             opacity: 0,
           }}
         >
-          Lebih dari sekadar titik di peta Jawa Timur, Kediri adalah perpaduan
-          harmonis antara kemegahan sejarah kerajaan, kekayaan tradisi yang
-          hidup, hingga geliat modernitas yang terus bertumbuh — sebuah kota yang
-          memahat identitasnya dalam setiap sudut kehangatan dan kejayaan yang
-          abadi.
+          Kami hadirkan pesona terbaik kota terhangat di Jawa Timur. Mulai dari peninggalan monumental kejayaan kerajaan masa lampau, petualangan alam yang menakjubkan, hingga harmoni budaya lokal yang memikat hati.
         </p>
 
         <div className="relative flex items-center justify-center z-10 mt-8">

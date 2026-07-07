@@ -37,6 +37,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
         { label: "Beranda", href: "/" },
         { label: "Destinasi", href: "/destinasi" },
         { label: "Peta Kediri", href: "/map" },
+        { label: "Sejarah", href: "/sejarah" },
       ],
     },
     {

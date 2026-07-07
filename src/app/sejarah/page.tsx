@@ -1,71 +1,79 @@
 import { createClient } from "@supabase/supabase-js";
-import { Timeline } from "@/components/ui/timeline"; // Sesuaikan path import komponen lu
+import { Timeline } from "@/components/ui/timeline"; 
 import Image from "next/image";
 import Link from "next/link";
 
+// 1. Tipe data disesuaikan dengan tabel baru 'histories'
 interface SejarahRow {
   id: number;
-  name: string;
   slug: string;
+  title: string;
+  year_era: string;
   short_desc?: string;
   description?: string;
   image?: string;
 }
 
-export const revalidate = 60; // Tetap pakai ISR biar kenceng!
+export const revalidate = 60; 
 
 export default async function SejarahPage() {
-  // 1. Setup client Supabase Server
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  // 2. Tarik data dari database destinations
-  // Di sini gw asumsiin lu ambil data atau filter kategori 'wisata' atau 'sejarah'
+  // 2. Tarik data dari tabel baru 'histories' & urutkan berdasarkan sort_order
   const { data: dbData } = await supabase
-    .from("destinations")
-    .select("id, name, slug, short_desc, description, image")
-    .order("id", { ascending: true }); // Diurutkan biar runtut urutan sejarahnya
+    .from("histories")
+    .select("id, slug, title, year_era, short_desc, description, image")
+    .order("sort_order", { ascending: true }); 
 
   const dataSejarah = (dbData as SejarahRow[]) || [];
 
-  // 3. Transformasi/Mapping data dari DB ke struktur data yang diminta oleh Aceternity Timeline
+  // 3. Transformasi data ke Aceternity Timeline dengan style mewah
   const timelineData = dataSejarah.map((item) => ({
-    // Judul di sebelah kiri garis (misal nama tempat/kejadian)
-    title: item.name, 
+    // Kita pajang Era/Tahun di sebelah kiri garis beserta judul peristiwanya
+    title: item.year_era, 
     
-    // Konten di sebelah kanan garis timeline
     content: (
-      <div className="font-sans">
+      <div key={item.id} className="font-sans text-neutral-200 group/item">
+        {/* Judul Peristiwa / Nama Situs Sejarah */}
+        <h3 className="text-xl md:text-2xl font-bold text-[#fff8e0] mb-3 tracking-wide transition-colors duration-300 group-hover/item:text-[#f0c040]">
+          {item.title}
+        </h3>
+
+        {/* Ringkasan Singkat ber-vibe prasasti/old paper */}
         {item.short_desc && (
-          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4 bg-neutral-100 dark:bg-neutral-900 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800">
-            {item.short_desc}
+          <p className="text-xs md:text-sm font-normal mb-4 bg-[#0a0a14]/80 text-[#c8a84b] p-4 rounded-lg border border-[rgba(212,160,23,0.22)] shadow-[0_0_15px_rgba(212,160,23,0.05)] group-hover/item:shadow-[0_0_20px_rgba(212,160,23,0.12)] group-hover/item:border-[rgba(240,192,64,0.35)] italic leading-relaxed transition-all duration-300">
+            ✦ {item.short_desc}
           </p>
         )}
         
+        {/* Deskripsi utama */}
         {item.description && (
-          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base font-normal mb-6 leading-relaxed line-clamp-4">
+          <p className="text-neutral-400 text-sm md:text-base font-normal mb-6 leading-relaxed line-clamp-4">
             {item.description}
           </p>
         )}
 
+        {/* Frame foto estetik dengan shadow glow */}
         {item.image && (
-          <div className="relative w-full h-44 md:h-80 rounded-lg overflow-hidden mb-6 border border-neutral-200 dark:border-neutral-800">
+          <div className="relative w-full h-48 md:h-[350px] rounded-xl overflow-hidden mb-6 border border-[rgba(212,160,23,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.5)] group-hover/item:shadow-[0_0_30px_rgba(212,160,23,0.22)] group-hover/item:border-[rgba(240,192,64,0.4)] transition-all duration-500 ease-out">
             <Image
               src={item.image}
-              alt={item.name}
+              alt={item.title}
               fill
-              className="object-cover object-center hover:scale-105 transition-transform duration-300"
+              className="object-cover object-center scale-100 group-hover/item:scale-105 transition-transform duration-700 ease-out"
             />
           </div>
         )}
 
+        {/* Tombol selengkapnya dengan style emas minimalis */}
         <div className="flex justify-start">
           <Link
             href={`/sejarah/${item.slug}`}
-            className="text-xs md:text-sm text-blue-500 dark:text-amber-500 font-semibold hover:underline flex items-center gap-1"
+            className="text-xs md:text-sm text-[#d4a017] hover:text-[#fff8e0] font-semibold tracking-wider uppercase flex items-center gap-2 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.18)] px-4 py-2 rounded transition-all duration-300 bg-[rgba(212,160,23,0.02)]"
           >
-            Pelajari Selengkapnya Pelan-Pelan →
+            Buka Catatan Sejarah →
           </Link>
         </div>
       </div>
@@ -73,13 +81,13 @@ export default async function SejarahPage() {
   }));
 
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-neutral-950">
-      {/* Jika data kosong, tampilkan fallback aman biar gak error screen */}
+    // Samakan background base-nya dengan warna gelap di footer lu
+    <div className="w-full min-h-screen bg-[#050509] pt-10">
       {timelineData.length > 0 ? (
         <Timeline data={timelineData} />
       ) : (
-        <div className="flex items-center justify-center min-h-[60vh] text-neutral-500 italic">
-          Belum ada rekaman sejarah di database... 😹
+        <div className="flex items-center justify-center min-h-[60vh] text-[#c8a84b] opacity-50 italic font-serif">
+          Belum ada data sejarah yang tersedia. Silakan cek kembali nanti, ya! ✨
         </div>
       )}
     </div>

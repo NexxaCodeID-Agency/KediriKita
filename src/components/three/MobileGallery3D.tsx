@@ -6,14 +6,9 @@ import * as THREE from "three";
 
 type Item = { image: string; text: string };
 
-// Mobile-tuned dimensions (world units)
-const CARD_W = 1.55;
-const CARD_H = 2.15;
-const SLOT_GAP = 1.7;
-
-// Circular arc params — chord-based bend (sama seperti CircularGallery OGL)
-const ARC_H = 2.6; // chord half-length: x dimana arc menyentuh y=-ARC_B
-const ARC_B = 0.7; // sagitta — seberapa dalam tepi arc menukik
+const CARD_W = 1.6;  
+const CARD_H = 2.3;  
+const SLOT_GAP = 2.1; 
 
 const VERTEX = /* glsl */ `
   varying vec2 vUv;
@@ -49,19 +44,15 @@ const FRAGMENT = /* glsl */ `
     );
     vec3 col = texture2D(uTex, uv).rgb;
 
-    // Dim non-active
     col *= mix(0.55, 1.0, uActive);
 
-    // Gold inner border glow (active only)
     float borderDist = abs(sdRound(vUv - 0.5, vec2(0.5 - uRadius), uRadius));
     float borderGlow = (1.0 - smoothstep(0.0, 0.04, borderDist)) * uActive * 0.6;
     col += vec3(0.94, 0.75, 0.25) * borderGlow;
 
-    // Vignette gelap di bawah supaya lebih sinematik
     float bottomFade = smoothstep(0.0, 0.35, vUv.y);
     col *= mix(0.55, 1.0, bottomFade);
 
-    // Rounded mask
     float d = sdRound(vUv - 0.5, vec2(0.5 - uRadius), uRadius);
     float mask = 1.0 - smoothstep(-0.003, 0.003, d);
 
@@ -97,49 +88,34 @@ function Card({ idx, total, texture, imgRes, progressRef }: CardProps) {
     const m = meshRef.current;
     if (!m) return;
 
-    // Wrap offset ke [-half, half) — modulo proper supaya tahan progress berapapun
     const half = total / 2;
     const raw = idx - progressRef.current;
     const off = ((raw + half) % total + total) % total - half;
     const absO = Math.abs(off);
 
-    // X mengikuti slot
     const x = off * SLOT_GAP;
-
-    // Bend arc circular (chord formula — sama dengan CircularGallery)
-    const R = (ARC_H * ARC_H + ARC_B * ARC_B) / (2 * ARC_B);
-    const eff = Math.min(Math.abs(x), ARC_H);
-    const arc = R - Math.sqrt(R * R - eff * eff);
-    const y = -arc;
-    const rotZ = -Math.sign(x) * Math.asin(eff / R);
-
-    // Z-depth halus untuk feel 3D
-    const z = -absO * 0.25;
+    const y = 0; 
+    const z = 0;
 
     const activeAmount = Math.max(0, 1 - absO * 0.6);
 
-    // Bobbing halus saat jadi pusat
     const bob =
       activeAmount > 0.6
         ? Math.sin(state.clock.elapsedTime * 1.4) * 0.03 * activeAmount
         : 0;
 
-    // Scale active sedikit lebih besar
-    const scale =
-      absO < 0.5 ? 1.06 : 0.92 - Math.min(absO * 0.04, 0.15);
+    const scale = absO < 0.5 ? 1.05 : 0.85;
 
-    // Assign langsung — progressRef sudah di-lerp di SceneController.
     m.position.x = x;
     m.position.y = y + bob;
     m.position.z = z;
-    m.rotation.z = rotZ;
+    m.rotation.z = 0; 
     m.scale.setScalar(scale);
 
     const mat = matRef.current;
     if (mat) {
       mat.uniforms.uActive.value = activeAmount;
-      // Fade rapat di dekat batas wrap supaya teleport pas wrap nggak terlihat
-      const fadeStart = Math.max(half - 0.3, 1.6);
+      const fadeStart = Math.max(half - 0.5, 1.2);
       const fadeRange = half - fadeStart;
       const targetOpacity =
         fadeRange > 0
@@ -277,7 +253,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
   const [imgResolutions, setImgResolutions] = useState<[number, number][]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Lazy init — baca preference langsung saat mount
   const [reducedMotion, setReducedMotion] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -290,8 +265,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
-  // Preload semua texture sekali — pakai allSettled supaya 1 gambar gagal
-  // tidak membatalkan seluruh galeri
   useEffect(() => {
     let cancelled = false;
     const loader = new THREE.TextureLoader();
@@ -317,11 +290,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
                 },
                 undefined,
                 (err) => {
-                  console.warn(
-                    "MobileGallery3D: gagal load",
-                    item.image,
-                    err,
-                  );
+                  console.warn("MobileGallery3D: gagal load", item.image, err);
                   reject(err);
                 },
               );
@@ -342,7 +311,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     };
   }, [items]);
 
-  // Sync state untuk DOM overlay (throttled)
   useEffect(() => {
     let prev = -1;
     const id = window.setInterval(() => {
@@ -411,7 +379,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
     const w = wrapperRef.current?.clientWidth ?? 360;
     const slotPx = Math.max(120, w * 0.55);
 
-    // Tap detection — gerakan minim & durasi pendek → navigasi side
     if (s.totalDist < 8 && duration < 260) {
       const rect = wrapperRef.current?.getBoundingClientRect();
       if (rect) {
@@ -424,7 +391,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
       return;
     }
 
-    // Momentum dari kecepatan akhir
     const flick = (-s.vel * 220) / slotPx;
     targetRef.current = Math.round(targetRef.current + flick);
     lastInteractionRef.current = Date.now();
@@ -448,7 +414,7 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
       onPointerCancel={onPointerUp}
     >
       <Canvas
-        camera={{ position: [0, 0.15, 5], fov: 40 }}
+        camera={{ position: [0, 0, 4.4], fov: 42 }}
         dpr={[1, 2]}
         gl={{
           antialias: true,
@@ -479,7 +445,6 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
           ))}
       </Canvas>
 
-      {/* Overlay: counter + judul aktif + dots */}
       <div
         className="absolute left-0 right-0 pointer-events-none flex flex-col items-center"
         style={{
@@ -496,18 +461,16 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
             marginBottom: "0.4rem",
           }}
         >
-          {String(activeIndex + 1).padStart(2, "0")} /{" "}
-          {String(items.length).padStart(2, "0")}
+          {String(activeIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
         </span>
         <h3
           key={activeIndex}
           className="mg3d-active-title"
           style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "1.5rem",
+            fontSize: "1.4rem",
             color: "#f0d080",
-            textShadow:
-              "0 2px 14px rgba(0,0,0,0.85), 0 0 28px rgba(212,160,23,0.18)",
+            textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 0 28px rgba(212,160,23,0.18)",
             margin: 0,
             textAlign: "center",
           }}
@@ -522,15 +485,9 @@ export default function MobileGallery3D({ items }: { items: Item[] }) {
                 width: i === activeIndex ? "22px" : "6px",
                 height: "6px",
                 borderRadius: "999px",
-                background:
-                  i === activeIndex
-                    ? "var(--color-emas-muda)"
-                    : "rgba(255,255,255,0.28)",
+                background: i === activeIndex ? "var(--color-emas-muda)" : "rgba(255,255,255,0.28)",
                 transition: "all 0.35s ease",
-                boxShadow:
-                  i === activeIndex
-                    ? "0 0 10px rgba(240,192,64,0.55)"
-                    : "none",
+                boxShadow: i === activeIndex ? "0 0 10px rgba(240,192,64,0.55)" : "none",
               }}
             />
           ))}

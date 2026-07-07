@@ -506,22 +506,109 @@ body {
   animation: mg3dTitleFade 0.5s ease-out;
 }
 
-/* ─── Carauser scroll hint button ────────────────────────── */
+/* ─── Carauser 3D navigation buttons ─────────────────────── */
+.carauser-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 160, 23, 0.25);
+  background: rgba(10, 10, 20, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(240, 192, 64, 0.6);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carauser-nav-btn:hover {
+  border-color: rgba(212, 160, 23, 0.6);
+  color: #F0C040;
+  background: rgba(212, 160, 23, 0.08);
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.15), inset 0 0 15px rgba(212, 160, 23, 0.05);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carauser-nav-prev { left: clamp(0.75rem, 3vw, 2.5rem); }
+.carauser-nav-next { right: clamp(0.75rem, 3vw, 2.5rem); }
+
+/* ─── Carauser 3D title animation ────────────────────────── */
+.carauser-3d-title {
+  animation: carauser3dTitleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes carauser3dTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* ─── Carauser 3D canvas area ────────────────────────────── */
+.carauser-wrapper canvas {
+  outline: none;
+}
+
+/* ─── Shimmer Animation for Cards ───────────────────────── */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmerSweep 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@media (max-width: 480px) {
+  .carauser-nav-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .carauser-nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ─── Carauser fallback (no-WebGL) scrollbar hide ────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─── Carauser fallback scroll hint button ───────────────── */
 .carauser-scroll-hint {
   bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
-  font-size: 0.6rem;
-  letter-spacing: 0.35em;
-  padding: 0.5rem 1.4rem;
 }
 
 @media (max-width: 480px) {
   .carauser-scroll-hint {
     bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
-    font-size: 0.5rem;
-    letter-spacing: 0.22em;
-    padding: 0.45rem 1rem;
+    font-size: 0.5rem !important;
+    letter-spacing: 0.22em !important;
+    padding: 0.45rem 1rem !important;
   }
 }
+
 
 /* ─── Footer responsive padding ──────────────────────────── */
 .footer-inner {

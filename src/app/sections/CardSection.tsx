@@ -326,9 +326,9 @@ export default function CardSection() {
               </div>
 
               {/* Badge */}
-              <div className="card-badge-wrap flex justify-center">
+              <div className="card-badge-wrap flex mb-5 justify-center">
                 <span
-                  onClick={() => (window.location.href = "/map")}
+                  onClick={() => (window.location.href = "/sejarah")}
                   className="card-badge cursor-pointer uppercase"
                   style={{
                     fontFamily: "var(--font-lato)",
@@ -351,7 +351,7 @@ export default function CardSection() {
                     e.currentTarget.style.borderColor = "rgba(200,168,75,0.38)";
                   }}
                 >
-                  ✦ Explore Kediri
+                  ✦ LIHAT SEJARAH KOTA KEDIRI ✦
                 </span>
               </div>
 

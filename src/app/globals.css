@@ -6,7 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 html {
-  scroll-behavior: smooth;
+  /* 🔴 HAPUS scroll-behavior: smooth biar gak nge-bug / nge-freeze koordinat Intersection Observer! */
+  scroll-behavior: auto;
 }
 
 body {
@@ -27,13 +28,6 @@ body {
 
 * {
   box-sizing: border-box;
-}
-
-@media (max-width: 767px) {
-  html {
-    /* native momentum scroll handles smoothness; CSS smooth-scroll on mobile feels laggy with parallax */
-    scroll-behavior: auto;
-  }
 }
 
 /* Scroll chevron animation */
@@ -185,10 +179,10 @@ body {
   }
 }
 
-/* ─── Section wrappers — semua section = 1 layar penuh, scroll smooth tanpa parallax gap */
+/* ─── Section wrappers — Diubah dari kaku height jadi min-height biar dinamis tanpa jank gap ─── */
 .hero-wrapper {
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .card-section-wrapper {
   min-height: 100vh;
@@ -199,17 +193,18 @@ body {
   min-height: 100dvh;
 }
 .carauser-wrapper {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .carauser-sticky {
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 @media (max-width: 767px) {
   .hero-wrapper {
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .card-section-wrapper {
     height: auto;
@@ -224,39 +219,28 @@ body {
     min-height: 100dvh;
   }
   .carauser-wrapper {
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .carauser-sticky {
     position: relative !important;
     top: auto !important;
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
-/* ─── CardSection responsive system ──────────────────────────
-   Semua sizing card diatur lewat CSS agar proporsional di
-   setiap ukuran device tanpa lompatan breakpoint yang kasar.
-   ──────────────────────────────────────────────────────────── */
-
-/* Layout container */
+/* ─── CardSection responsive system ────────────────────────── */
 .card-section-layout {
   padding: 4rem 1.5rem;
 }
-
-/* Card outer — default (desktop ≥1024) */
 .card-outer {
   width: 26rem;
   max-width: 92vw;
 }
-
-/* Card body */
 .card-body {
   padding: 2.75rem 3rem;
 }
-
-/* Typography */
 .card-label {
   font-size: 9px;
   letter-spacing: 5px;
@@ -278,8 +262,6 @@ body {
 .card-divider {
   margin-bottom: 1.25rem;
 }
-
-/* Poin list */
 .card-points {
   gap: 1rem;
 }
@@ -299,8 +281,6 @@ body {
 .card-point-desc {
   font-size: 11.5px;
 }
-
-/* Badge */
 .card-badge-wrap {
   margin-top: 1.5rem;
 }
@@ -325,7 +305,7 @@ body {
   }
 }
 
-/* ── Mobile (≤767px) — card mengisi layar, teks proporsional ── */
+/* ── Mobile (≤767px) ── */
 @media (max-width: 767px) {
   .card-section-layout {
     padding: 3.5rem 1rem;
@@ -381,11 +361,11 @@ body {
   }
   .card-badge {
     font-size: 7.5px;
-    padding: 0.3rem 1rem;
+    padding: 0.3./r 1rem;
   }
 }
 
-/* ── Small phone (≤374px) — extra compact ── */
+/* ── Small phone (≤374px) ── */
 @media (max-width: 374px) {
   .card-section-layout {
     padding: 2.5rem 0.5rem;
@@ -445,13 +425,12 @@ body {
   }
 }
 
-/* ── Large desktop (≥1280px) ── left-anchored with more space ── */
+/* ── Large desktop (≥1280px) ── */
 @media (min-width: 1280px) {
   .card-section-layout {
     padding: 4rem 2rem 4rem 6rem;
   }
 }
-
 
 /* ─── Hero responsive typography ─────────────────────────── */
 .hero-subtitle {
@@ -459,13 +438,11 @@ body {
   letter-spacing: 0.38em;
   margin-bottom: 1.1rem;
 }
-
 .hero-desc {
   font-size: 0.85rem;
   max-width: min(26rem, 88vw);
   letter-spacing: 0.12em;
 }
-
 .hero-scroll-indicator {
   bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
 }
@@ -526,7 +503,6 @@ body {
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .carauser-nav-btn:hover {
   border-color: rgba(212, 160, 23, 0.6);
   color: #F0C040;
@@ -534,7 +510,6 @@ body {
   box-shadow: 0 0 20px rgba(212, 160, 23, 0.15), inset 0 0 15px rgba(212, 160, 23, 0.05);
   transform: translateY(-50%) scale(1.08);
 }
-
 .carauser-nav-prev { left: clamp(0.75rem, 3vw, 2.5rem); }
 .carauser-nav-next { right: clamp(0.75rem, 3vw, 2.5rem); }
 
@@ -542,7 +517,6 @@ body {
 .carauser-3d-title {
   animation: carauser3dTitleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-
 @keyframes carauser3dTitleIn {
   from {
     opacity: 0;
@@ -556,21 +530,15 @@ body {
   }
 }
 
-/* ─── Carauser 3D canvas area ────────────────────────────── */
 .carauser-wrapper canvas {
   outline: none;
 }
 
 /* ─── Shimmer Animation for Cards ───────────────────────── */
 @keyframes shimmerSweep {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-15deg);
-  }
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
 }
-
 .animate-shimmer {
   animation: shimmerSweep 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
@@ -586,7 +554,6 @@ body {
   }
 }
 
-/* ─── Carauser fallback (no-WebGL) scrollbar hide ────────── */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -594,8 +561,6 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-/* ─── Carauser fallback scroll hint button ───────────────── */
 .carauser-scroll-hint {
   bottom: max(1.5rem, env(safe-area-inset-bottom, 0px) + 0.75rem);
 }
@@ -608,7 +573,6 @@ body {
     padding: 0.45rem 1rem !important;
   }
 }
-
 
 /* ─── Footer responsive padding ──────────────────────────── */
 .footer-inner {
@@ -637,16 +601,13 @@ body {
   padding: 0 !important;
   border-radius: 12px !important;
 }
-
 .custom-popup .leaflet-popup-content {
   margin: 0 !important;
   line-height: 1 !important;
 }
-
 .custom-popup .leaflet-popup-tip-container {
   display: none !important;
 }
-
 .leaflet-default-icon-path {
   display: none !important;
 }
@@ -657,7 +618,6 @@ body {
   transform: translateY(32px);
   transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 .fade-in-up.is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -667,29 +627,23 @@ body {
 .route-button {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
-
 .route-button .icon,
 .route-button .text {
   transition: transform 0.3s ease-out;
 }
-
 .route-button:hover {
   background-color: rgba(212, 160, 23, 0.1);
   border-color: rgba(212, 160, 23, 0.5);
 }
-
 .route-button:hover .icon {
   transform: translateX(3px) rotate(10deg);
 }
-
 .route-button:hover .text {
   transform: translateX(2px);
 }
-
 .route-button:active {
   transform: scale(0.98);
 }
-
 
 html,
 body {

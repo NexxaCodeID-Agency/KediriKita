@@ -25,7 +25,7 @@ export default function LazySection({
   const [hasIntersected, setHasIntersected] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+useEffect(() => {
     if (hasIntersected) return;
 
     const observer = new IntersectionObserver(
@@ -43,11 +43,11 @@ export default function LazySection({
     }
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      // 🔴 Mematikan total instance observer biar hemat ram browser
+      observer.disconnect(); 
     };
   }, [hasIntersected, threshold, rootMargin]);
+  
 
   return (
     <div 

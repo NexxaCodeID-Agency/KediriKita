@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useIntersectionObserverAnimation } from "@/hooks/useIntersectionAnimation";
 import { cn } from "@/lib/utils";
@@ -179,26 +178,8 @@ export default function DestinationGrid({
 }: {
   destinations: Destination[];
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const [activeCategory, setActiveCategory] = useState("Semua");
-  const [search, setSearch] = useState(searchParams.get("search") || "");
-
-  useEffect(() => {
-    const delayDebounceId = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (search.trim()) {
-        params.set("search", search.trim());
-      } else {
-        params.delete("search");
-      }
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }, 350);
-
-    return () => clearTimeout(delayDebounceId);
-  }, [search, pathname, router, searchParams]);
+  const [search, setSearch] = useState("");
 
   const activeCat = activeCategory.toLowerCase();
 
@@ -223,7 +204,6 @@ export default function DestinationGrid({
   return (
     <section className="min-h-screen px-4 sm:px-6 pt-8 sm:pt-10 pb-20 sm:pb-24 max-w-7xl mx-auto">
       <div className="w-full flex items-center justify-between gap-4 mb-8 sm:mb-10">
-        {/* Pakai tag <a> murni untuk bypass cache router yang macet */}
         <a
           href="/"
           data-discover="true"

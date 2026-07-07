@@ -26,7 +26,6 @@ const LINKS = [
       { label: "Tahu Takwa", href: "#" },
       { label: "Getuk Pisang", href: "#" },
       { label: "Nasi Pecel Kediri", href: "#" },
-      { label: "Sate Emprit", href: "#" },
     ],
   },
 ];

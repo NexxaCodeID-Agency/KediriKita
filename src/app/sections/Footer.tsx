@@ -32,9 +32,7 @@ const LINKS = [
 ];
 
 const SOSMED = [
-  { label: "Instagram", href: "#", icon: "IG" },
-  { label: "Facebook",  href: "#", icon: "FB" },
-  { label: "YouTube",   href: "#", icon: "YT" },
+  { label: "Instagram", href: "https://www.instagram.com/nexxacodeid?igsh=MTRtdnJ4bXAxaWtodw==", icon: "IG" },
 ];
 
 export default function Footer() {

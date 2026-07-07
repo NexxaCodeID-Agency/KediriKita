@@ -218,15 +218,18 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
   }
-  .carauser-wrapper {
-    min-height: 100vh;
-    min-height: 100dvh;
+ .carauser-wrapper {
+    height: auto;
+    min-height: 60vh; 
+    min-height: 60dvh;
   }
+  
   .carauser-sticky {
     position: relative !important;
     top: auto !important;
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: auto;
+    min-height: 60vh;
+    min-height: 60dvh;
   }
 }
 

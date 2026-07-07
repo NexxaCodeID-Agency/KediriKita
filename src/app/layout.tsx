@@ -3,9 +3,8 @@ import { Cinzel, Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
-import { DestinationLink } from "@/app/sections/Footer";
+import {DestinationLink} from "@/app/sections/Footer";
 import { createClient } from '@supabase/supabase-js';
-import { Suspense } from "react"; // 🔴 IMPORT SUSPENSE NYET!
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -59,7 +58,7 @@ async function getFooterData(): Promise<{ wisata: DestinationLink[]; kuliner: De
 
   if (!supabaseUrl || !supabaseAnonKey) return { wisata: [], kuliner: [] };
 
-  const supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
+  const  supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
 
   try {
     const { data: wisata } = await supabaseServer
@@ -79,33 +78,21 @@ async function getFooterData(): Promise<{ wisata: DestinationLink[]; kuliner: De
   }
 }
 
-// 🟢 KOMPONEN INNER UNTUK MENANGANI DATA FOOTER AGAR STREAMING RUNNING SEPARATELY
-async function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { wisata, kuliner } = await getFooterData();
-  return (
-    <ClientLayout dataWisata={wisata} dataKuliner={kuliner}>
-      {children}
-    </ClientLayout>
-  );
-}
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const {wisata, kuliner} = await getFooterData();
   return (
     <html
       lang="id"
       className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
     >
-      <body className="min-h-full bg-[#080812]">
-        {/* 🔴 BUNTEL PAKE SUSPENSE! Biar halaman children (Home dll) lu bisa kerender instan 
-            tanpa perlu nungguin query table destinations Supabase kelar! */}
-        <Suspense fallback={<div className="min-h-screen bg-[#080812]" />}>
-          <LayoutContent>{children}</LayoutContent>
-        </Suspense>
+      <body className="min-h-full">
+        <ClientLayout dataWisata={wisata} dataKuliner={kuliner}>{children}</ClientLayout>
       </body>
     </html>
   );
 }
+

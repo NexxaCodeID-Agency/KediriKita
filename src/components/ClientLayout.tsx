@@ -2,8 +2,7 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
 import LoadingScreen from './LoadingScreen';
-import Footer, { DestinationLink } from '@/app/sections/Footer'; 
-import LazySection from "@/components/ui/LazySection";
+import Footer, { DestinationLink } from '@/app/sections/Footer'; // Import Footer dan tipenya
 
 export const ReadyContext = createContext(false);
 
@@ -52,10 +51,8 @@ export default function ClientLayout({
             {children}
           </div>
           
-          
-          <LazySection minHeight="300px">
-            <Footer dataWisata={dataWisata} dataKuliner={dataKuliner} />
-          </LazySection>
+          {/* 3. Panggil Footer di sini dan oper datanya langsung bosquu! */}
+          <Footer dataWisata={dataWisata} dataKuliner={dataKuliner} />
         </div>
       </ReadyContext.Provider>
     </>

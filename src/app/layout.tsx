@@ -3,6 +3,8 @@ import { Cinzel, Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
+import {DestinationLink} from "@/app/sections/Footer";
+import { createClient } from '@supabase/supabase-js';
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -50,18 +52,45 @@ export const viewport: Viewport = {
   themeColor: "#1A1A2E",
 };
 
-export default function RootLayout({
+async function getFooterData(): Promise<{ wisata: DestinationLink[]; kuliner: DestinationLink[] }> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) return { wisata: [], kuliner: [] };
+
+  const  supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
+
+  try {
+    const { data: wisata } = await supabaseServer
+      .from("destinations")
+      .select("name, slug")
+      .eq("category", "wisata");
+
+    const { data: kuliner } = await supabaseServer
+      .from("destinations")
+      .select("name, slug")
+      .eq("category", "kuliner");
+
+    return { wisata: (wisata as DestinationLink[]) || [], kuliner: (kuliner as DestinationLink[]) || [] };
+  } catch (error) {
+    console.error("Gagal mengambil data footer:", error);
+    return { wisata: [], kuliner: [] };
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const {wisata, kuliner} = await getFooterData();
   return (
     <html
       lang="id"
       className={cn("h-full", cinzel.variable, playfair.variable, lato.variable, "font-sans")}
     >
       <body className="min-h-full">
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout dataWisata={wisata} dataKuliner={kuliner}>{children}</ClientLayout>
       </body>
     </html>
   );

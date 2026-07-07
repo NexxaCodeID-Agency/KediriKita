@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
 import LoadingScreen from './LoadingScreen';
+import Footer, { DestinationLink } from '@/app/sections/Footer'; // Import Footer dan tipenya
 
 export const ReadyContext = createContext(false);
 
@@ -11,14 +12,24 @@ export function useReady() {
 
 const SESSION_KEY = 'kediri_intro_played';
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+// 1. Definisikan interface props baru buat nampung data dari database
+interface ClientLayoutProps {
+  children: React.ReactNode;
+  dataWisata: DestinationLink[];
+  dataKuliner: DestinationLink[];
+}
+
+export default function ClientLayout({ 
+  children, 
+  dataWisata, 
+  dataKuliner 
+}: ClientLayoutProps) { // 2. Terapkan interface props di sini
+  
   // Selalu mulai false agar server & client HTML cocok (tidak ada hydration mismatch)
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
-    // Pola "lazy client-only sync" yang disengaja: state awal harus false di server
-    // agar HTML cocok, lalu di-sync ke true di client kalau session menandai.
     if (sessionStorage.getItem(SESSION_KEY) === '1') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setReady(true);
@@ -34,7 +45,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       {!ready && <LoadingScreen onDone={handleDone} />}
       <ReadyContext.Provider value={ready}>
-        {children}
+        {/* Bungkus layout utama lu */}
+        <div className="flex flex-col min-h-screen">
+          <div className="flex-grow">
+            {children}
+          </div>
+          
+          {/* 3. Panggil Footer di sini dan oper datanya langsung bosquu! */}
+          <Footer dataWisata={dataWisata} dataKuliner={dataKuliner} />
+        </div>
       </ReadyContext.Provider>
     </>
   );

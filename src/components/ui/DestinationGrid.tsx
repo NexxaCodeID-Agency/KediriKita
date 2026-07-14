@@ -6,6 +6,8 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useIntersectionObserverAnimation } from "@/hooks/useIntersectionAnimation";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+import { localizedPath } from "@/lib/i18n";
 
 const PLACEHOLDER_IMG =
   "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%231A1A2E' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23d4a017' font-family='serif' font-size='14' text-anchor='middle' dominant-baseline='middle'%3EKediri%3C/text%3E%3C/svg%3E";
@@ -22,7 +24,7 @@ function isValidImageSrc(src: string | null | undefined): src is string {
 }
 
 type Destination = {
-  id: number;
+  id: string;
   slug: string;
   name: string;
   category: string[];
@@ -33,7 +35,7 @@ type Destination = {
 
 const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
 
-function getNormalizedCategories(categoryData: any): string[] {
+function getNormalizedCategories(categoryData: string[] | string): string[] {
   if (Array.isArray(categoryData)) {
     return categoryData.map((cat) => String(cat).trim());
   }
@@ -44,6 +46,7 @@ function getNormalizedCategories(categoryData: any): string[] {
 }
 
 function DestinationCard({ item, index }: { item: Destination; index: number }) {
+  const { lang, t } = useTranslation();
   const ref = useIntersectionObserverAnimation<HTMLDivElement>({
     delay: index * 50,
     rootMargin: "400px",
@@ -58,7 +61,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
       style={{ transitionDelay: `${index * 50}ms` }}
     >
       <Link
-        href={`/destinasi/${encodeURIComponent(item.slug ?? "")}`}
+        href={localizedPath(lang, `/destinasi/${encodeURIComponent(item.slug ?? "")}`)}
         className="group block"
       >
         <div
@@ -112,7 +115,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
                 color: "#1A1A2E",
               }}
             >
-              {itemCategories.length > 0 ? itemCategories.join(", ") : "Umum"}
+              {itemCategories.length > 0 ? itemCategories.join(", ") : t.destDetail.general}
             </span>
 
             {typeof item.rating === "number" && item.rating > 0 && (
@@ -164,7 +167,7 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
                 fontFamily: "var(--font-lato)",
               }}
             >
-              Lihat Detail →
+              {t.viewDetail} →
             </span>
           </div>
         </div>
@@ -178,6 +181,7 @@ export default function DestinationGrid({
 }: {
   destinations: Destination[];
 }) {
+  const { lang, t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [search, setSearch] = useState("");
 
@@ -204,25 +208,23 @@ export default function DestinationGrid({
   return (
     <section className="min-h-screen px-4 sm:px-6 pt-8 sm:pt-10 pb-20 sm:pb-24 max-w-7xl mx-auto">
       <div className="w-full flex items-center justify-between gap-4 mb-8 sm:mb-10">
-        <a
-          href="/"
-          data-discover="true"
+        <Link
+          href={localizedPath(lang)}
           className="inline-flex whitespace-nowrap items-center gap-2 text-sm transition-colors duration-200"
           style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
         >
           <ArrowLeft size={16} />
-          Kembali ke Beranda
-        </a>
+          {t.backToHome}
+        </Link>
 
-        <a
-          href="/sejarah"
-          data-discover="true"
+        <Link
+          href={localizedPath(lang, "/sejarah")}
           className="inline-flex whitespace-nowrap items-center gap-2 text-sm transition-colors duration-200"
           style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
         >
-          Lihat Sejarah Kediri
+          {t.seeHistory}
           <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
       
       <div className="text-center mb-10 sm:mb-12 px-2">
@@ -230,7 +232,7 @@ export default function DestinationGrid({
           className="text-[10px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] mb-2 sm:mb-3 uppercase"
           style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
         >
-          ✦ Temukan Destinasimu ✦
+          {t.discoverDest}
         </p>
         <h1
           className="text-3xl sm:text-4xl md:text-5xl font-bold text-white"
@@ -239,7 +241,7 @@ export default function DestinationGrid({
             textShadow: "0 2px 16px rgba(0,0,0,0.6)",
           }}
         >
-          Jelajahi Kediri
+          {t.exploreKediri}
         </h1>
         <p
           className="mt-3 sm:mt-4 text-xs sm:text-sm max-w-md mx-auto leading-relaxed"
@@ -248,7 +250,7 @@ export default function DestinationGrid({
             fontFamily: "var(--font-lato)",
           }}
         >
-          Wisata alam, kuliner khas, dan warisan sejarah menanti di setiap sudut kota.
+          {t.destSubtitle}
         </p>
       </div>
 
@@ -258,7 +260,7 @@ export default function DestinationGrid({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari destinasi..."
+            placeholder={t.searchDest}
             className="w-full px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-sm outline-none"
             style={{
               background: "rgba(255,255,255,0.06)",
@@ -303,7 +305,7 @@ export default function DestinationGrid({
                   : "1px solid rgba(255,255,255,0.12)",
             }}
           >
-            {cat}
+            {t.categories[cat as keyof typeof t.categories] ?? cat}
           </button>
         ))}
       </div>
@@ -317,7 +319,7 @@ export default function DestinationGrid({
               fontFamily: "var(--font-lato)",
             }}
           >
-            Belum ada destinasi dalam kategori ini.
+            {t.noDest}
           </p>
           <button
             onClick={() => {
@@ -330,7 +332,7 @@ export default function DestinationGrid({
               fontFamily: "var(--font-lato)",
             }}
           >
-            Tampilkan semua
+            {t.showAll}
           </button>
         </div>
       ) : (

@@ -3,8 +3,10 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { translations } from "@/lib/translations";
 
-const FloatingCards = dynamic(() => import("../../components/FloatingCards"), {
+const FloatingCards = dynamic(() => import("../FloatingCards"), {
   ssr: false,
   loading: () => null,
 });
@@ -33,6 +35,29 @@ const poinData = [
 ];
 
 export default function CardSection() {
+  const params = useParams();
+  const router = useRouter();
+  const lang = (params?.lang as "id" | "en" | "cn") || "id";
+  const t = translations[lang] || translations.id;
+
+  const localizedPoinData = [
+    {
+      title: t.historyPoin["Sejarah"],
+      desc: t.historyPoin.SejarahDesc,
+      icon: "🏛️",
+    },
+    {
+      title: t.historyPoin["Seni Budaya"],
+      desc: t.historyPoin.SeniBudayaDesc,
+      icon: "🎭",
+    },
+    {
+      title: t.culinary,
+      desc: t.historyPoin.KulinerDesc,
+      icon: "🍛",
+    },
+  ];
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [showFloating, setShowFloating] = useState(false);
 
@@ -231,7 +256,7 @@ export default function CardSection() {
                   fontWeight: 300,
                 }}
               >
-                Jawa Timur, Indonesia
+                {t.card.region}
               </p>
 
               {/* Judul */}
@@ -259,7 +284,7 @@ export default function CardSection() {
                   borderBottom: "1px solid rgba(200,168,75,0.28)",
                 }}
               >
-                Kota Tahu · Kota Budaya · Kota Sejarah
+                {t.card.tagline}
               </p>
 
               {/* Intro */}
@@ -271,9 +296,9 @@ export default function CardSection() {
                   lineHeight: "1.85",
                 }}
               >
-                Kediri, dikenal sebagai kota tahu,
+                {t.card.intro}
                 <br />
-                banyak hal yang menanti untuk diketahui.
+                {t.card.introLine2}
               </p>
 
               {/* Divider ✦ */}
@@ -286,8 +311,8 @@ export default function CardSection() {
               </div>
 
               {/* Poin list */}
-              <div className="card-points flex flex-col">
-                {poinData.map((poin) => (
+              <div className="card-points flex flex-col gap-4 mb-6 px-6 sm:px-10">
+                {localizedPoinData.map((poin) => (
                   <div key={poin.title} className="card-point-item flex items-start">
                     <div
                       className="card-point-icon rounded-full flex items-center justify-center shrink-0"
@@ -328,8 +353,8 @@ export default function CardSection() {
               {/* Badge */}
               <div className="card-badge-wrap flex mb-5 justify-center">
                 <span
-                  onClick={() => (window.location.href = "/sejarah")}
-                  className="card-badge cursor-pointer uppercase"
+                  onClick={() => router.push(`/${lang}/sejarah`)}
+                  className="card-badge cursor-pointer uppercase text-center"
                   style={{
                     fontFamily: "var(--font-lato)",
                     letterSpacing: "0.28em",
@@ -351,7 +376,7 @@ export default function CardSection() {
                     e.currentTarget.style.borderColor = "rgba(200,168,75,0.38)";
                   }}
                 >
-                  ✦ LIHAT SEJARAH KOTA KEDIRI ✦
+                  ✦ {t.seeHistory} ✦
                 </span>
               </div>
 

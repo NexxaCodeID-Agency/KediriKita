@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext } from 'react';
+import { useParams } from 'next/navigation';
 import LoadingScreen from './LoadingScreen';
-import Footer, { DestinationLink } from '@/app/sections/Footer'; // Import Footer dan tipenya
+import Footer, { DestinationLink } from '@/components/sections/Footer';
+import LanguageSwitcher from '@/components/sections/LanguageSwitcher';
+import { getLocale } from '@/lib/i18n';
+import { useHistoryNavigation } from '@/hooks/useHistoryNavigation';
 
 export const ReadyContext = createContext(false);
 
@@ -25,8 +29,13 @@ export default function ClientLayout({
   dataKuliner 
 }: ClientLayoutProps) { // 2. Terapkan interface props di sini
   
-  // Selalu mulai false agar server & client HTML cocok (tidak ada hydration mismatch)
   const [ready, setReady] = useState(false);
+  const params = useParams();
+  const lang = getLocale(params?.lang as string | undefined);
+
+  useEffect(() => {
+    document.documentElement.lang = lang === 'cn' ? 'zh' : lang;
+  }, [lang]);
 
   useEffect(() => {
     // Setelah mount (client only) — cek apakah intro sudah pernah ditampilkan.
@@ -41,9 +50,12 @@ export default function ClientLayout({
     setReady(true);
   };
 
+  useHistoryNavigation();
+
   return (
     <>
       {!ready && <LoadingScreen onDone={handleDone} />}
+      {ready && <LanguageSwitcher />}
       <ReadyContext.Provider value={ready}>
         {/* Bungkus layout utama lu */}
         <div className="flex flex-col min-h-screen">

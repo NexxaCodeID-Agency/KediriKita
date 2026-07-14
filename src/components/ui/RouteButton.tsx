@@ -1,4 +1,6 @@
 "use client";
+import { translations } from "@/lib/translations";
+import { useParams } from "next/navigation";
 
 interface RouteButtonProps {
   latitude: number;
@@ -7,6 +9,9 @@ interface RouteButtonProps {
 
 export default function RouteButton({ latitude, longitude }: RouteButtonProps) {
   const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+  const params = useParams();
+  const lang = (params?.lang as "id" | "en" | "cn") || "id";
+  const t = translations[lang] || translations.id;
 
   return (
     <a
@@ -40,7 +45,7 @@ export default function RouteButton({ latitude, longitude }: RouteButtonProps) {
 
       {/* Teks */}
       <span className="text">
-        Buat Rute ke Sini
+        {t.destDetail.route}
       </span>
     </a>
   );

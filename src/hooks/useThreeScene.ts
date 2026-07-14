@@ -130,7 +130,7 @@ export function useThreeScene(ready: boolean = true) {
         mount.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [ready]);
 
   return mountRef;
 }

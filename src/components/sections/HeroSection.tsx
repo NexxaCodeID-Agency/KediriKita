@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useParallax } from "@/hooks/useParallax";
 import { useThreeScene } from "@/hooks/useThreeScene";
 import { useReady } from "@/components/ClientLayout";
+import { useTranslation } from "@/hooks/useTranslation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,6 +36,7 @@ export default function HeroSection() {
   const glowRef = useRef<HTMLDivElement>(null);
   const teksRef = useRef<HTMLDivElement>(null);
   const ready = useReady();
+  const { t } = useTranslation();
   const particlesMountRef = useThreeScene(ready);
 
   const parallaxLayers = useMemo(
@@ -409,7 +411,7 @@ export default function HeroSection() {
               textAlign: "center",
             }}
           >
-            ✦ Selamat Datang di ✦
+            {t.hero.welcome}
           </p>
 
           <h1
@@ -449,7 +451,7 @@ export default function HeroSection() {
             textShadow:
                 "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
           }}>
-            Atau lebih dikenal sebagai Kota Tahu
+            {t.hero.citySubtitle}
           </p>
 
           <div
@@ -476,8 +478,7 @@ export default function HeroSection() {
               textTransform: "uppercase",
             }}
           >
-            Temukan keindahan, sejarah, dan kehangatan kota Kediri — kota yang
-            selalu punya cerita untukmu.
+            {t.hero.description}
           </p>
 
           {/* Scroll indicator */}
@@ -489,7 +490,7 @@ export default function HeroSection() {
               letterSpacing: "0.22em",
             }}
           >
-            <span style={{ textTransform: "uppercase" }}>Scroll</span>
+            <span style={{ textTransform: "uppercase" }}>{t.hero.scroll}</span>
             <svg width="16" height="30" viewBox="0 0 16 30" fill="none">
               <path
                 d="M1 2 L8 9 L15 2"

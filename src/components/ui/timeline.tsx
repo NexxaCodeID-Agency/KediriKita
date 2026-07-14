@@ -1,6 +1,5 @@
 "use client";
 import {
-  useMotionValueEvent,
   useScroll,
   useTransform,
   motion,
@@ -8,8 +7,14 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import dynamic from "next/dynamic";
 
-import TimelineParticles from "@/components/three/TimelineParticles";
+const TimelineParticles = dynamic(() => import("@/components/three/TimelineParticles"), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-[#050509]" style={{ zIndex: 1 }} />,
+});
+import { useTranslation } from "@/hooks/useTranslation";
+import { localizedPath } from "@/lib/i18n";
 
 interface TimelineEntry {
   title: string;
@@ -17,6 +22,7 @@ interface TimelineEntry {
 }
 
 export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
+  const { lang, t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
@@ -50,7 +56,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
       <div className="mb-8 relative z-10">
         <Link
-          href="/"
+          href={localizedPath(lang)}
           className="inline-flex items-center gap-2 text-xs sm:text-sm px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.15)]"
           style={{
             color: "#d4a017",
@@ -59,7 +65,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
           }}
         >
           <ArrowLeft size={14} />
-          Kembali
+          {t.back}
         </Link>
       </div>
 
@@ -71,10 +77,10 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             textShadow: "0 0 30px rgba(212,160,23,0.2)"
           }}
         >
-        <span className="text-[#d4a017] shadow-glow">Sejarah Kediri</span>
+        <span className="text-[#d4a017] shadow-glow">{t.sejarahPage.title}</span>
         </h2>
         <p className="text-neutral-400 text-sm md:text-base max-w-sm">
-          Menelusuri jejak peradaban, kerajaan purba, hingga perkembangan modern Kota Kediri.
+          {t.sejarahPage.subtitle}
         </p>
       </div>
 

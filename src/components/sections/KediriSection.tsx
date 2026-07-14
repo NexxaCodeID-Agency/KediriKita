@@ -4,12 +4,16 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LihatDestinasiButton from "@/components/LihatDestinasiButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { translations } from "@/lib/translations";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function KediriSection() {
   const router = useRouter();
+  const params = useParams();
+  const lang = (params?.lang as "id" | "en" | "cn") || "id";
+  const t = translations[lang] || translations.id;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -225,7 +229,7 @@ export default function KediriSection() {
               textTransform: "uppercase",
             }}
           >
-            Kota Kediri
+            {t.pesona.tagline}
           </span>
         </div>
 
@@ -246,7 +250,7 @@ export default function KediriSection() {
                 "0 4px 32px rgba(0,0,0,0.9), 0 0 60px rgba(212,160,23,0.2)",
             }}
           >
-            Seputar
+            {t.pesonaTitle.prefix}
           </h2>
           <h2
             style={{
@@ -260,7 +264,7 @@ export default function KediriSection() {
                 "0 4px 32px rgba(0,0,0,0.9), 0 0 60px rgba(240,192,64,0.35)",
             }}
           >
-            Kediri
+            {t.pesonaTitle.city}
           </h2>
         </div>
 
@@ -290,11 +294,11 @@ export default function KediriSection() {
             opacity: 0,
           }}
         >
-          Kami hadirkan pesona terbaik kota terhangat di Jawa Timur. Mulai dari peninggalan monumental kejayaan kerajaan masa lampau, petualangan alam yang menakjubkan, hingga harmoni budaya lokal yang memikat hati.
+          {t.pesona.desc}
         </p>
 
         <div className="relative flex items-center justify-center z-10 mt-8">
-          <LihatDestinasiButton onClick={() => router.push("/destinasi")} />
+          <LihatDestinasiButton onClick={() => router.push(`/${lang}/destinasi`)} />
         </div>
       </div>
 

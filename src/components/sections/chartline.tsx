@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useEffect, useRef, useState, useCallback } from "react"
-import { Chart, ChartConfiguration, registerables } from "chart.js"
+import { Chart, ChartConfiguration, CategoryScale, LinearScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Filler } from "chart.js"
+import { useTranslation } from "@/hooks/useTranslation"
 
-Chart.register(...registerables)
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Filler)
 
 // Import data sources riil langsung dari file tech-data.ts bosquu
 import { ekonomiData, smartCityData, bandaraData } from "@/data/tech-data"
@@ -31,16 +32,20 @@ const TICK_STYLE = {
   font: { family: "var(--font-dm-sans, 'DM Sans', sans-serif)", size: 11 },
 }
 
-const CATS: Record<Category, CategoryData> = {
+type TranslationType = ReturnType<typeof useTranslation>["t"]
+
+function buildCATS(t: TranslationType): Record<Category, CategoryData> {
+  const chart = t.chart
+  return {
   ekonomi: {
-    headline: "Akselerasi Ekonomi Digital Regional",
-    cardTitle: "Akselerasi Ekonomi Digital Regional",
-    desc: "Runtun waktu integrasi Katalog UMKM Go Digital bersama akselerasi Merchant QRIS Kota Kediri.",
-    footer: "Pertumbuhan merchant QRIS naik tajam di periode 2022–2025",
+    headline: chart.category.headline,
+    cardTitle: chart.category.headline,
+    desc: chart.category.desc,
+    footer: chart.category.footer,
     statBadge: "+450k",
     legend: [
-      { color: "#06b6d4", label: "Merchant QRIS" },
-      { color: "#f0c040", label: "Usaha Mikro (Kota)" },
+      { color: "#06b6d4", label: chart.category.legend1 },
+      { color: "#f0c040", label: chart.category.legend2 },
     ],
     config: {
       type: "line",
@@ -48,7 +53,7 @@ const CATS: Record<Category, CategoryData> = {
         labels: ekonomiData.map(d => d.tahun),
         datasets: [
           {
-            label: "Merchant QRIS",
+            label: chart.category.legend1,
             data: ekonomiData.map(d => d.qris),
             borderColor: "#06b6d4",
             backgroundColor: "rgba(6, 182, 212, 0.04)",
@@ -63,7 +68,7 @@ const CATS: Record<Category, CategoryData> = {
             yAxisID: "y",
           },
           {
-            label: "Usaha Mikro (Kota)",
+            label: chart.category.legend2,
             data: ekonomiData.map(d => d.umkm),
             borderColor: "#f0c040",
             backgroundColor: "rgba(240, 192, 64, 0.04)",
@@ -83,7 +88,7 @@ const CATS: Record<Category, CategoryData> = {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
-        plugins: { legend: { display: false }, tooltip: buildTooltip() },
+        plugins: { legend: { display: false }, tooltip: buildTooltip(chart.periodLabel) },
         scales: {
           x: { grid: { display: false }, ticks: TICK_STYLE },
           y: { 
@@ -118,19 +123,19 @@ const CATS: Record<Category, CategoryData> = {
     },
   },
   smart: {
-    headline: "Transformasi Digital Governance",
-    cardTitle: "Transformasi Digital Governance",
-    desc: "Pencapaian Indeks Kemajuan Smart City Kota Kediri melalui efisiensi sistem administrasi digital.",
-    footer: "Indeks Smart City Kota Kediri kini mencapai kategori Sangat Tinggi (3.60)",
+    headline: chart.smart.headline,
+    cardTitle: chart.smart.headline,
+    desc: chart.smart.desc,
+    footer: chart.smart.footer,
     statBadge: "3.60",
-    legend: [{ color: "#a855f7", label: "Indeks Smart City" }],
+    legend: [{ color: "#a855f7", label: chart.smart.legend1 }],
     config: {
       type: "line",
       data: {
         labels: smartCityData.map(d => d.tahun),
         datasets: [
           {
-            label: "Indeks Smart City",
+            label: chart.smart.legend1,
             data: smartCityData.map(d => d.indeks),
             borderColor: "#a855f7",
             backgroundColor: "rgba(168, 85, 247, 0.05)",
@@ -150,7 +155,7 @@ const CATS: Record<Category, CategoryData> = {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
-        plugins: { legend: { display: false }, tooltip: buildTooltip() },
+        plugins: { legend: { display: false }, tooltip: buildTooltip(chart.periodLabel) },
         scales: {
           x: { grid: { display: false }, ticks: TICK_STYLE },
           y: { 
@@ -167,19 +172,19 @@ const CATS: Record<Category, CategoryData> = {
     },
   },
   potensi: {
-headline: "Gerbang Aviasi & Jalur Logistik Udara",
-  cardTitle: "Gerbang Aviasi & Jalur Logistik Udara",
-  desc: "Analisis Tren Kunjungan Penumpang Pasca-Operasional Awal Bandara Internasional Dhoho (Data Tahunan).",
-  footer: "Dinamika volume mobilitas penumpang sejak awal pembukaan rute komersial",
-  statBadge: "20k+",
-    legend: [{ color: "#22c55e", label: "Penumpang Bandara" }],
+    headline: chart.potensi.headline,
+    cardTitle: chart.potensi.headline,
+    desc: chart.potensi.desc,
+    footer: chart.potensi.footer,
+    statBadge: "20k+",
+    legend: [{ color: "#22c55e", label: chart.potensi.legend1 }],
     config: {
       type: "bar",
       data: {
         labels: bandaraData.map(d => d.tahun),
         datasets: [
           {
-            label: "Penumpang Bandara",
+            label: chart.potensi.legend1,
             data: bandaraData.map(d => d.penumpang),
             backgroundColor: "rgba(34, 197, 94, 0.12)",
             borderColor: "#22c55e",
@@ -195,7 +200,7 @@ headline: "Gerbang Aviasi & Jalur Logistik Udara",
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
-        plugins: { legend: { display: false }, tooltip: buildTooltip() },
+        plugins: { legend: { display: false }, tooltip: buildTooltip(chart.periodLabel) },
         scales: {
           x: { grid: { display: false }, ticks: TICK_STYLE },
           y: { 
@@ -216,8 +221,9 @@ headline: "Gerbang Aviasi & Jalur Logistik Udara",
     } as ChartConfiguration,
   },
 }
+}
 
-function buildTooltip() {
+function buildTooltip(periodLabel: string) {
   return {
     enabled: true,
     backgroundColor: "rgba(10, 11, 22, 0.95)",
@@ -238,7 +244,7 @@ function buildTooltip() {
     callbacks: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       title: function(context: any) {
-        return `Periode Analisis: ${context[0].label}`
+        return `${periodLabel} ${context[0].label}`
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       label: function(context: any) {
@@ -335,6 +341,8 @@ export function KediriTechChart() {
   const [active, setActive] = useState<Category>("ekonomi")
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chartRef = useRef<Chart | null>(null)
+  const { t } = useTranslation()
+  const CATS = buildCATS(t)
 
   const renderChart = useCallback((cat: Category) => {
     if (!canvasRef.current) return
@@ -346,7 +354,7 @@ export function KediriTechChart() {
     if (!ctx) return
     const chartConfig = JSON.parse(JSON.stringify(CATS[cat].config))
     chartRef.current = new Chart(ctx, chartConfig)
-  }, [])
+  }, [CATS])
 
   useEffect(() => {
     renderChart(active)
@@ -371,17 +379,17 @@ export function KediriTechChart() {
         <WaveOrnament />
 
         <div className="relative z-10 max-w-[860px] mx-auto">
-          <p className="text-center text-[10px] tracking-[0.3em] font-light text-[rgba(201,168,76,0.55)] mb-2">✦ KOTA KEDIRI · DATA &amp; INOVASI ✦</p>
+          <p className="text-center text-[10px] tracking-[0.3em] font-light text-[rgba(201,168,76,0.55)] mb-2">{t.chart.badge}</p>
           <h2 className="text-center text-[26px] font-semibold tracking-[0.04em] mb-1 transition-opacity duration-300" style={{ fontFamily: "'Cormorant Garamond', serif", color: "#F0D080" }}>{data.headline}</h2>
-          <p className="text-center text-[11px] tracking-[0.1em] uppercase font-light text-white/30 mb-1">Kota Kediri · Jawa Timur</p>
-          <p className="text-center text-[13px] tracking-[0.1em] font-light text-white/70 ">Berdasarkan data yang tercatat secara resmi di PEMKOT KEDIRI</p>
+          <p className="text-center text-[11px] tracking-[0.1em] uppercase font-light text-white/30 mb-1">{t.chart.region}</p>
+          <p className="text-center text-[13px] tracking-[0.1em] font-light text-white/70 ">{t.chart.source}</p>
 
           <Divider />
 
           <div className="flex gap-2.5 justify-center flex-wrap mx-auto mb-8 w-fit rounded-full p-1.5 border border-white/[0.06] bg-[#0a0a16]/60 backdrop-blur-md">
-            <TabButton cat="ekonomi" active={active} onClick={setActive} icon={<IconActivity />} label="QRIS & UMKM" />
-            <TabButton cat="smart"   active={active} onClick={setActive} icon={<IconSmartCity />} label="Smart City Index" />
-            <TabButton cat="potensi" active={active} onClick={setActive} icon={<IconPlane />} label="Konektivitas Udara" />
+            <TabButton cat="ekonomi" active={active} onClick={setActive} icon={<IconActivity />} label={t.chart.tabEkonomi} />
+            <TabButton cat="smart"   active={active} onClick={setActive} icon={<IconSmartCity />} label={t.chart.tabSmart} />
+            <TabButton cat="potensi" active={active} onClick={setActive} icon={<IconPlane />} label={t.chart.tabPotensi} />
           </div>
 
           <div className="rounded-[24px] overflow-hidden border border-[rgba(212,160,23,0.18)] bg-[#040610]/85 backdrop-blur-xl transition-all duration-500 hover:border-[rgba(212,160,23,0.3)]" style={{ boxShadow: "0 30px 70px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03)" }}>

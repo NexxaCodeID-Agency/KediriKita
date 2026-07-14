@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const CircularGallery = dynamic(
-  () => import("../../components/CircularGallery"),
+  () => import("../CircularGallery"),
   { ssr: false, loading: () => null },
 );
 const MobileGallery3D = dynamic(
-  () => import("../../components/three/MobileGallery3D"),
+  () => import("../three/MobileGallery3D"),
   { ssr: false, loading: () => null },
 );
 
@@ -36,6 +37,7 @@ export default function Carauser() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const [showGallery, setShowGallery] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -244,7 +246,7 @@ export default function Carauser() {
               willChange: "transform",
             }}
           >
-            ✦ Galeri Pesona ✦
+            ✦ {t.carousel.tagline}
           </p>
 
           <h2
@@ -261,8 +263,8 @@ export default function Carauser() {
               willChange: "transform",
             }}
           >
-            Pesona{" "}
-            <span style={{ color: "var(--color-emas-muda)" }}>Kediri</span>
+            {t.carousel.title}{" "}
+            <span style={{ color: "var(--color-emas-muda)" }}>{t.carousel.subtitle}</span>
           </h2>
 
           <div
@@ -394,7 +396,7 @@ export default function Carauser() {
             el.style.background = "transparent";
           }}
         >
-          ← Geser untuk Jelajahi →
+          {t.carousel.swipeHint}
         </button>
       </div>
     </div>

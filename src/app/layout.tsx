@@ -3,8 +3,9 @@ import { Cinzel, Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
-import {DestinationLink} from "@/app/sections/Footer";
+import {DestinationLink} from "@/components/sections/Footer";
 import { createClient } from '@supabase/supabase-js';
+import "flag-icons/css/flag-icons.min.css";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",

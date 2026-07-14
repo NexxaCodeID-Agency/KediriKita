@@ -1,4 +1,13 @@
-import type { ChartConfig } from "@/components/ui/chart"
+export type ChartConfig = Record<
+  string,
+  {
+    label?: React.ReactNode
+    icon?: React.ComponentType
+  } & (
+    | { color?: string; theme?: never }
+    | { color?: never; theme: Record<string, string> }
+  )
+>
 
 export const ekonomiData = [
   { tahun: "2019", umkm: 5070, qris: 0 },

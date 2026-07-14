@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
+import { getLocale, localizedPath } from "@/lib/i18n";
+import { translations } from "@/lib/translations";
 
 type Destination = {
   slug: string;
@@ -19,6 +21,7 @@ type Props = {
   scrollZoom?: boolean;
   fitPadding?: number;
   showMarkers?: boolean;
+  lang?: string;
 };
 
 const CATEGORY_COLORS: Record<string, { base: string; glow: string }> = {
@@ -48,7 +51,14 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMarkers = true }: Props) {
+export default function MapCanvas({
+  scrollZoom = true,
+  fitPadding = 30,
+  showMarkers = true,
+  lang: langProp,
+}: Props) {
+  const locale = getLocale(langProp);
+  const t = translations[locale];
   const mountRef = useRef<HTMLDivElement>(null);
   
   // 1. Tambahkan state untuk menyimpan raw data dari Supabase & kategori yang dipilih
@@ -194,7 +204,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
             <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category.join(',')}</p>
             <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
             <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
-            <a href="/destinasi/${dest.slug}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:${base};padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">Lihat Detail →</a>
+            <a href="${localizedPath(locale, `/destinasi/${dest.slug}`)}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:${base};padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">${t.viewDetail} →</a>
           </div>
         </div>
       `;
@@ -207,7 +217,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
           className: "custom-popup",
         });
     });
-  }, [destinations, selectedCategory]);
+  }, [destinations, selectedCategory, locale, t.viewDetail]);
 
   // Fungsi toggle filter kategori
   const handleCategoryClick = (category: string) => {
@@ -253,7 +263,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
               alignItems: "center"
             }}
           >
-            <span>Kategori</span>
+            <span>{translations[locale].kategori}</span>
             {selectedCategory && (
               <button 
                 onClick={() => setSelectedCategory(null)}
@@ -267,7 +277,7 @@ export default function MapCanvas({ scrollZoom = true, fitPadding = 30, showMark
                   padding: 0
                 }}
               >
-                Reset
+                {translations[locale].reset}
               </button>
             )}
           </div>

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const FADE_MS = 700;
 const MAX_WAIT_MS = 8_000; // paksa selesai setelah 8 detik
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const onDoneRef = useRef(onDone);
   const [fading, setFading] = useState(false);
@@ -120,7 +122,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
       {buffering && (
         <div className="ls-bottom-info">
           <div className="ls-spinner" />
-          <span className="ls-label ls-label-buffer">Memuat...</span>
+          <span className="ls-label ls-label-buffer">{t.loading.buffering}</span>
         </div>
       )}
 
@@ -133,7 +135,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
           }}
         >
           <span className="ls-label ls-label-skip">
-            {isMobile ? "Ketuk untuk Lewati" : "Ketuk · Lewati"}
+            {isMobile ? t.loading.skipMobile : t.loading.skipDesktop}
           </span>
         </div>
       )}

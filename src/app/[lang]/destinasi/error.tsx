@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { localizedPath } from "@/lib/i18n";
 
 export default function DestinasiError({
   error,
@@ -11,6 +13,7 @@ export default function DestinasiError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { lang, t } = useTranslation();
   useEffect(() => {
     console.error("[/destinasi] runtime error:", error);
   }, [error]);
@@ -25,13 +28,13 @@ export default function DestinasiError({
           className="text-xs tracking-[0.3em] uppercase mb-3"
           style={{ color: "var(--color-emas)", fontFamily: "var(--font-lato)" }}
         >
-          ✦ Ada Sedikit Kendala ✦
+          ✦ {t.error.title}
         </p>
         <h1
           className="text-2xl sm:text-3xl font-bold text-white mb-4"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Halaman tidak bisa dimuat
+          {t.error.heading}
         </h1>
         <p
           className="text-sm mb-8"
@@ -41,8 +44,7 @@ export default function DestinasiError({
             lineHeight: 1.8,
           }}
         >
-          Terjadi kesalahan saat mengambil data destinasi. Coba muat ulang, atau
-          kembali ke beranda.
+          {t.error.desc}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -56,10 +58,10 @@ export default function DestinasiError({
             }}
           >
             <RefreshCw size={14} />
-            Muat ulang
+            {t.error.reload}
           </button>
           <Link
-            href="/"
+            href={localizedPath(lang)}
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm transition-all hover:opacity-80"
             style={{
               color: "var(--color-emas)",
@@ -68,7 +70,7 @@ export default function DestinasiError({
             }}
           >
             <ArrowLeft size={14} />
-            Kembali ke Beranda
+            {t.error.backHome}
           </Link>
         </div>
       </div>

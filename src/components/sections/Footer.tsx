@@ -1,4 +1,7 @@
 "use client";
+import { useParams } from "next/navigation";
+import { translations } from "@/lib/translations";
+import { getLocale, localizedPath } from "@/lib/i18n";
 
 const ORNAMEN_DOTS = Array.from({ length: 10 }, (_, i) => ({ key: i, cx: 60 + i * 132 }));
 
@@ -18,6 +21,9 @@ interface FooterProps {
 }
 
 export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProps) {
+  const params = useParams();
+  const lang = getLocale(params?.lang as string | undefined);
+  const t = translations[lang];
   
   // 2. Tentukan tipe untuk array LINKS biar strict dan aman
   interface LinkItem {
@@ -32,30 +38,30 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
 
   const LINKS: LinkGroup[] = [
     {
-      heading: "Jelajahi",
+      heading: t.explore,
       items: [
-        { label: "Beranda", href: "/" },
-        { label: "Destinasi", href: "/destinasi" },
-        { label: "Peta Kediri", href: "/map" },
-        { label: "Sejarah", href: "/sejarah" },
+        { label: t.home, href: localizedPath(lang) },
+        { label: t.destinations, href: localizedPath(lang, "/destinasi") },
+        { label: t.map, href: localizedPath(lang, "/map") },
+        { label: t.history, href: localizedPath(lang, "/sejarah") },
       ],
     },
     {
-      heading: "Wisata",
+      heading: t.tourism,
       items: dataWisata.length > 0 
-        ? dataWisata.map((w) => ({ label: w.name, href: `/destinasi/${w.slug}` }))
+        ? dataWisata.map((w) => ({ label: w.name, href: localizedPath(lang, `/destinasi/${w.slug}`) }))
         : [
-            { label: "Gunung Kelud", href: "/destinasi/gunung-kelud" },
-            { label: "Gua Selomangleng", href: "/destinasi/goa-selomangleng" },
+            { label: "Gunung Kelud", href: localizedPath(lang, "/destinasi/gunung-kelud") },
+            { label: "Gua Selomangleng", href: localizedPath(lang, "/destinasi/goa-selomangleng") },
           ],
     },
     {
-      heading: "Kuliner",
+      heading: t.culinary,
       items: dataKuliner.length > 0 
-        ? dataKuliner.map((k) => ({ label: k.name, href: `/destinasi/${k.slug}` }))
+        ? dataKuliner.map((k) => ({ label: k.name, href: localizedPath(lang, `/destinasi/${k.slug}`) }))
         : [
-            { label: "Tahu kuning", href: "/destinasi/tahu-kuning-poo" },
-            { label: "Getuk Pisang", href: "/destinasi/getuk-pisang-ud-rasa-manis" },
+            { label: "Tahu kuning", href: localizedPath(lang, "/destinasi/tahu-kuning-poo") },
+            { label: "Getuk Pisang", href: localizedPath(lang, "/destinasi/getuk-pisang-ud-rasa-manis") },
           ],
     },
   ];
@@ -126,7 +132,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
               marginBottom: "0.4rem",
             }}
           >
-            ✦ Kota Bersejarah ✦
+            {t.footer.tagline}
           </p>
           <h2
             style={{
@@ -151,7 +157,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
               letterSpacing: "0.05em",
             }}
           >
-            Kota Tahu · Kota Budaya · Kota Sejarah
+            {t.footer.subtitle}
           </p>
 
           {/* Divider */}
@@ -223,7 +229,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
                 marginBottom: "1rem",
               }}
             >
-              Ikuti Kami
+              {t.followUs}
             </p>
             <div className="flex flex-col gap-3">
               {SOSMED.map((s) => (
@@ -286,7 +292,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
               textAlign: "center",
             }}
           >
-            © {new Date().getFullYear()} Kota Kediri — Jawa Timur, Indonesia
+            © {new Date().getFullYear()} {t.footer.copyright}
           </p>
           <p
             style={{
@@ -296,7 +302,7 @@ export default function Footer({ dataWisata = [], dataKuliner = [] }: FooterProp
               letterSpacing: "0.06em",
             }}
           >
-            Dibuat dengan cinta untuk Kota Kediri
+            {t.footer.madeWith}
           </p>
         </div>
       </div>

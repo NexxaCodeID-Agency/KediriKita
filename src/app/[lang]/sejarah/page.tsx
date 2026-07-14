@@ -2,10 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 import { Timeline } from "@/components/ui/timeline"; 
 import Image from "next/image";
 import Link from "next/link";
+import { translations } from "@/lib/translations";
+import { getLocale, localizedPath } from "@/lib/i18n";
+import { getTranslationData } from "@/lib/db";
 
 // 1. Tipe data disesuaikan dengan tabel baru 'histories'
 interface SejarahRow {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   year_era: string;
@@ -16,7 +19,15 @@ interface SejarahRow {
 
 export const revalidate = 60; 
 
-export default async function SejarahPage() {
+export default async function SejarahPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang: langParam } = await params;
+  const lang = getLocale(langParam);
+  const t = translations[lang];
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -29,8 +40,17 @@ export default async function SejarahPage() {
 
   const dataSejarah = (dbData as SejarahRow[]) || [];
 
+  const dataSejarahTranslated = lang === "id"
+    ? dataSejarah
+    : await Promise.all(
+        dataSejarah.map(async (item) => {
+          const tr = await getTranslationData(item.id, 'histories', lang);
+          return tr ? { ...item, ...tr } : item;
+        })
+      );
+
   // 3. Transformasi data ke Aceternity Timeline dengan style mewah
-  const timelineData = dataSejarah.map((item) => ({
+  const timelineData = dataSejarahTranslated.map((item) => ({
     // Kita pajang Era/Tahun di sebelah kiri garis beserta judul peristiwanya
     title: item.year_era, 
     
@@ -70,10 +90,10 @@ export default async function SejarahPage() {
         {/* Tombol selengkapnya dengan style emas minimalis */}
         <div className="flex justify-start">
           <Link
-            href={`/sejarah/${item.slug}`}
+            href={localizedPath(lang, `/sejarah/${item.slug}`)}
             className="text-xs md:text-sm text-[#d4a017] hover:text-[#fff8e0] font-semibold tracking-wider uppercase flex items-center gap-2 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.18)] px-4 py-2 rounded transition-all duration-300 bg-[rgba(212,160,23,0.02)]"
           >
-            Buka Catatan Sejarah →
+            {t.openHistoryNotes}
           </Link>
         </div>
       </div>
@@ -87,7 +107,7 @@ export default async function SejarahPage() {
         <Timeline data={timelineData} />
       ) : (
         <div className="flex items-center justify-center min-h-[60vh] text-[#c8a84b] opacity-50 italic font-serif">
-          Belum ada data sejarah yang tersedia. Silakan cek kembali nanti, ya! ✨
+          {t.noHistory}
         </div>
       )}
     </div>

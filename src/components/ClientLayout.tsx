@@ -53,20 +53,20 @@ export default function ClientLayout({
   useHistoryNavigation();
 
   return (
-    <>
+    <ReadyContext.Provider value={ready}>
+      {/* Loading screen sebagai overlay dekoratif — TIDAK memblokir konten di belakangnya */}
       {!ready && <LoadingScreen onDone={handleDone} />}
-      {ready && <LanguageSwitcher />}
-      <ReadyContext.Provider value={ready}>
-        {/* Bungkus layout utama lu */}
-        <div className="flex flex-col min-h-screen">
-          <div className="flex-grow">
-            {children}
-          </div>
-          
-          {/* 3. Panggil Footer di sini dan oper datanya langsung bosquu! */}
-          <Footer dataWisata={dataWisata} dataKuliner={dataKuliner} />
+
+      <LanguageSwitcher />
+
+      {/* Konten selalu di-render supaya LCP (h1 KOTA KEDIRI) langsung visible */}
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          {children}
         </div>
-      </ReadyContext.Provider>
-    </>
+        
+        <Footer dataWisata={dataWisata} dataKuliner={dataKuliner} />
+      </div>
+    </ReadyContext.Provider>
   );
 }

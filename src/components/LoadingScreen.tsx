@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const FADE_MS = 700;
-const MAX_WAIT_MS = 8_000; // paksa selesai setelah 8 detik
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const { t } = useTranslation();
@@ -20,12 +19,9 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   }, [onDone]);
 
   useEffect(() => {
-  
-
     const video = videoRef.current;
     if (!video) return;
 
-    // Pilih video sesuai viewport — portrait/mobile pakai loadingMobile.mp4
     const mobile = window.matchMedia("(max-width: 767px)").matches;
     setIsMobile(mobile);
     video.src = mobile ? "/loadingMobile.mp4" : "/loading.mp4";
@@ -33,6 +29,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
 
     let finished = false;
     let fadeTimer: ReturnType<typeof setTimeout>;
+    let maxTimer: ReturnType<typeof setTimeout>;
 
     const finish = () => {
       if (finished) return;
@@ -42,28 +39,33 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
       fadeTimer = setTimeout(() => onDoneRef.current(), FADE_MS);
     };
 
-    const tryPlay = () => {
-      setBuffering(false);
-      video.play().catch(finish); // autoplay diblokir → langsung selesai
+    const FALLBACK_MAX_WAIT_MS = 3_000;
+    maxTimer = setTimeout(finish, FALLBACK_MAX_WAIT_MS);
+
+    const onLoadedMetadata = () => {
+      const safetyBuffer = 1_000;
+      const dynamicMaxWait = video.duration * 1000 + safetyBuffer;
+      clearTimeout(maxTimer);
+      maxTimer = setTimeout(finish, dynamicMaxWait);
     };
 
-    // Paksa selesai setelah MAX_WAIT_MS (network lambat / video gagal total)
-    const maxTimer: ReturnType<typeof setTimeout> = setTimeout(finish, MAX_WAIT_MS);
+    const tryPlay = () => {
+      setBuffering(false);
+      video.play().catch(finish);
+    };
 
+    video.addEventListener("loadedmetadata", onLoadedMetadata, { once: true });
     video.addEventListener("ended", finish, { once: true });
-
-    // Dengan preload="metadata", play() sendiri yang akan trigger buffering.
-    // playing event = video sudah benar-benar mulai diputar → sembunyikan spinner
     const onPlaying = () => setBuffering(false);
     video.addEventListener("playing", onPlaying, { once: true });
 
-    // Langsung coba play — browser akan auto-fetch chunk yang dibutuhkan
     tryPlay();
 
     return () => {
       finished = true;
       clearTimeout(fadeTimer);
       clearTimeout(maxTimer);
+      video.removeEventListener("loadedmetadata", onLoadedMetadata);
       video.removeEventListener("ended", finish);
       video.removeEventListener("playing", onPlaying);
     };
@@ -101,7 +103,9 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         ref={videoRef}
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
+        // @ts-expect-error — fetchPriority valid di browser tapi belum di-type React untuk <video>
+        fetchPriority="low"
         poster={
           isMobile ? "/loadingMobile-poster.avif" : "/loading-poster.webp"
         }

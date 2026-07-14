@@ -107,7 +107,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         // @ts-expect-error — fetchPriority valid di browser tapi belum di-type React untuk <video>
         fetchPriority="low"
         poster={
-          isMobile ? "/loadingMobile-poster.avif" : "/loading-poster.webp"
+          isMobile ? "/loadingMobile-poster.avif" : "/loading-poster.avif"
         }
         style={{
           position: "absolute",

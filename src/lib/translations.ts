@@ -165,7 +165,7 @@ export const translations = {
     history: "History",
     categories: {
       "Semua": "All",
-      "Wisata Alam": "Nature",
+      "Wisata Alam": "Nature Tourism",
       "Kuliner": "Culinary",
       "Sejarah & Budaya": "History & Culture",
       "Ruang Publik": "Public Space",

@@ -6,11 +6,13 @@ import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
 import { getLocale, localizedPath } from "@/lib/i18n";
 import { translations } from "@/lib/translations";
+import { getTranslationData } from "@/lib/db";
 
 type Destination = {
+  id: string;
   slug: string;
   name: string;
-  category: string[];
+  category: string[] | string;
   short_desc: string;
   image: string;
   latitude: number;
@@ -35,12 +37,23 @@ const CATEGORY_COLORS: Record<string, { base: string; glow: string }> = {
 const DEFAULT_COLOR = { base: "#d4a017", glow: "#f0c040" };
 
 
-function getCategoryColor(category: string[] | null | undefined) {
-  if (!category || !Array.isArray(category) || category.length === 0){
-    return DEFAULT_COLOR;
-  }
-  const primaryCategory = category[0];
-  return CATEGORY_COLORS[primaryCategory.toLocaleLowerCase().trim()] ?? DEFAULT_COLOR;
+const CATEGORY_KEY_MAP: Record<string, string> = {
+  "wisata alam": "Wisata Alam",
+  "kuliner": "Kuliner",
+  "sejarah & budaya": "Sejarah & Budaya",
+  "ruang publik": "Ruang Publik",
+  "ikon kota": "Ikon Kota",
+  "cafe": "Cafe",
+};
+
+function getCategoryColor(category: string[] | string | null | undefined) {
+  const arr = Array.isArray(category)
+    ? category
+    : typeof category === "string"
+      ? category.split(",").map((c) => c.trim())
+      : [];
+  if (arr.length === 0) return DEFAULT_COLOR;
+  return CATEGORY_COLORS[arr[0].toLocaleLowerCase().trim()] ?? DEFAULT_COLOR;
 }
 
 function hexToRgba(hex: string, alpha: number) {
@@ -141,14 +154,28 @@ export default function MapCanvas({
     if (showMarkers) {
       supabase
         .from("destinations")
-        .select("slug, name, category, short_desc, image, latitude, longitude")
-        .then(({ data, error }) => {
+        .select("id, slug, name, category, short_desc, image, latitude, longitude")
+        .then(async ({ data, error }) => {
           if (!isMounted) return;
           if (error) {
             console.error("Error fetching destinations:", error);
             return;
           }
-          if (data) setDestinations(data);
+          if (!data) return;
+
+          if (locale === "id") {
+            setDestinations(data);
+            return;
+          }
+
+          const translated = await Promise.all(
+            data.map(async (dest) => {
+              const tr = await getTranslationData(dest.id, "destinations", locale);
+              return tr ? { ...dest, ...tr } : dest;
+            })
+          );
+
+          if (isMounted) setDestinations(translated);
         });
     }
 
@@ -156,7 +183,7 @@ export default function MapCanvas({
       isMounted = false;
       map.remove();
     };
-  }, [scrollZoom, fitPadding, showMarkers]);
+  }, [scrollZoom, fitPadding, showMarkers, locale]);
 
   // EFFECT 2: Render & Filter Marker (Berjalan setiap kali state `destinations` atau `selectedCategory` berubah)
   useEffect(() => {
@@ -197,11 +224,21 @@ export default function MapCanvas({
         iconAnchor: [9, 9],
       });
 
+      const categoryArray = Array.isArray(dest.category)
+        ? dest.category
+        : typeof dest.category === "string"
+          ? dest.category.split(",").map((c: string) => c.trim())
+          : [];
+
+      const translatedCategories = categoryArray.map(
+        (cat) => translations[locale].categories[cat as keyof typeof translations["id"]["categories"]] ?? cat
+      );
+
       const popupContent = `
         <div style="width:200px;background:#0a0a1a;border:1px solid ${hexToRgba(base, 0.4)};border-radius:12px;overflow:hidden;font-family:sans-serif;">
           <img src="${dest.image}" alt="${dest.name}" style="width:100%;height:110px;object-fit:cover;display:block;" />
           <div style="padding:10px 12px;">
-            <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${dest.category.join(',')}</p>
+            <p style="font-size:10px;color:${base};text-transform:uppercase;letter-spacing:2px;margin:0 0 4px 0;">${translatedCategories.join(',')}</p>
             <p style="font-size:14px;font-weight:bold;color:white;margin:0 0 6px 0;">${dest.name}</p>
             <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 10px 0;line-height:1.4;">${dest.short_desc}</p>
             <a href="${localizedPath(locale, `/destinasi/${dest.slug}`)}" style="display:inline-block;font-size:10px;color:#1a1a2e;background:${base};padding:5px 12px;border-radius:20px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-weight:bold;">${t.viewDetail} →</a>
@@ -313,7 +350,9 @@ export default function MapCanvas({
                     display: "inline-block",
                   }}
                 />
-                <span style={{ textTransform: "capitalize" }}>{key}</span>
+                <span style={{ textTransform: "capitalize" }}>
+                  {translations[locale].categories[CATEGORY_KEY_MAP[key] as keyof typeof translations["id"]["categories"]] ?? key}
+                </span>
               </div>
             );
           })}

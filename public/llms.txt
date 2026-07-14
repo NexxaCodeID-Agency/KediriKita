@@ -1,0 +1,20 @@
+# KediriKita
+
+KediriKita adalah portal wisata dan budaya digital untuk Kota Kediri, menyediakan informasi destinasi wisata, kuliner, sejarah, dan profil kota secara interaktif.
+
+## Bagian Utama
+
+- [Beranda](/) - Halaman utama dengan ringkasan destinasi dan peta interaktif
+- [Peta Destinasi](/id/map) - Peta interaktif seluruh destinasi wisata Kota Kediri
+- [Wisata](/id/wisata) - Daftar destinasi wisata alam dan buatan
+- [Kuliner](/id/kuliner) - Rekomendasi kuliner khas Kediri
+- [Sejarah](/id/sejarah) - Cerita sejarah dan budaya Kota Kediri
+- [Profil](/id/profil) - Profil Kota Kediri
+
+## Multibahasa
+
+Situs ini tersedia dalam Bahasa Indonesia (id), English (en), dan 简体中文 (cn).
+
+## API & Data
+
+Data destinasi bersumber dari database Supabase publik.

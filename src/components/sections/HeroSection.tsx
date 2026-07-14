@@ -398,15 +398,29 @@ export default function HeroSection() {
           className="absolute inset-0 flex flex-col items-center justify-center px-5"
           style={{ willChange: "transform, filter", zIndex: 10, opacity: 0 }}
         >
+          {/* Dark scrim behind text for contrast */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              width: "clamp(340px, 70vw, 900px)",
+              height: "clamp(280px, 50vh, 420px)",
+              background:
+                "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 55%, transparent 80%)",
+              borderRadius: "50%",
+              filter: "blur(30px)",
+            }}
+          />
+
           <p
             className="hero-subtitle"
             style={{
+              position: "relative",
               fontFamily: "var(--font-playfair)",
               color: "var(--color-emas-muda)",
               fontWeight: 600,
               textTransform: "uppercase",
               textShadow:
-                "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9), 0 0 15px rgba(240,192,64,0.4)",
+                "0 2px 8px rgba(0,0,0,1), 0 4px 24px rgba(0,0,0,1), 0 0 20px rgba(240,192,64,0.5)",
               opacity: 1,
               textAlign: "center",
             }}
@@ -416,6 +430,7 @@ export default function HeroSection() {
 
           <h1
             style={{
+              position: "relative",
               fontFamily: "var(--font-cinzel)",
               fontSize: "clamp(2.6rem, 11vw, 6.8rem)",
               fontWeight: 900,
@@ -428,7 +443,7 @@ export default function HeroSection() {
               style={{
                 color: "var(--color-teks-utama)",
                 textShadow:
-                  "0 4px 40px rgba(0,0,0,0.9), 0 0 80px rgba(212,160,23,0.25)",
+                  "0 4px 40px rgba(0,0,0,1), 0 0 80px rgba(212,160,23,0.25), 0 2px 10px rgba(0,0,0,1)",
               }}
             >
               KOTA
@@ -437,7 +452,7 @@ export default function HeroSection() {
               style={{
                 color: "var(--color-emas-muda)",
                 textShadow:
-                  "0 4px 40px rgba(0,0,0,0.9), 0 0 60px rgba(240,192,64,0.4)",
+                  "0 4px 40px rgba(0,0,0,1), 0 0 60px rgba(240,192,64,0.4), 0 2px 10px rgba(0,0,0,1)",
               }}
             >
               KEDIRI
@@ -446,16 +461,18 @@ export default function HeroSection() {
 
           <p className="hero-desc"
           style={{
+            position: "relative",
             fontFamily: "var(--font-lato)",
             color: "#FFFFFF",
             textShadow:
-                "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
+                "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,1)",
           }}>
             {t.hero.citySubtitle}
           </p>
 
           <div
             style={{
+              position: "relative",
               width: "clamp(100px, 18vw, 220px)",
               height: "1px",
               background:
@@ -468,12 +485,13 @@ export default function HeroSection() {
           <p
             className="hero-desc"
             style={{
+              position: "relative",
               fontFamily: "var(--font-lato)",
               color: "#FFFFFF",
               fontWeight: 400,
               textAlign: "center",
               textShadow:
-                "0 2px 4px rgba(0,0,0,0.9), 0 4px 16px rgba(0,0,0,0.8)",
+                "0 2px 6px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,1)",
               lineHeight: 1.9,
               textTransform: "uppercase",
             }}

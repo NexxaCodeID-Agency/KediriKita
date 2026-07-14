@@ -5,7 +5,7 @@ import ClientLayout from "@/components/ClientLayout";
 import { cn } from "@/lib/utils";
 import {DestinationLink} from "@/components/sections/Footer";
 import { createClient } from '@supabase/supabase-js';
-import "flag-icons/css/flag-icons.min.css";
+
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",

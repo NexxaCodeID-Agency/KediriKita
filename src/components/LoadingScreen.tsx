@@ -101,7 +101,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         ref={videoRef}
         muted
         playsInline
-        preload="none"
+        preload="auto"
         poster={
           isMobile ? "/loadingMobile-poster.avif" : "/loading-poster.webp"
         }

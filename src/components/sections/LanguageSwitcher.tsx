@@ -3,12 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import { locales } from "@/lib/i18n";
 import { usePathname, useRouter, useParams } from "next/navigation";
 
-const flagMap: Record<string, string> = {
-  id: "id",
-  en: "gb",
-  cn: "cn",
-};
-
 const labelMap: Record<string, string> = {
   id: "ID",
   en: "EN",
@@ -16,11 +10,48 @@ const labelMap: Record<string, string> = {
 };
 
 function Flag({ lang }: { lang: string }) {
+  const flags: Record<string, React.ReactNode> = {
+    id: (
+      <svg viewBox="0 0 36 36" className="w-5 h-5 rounded-full inline-block shrink-0">
+        <clipPath id="circle"><circle cx="18" cy="18" r="18" /></clipPath>
+        <g clipPath="url(#circle)">
+          <rect width="36" height="18" fill="#FF0000" />
+          <rect y="18" width="36" height="18" fill="#FFFFFF" />
+        </g>
+      </svg>
+    ),
+    en: (
+      <svg viewBox="0 0 36 36" className="w-5 h-5 rounded-full inline-block shrink-0">
+        <clipPath id="circle-en"><circle cx="18" cy="18" r="18" /></clipPath>
+        <g clipPath="url(#circle-en)">
+          <rect width="36" height="36" fill="#00247D" />
+          <path d="M0,0 L36,36 M36,0 L0,36" stroke="#FFF" strokeWidth="4" />
+          <path d="M18,0 V36 M0,18 H36" stroke="#FFF" strokeWidth="7" />
+          <path d="M18,0 V36 M0,18 H36" stroke="#CF142B" strokeWidth="3" />
+          <path d="M0,0 L36,36 M36,0 L0,36" stroke="#CF142B" strokeWidth="1.5" />
+        </g>
+      </svg>
+    ),
+    cn: (
+      <svg viewBox="0 0 36 36" className="w-5 h-5 rounded-full inline-block shrink-0">
+        <clipPath id="circle-cn"><circle cx="18" cy="18" r="18" /></clipPath>
+        <g clipPath="url(#circle-cn)">
+          <rect width="36" height="36" fill="#DE2910" />
+          <polygon transform="translate(8,6) scale(0.45)" points="12,0 14.5,8.5 23.5,8.5 16,14 18.5,22.5 12,17.5 5.5,22.5 8,14 0.5,8.5 9.5,8.5" fill="#FFDE00" />
+          <polygon transform="translate(17,3) scale(0.2)" points="12,0 14.5,8.5 23.5,8.5 16,14 18.5,22.5 12,17.5 5.5,22.5 8,14 0.5,8.5 9.5,8.5" fill="#FFDE00" />
+          <polygon transform="translate(19,6) scale(0.2)" points="12,0 14.5,8.5 23.5,8.5 16,14 18.5,22.5 12,17.5 5.5,22.5 8,14 0.5,8.5 9.5,8.5" fill="#FFDE00" />
+          <polygon transform="translate(19,10) scale(0.2)" points="12,0 14.5,8.5 23.5,8.5 16,14 18.5,22.5 12,17.5 5.5,22.5 8,14 0.5,8.5 9.5,8.5" fill="#FFDE00" />
+          <polygon transform="translate(17,13) scale(0.2)" points="12,0 14.5,8.5 23.5,8.5 16,14 18.5,22.5 12,17.5 5.5,22.5 8,14 0.5,8.5 9.5,8.5" fill="#FFDE00" />
+        </g>
+      </svg>
+    ),
+  };
   return (
     <span
-      className={`fi fis fi-${flagMap[lang] ?? "xx"} w-5 h-5 rounded-full inline-block shrink-0`}
-      style={{ boxShadow: "0 0 0 1px rgba(212,160,23,0.35)" }}
-    />
+      style={{ boxShadow: "0 0 0 1px rgba(212,160,23,0.35)", borderRadius: "50%", display: "inline-block", lineHeight: 0 }}
+    >
+      {flags[lang] ?? <span className="w-5 h-5 rounded-full inline-block shrink-0 bg-gray-500" />}
+    </span>
   );
 }
 

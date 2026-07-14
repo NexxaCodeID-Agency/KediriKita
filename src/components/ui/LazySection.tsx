@@ -23,6 +23,7 @@ export default function LazySection({
   minHeight = "100px",
 }: LazySectionProps) {
   const [hasIntersected, setHasIntersected] = useState(false);
+  const [renderedHeight, setRenderedHeight] = useState<string | undefined>(undefined);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,11 +50,19 @@ export default function LazySection({
     };
   }, [hasIntersected, threshold, rootMargin]);
 
+  useEffect(() => {
+    if (!hasIntersected || !sectionRef.current) return;
+    const h = sectionRef.current.offsetHeight;
+    if (h > 0) setRenderedHeight(`${h}px`);
+  }, [hasIntersected]);
+
+  const currentMinHeight = renderedHeight ?? minHeight;
+
   return (
     <div 
       ref={sectionRef} 
       className={className}
-      style={!hasIntersected ? { minHeight } : {}}
+      style={{ minHeight: currentMinHeight }}
     >
       {hasIntersected ? (
         children

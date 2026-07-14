@@ -78,11 +78,11 @@ export default function CardSection() {
       ([entry]) => {
         if (entry.isIntersecting) trigger();
       },
-      { rootMargin: "1200px 0px" },
+      { rootMargin: "400px 0px" },
     );
     io.observe(wrapper);
 
-    const fallback = setTimeout(trigger, 2000);
+    const fallback = setTimeout(trigger, 8_000);
 
     return () => {
       io.disconnect();

@@ -191,8 +191,9 @@ export default function DestinationGrid({
     .filter((d) => d.slug)
     .filter((d) => {
       if (activeCategory === "Semua") return true;
+      const translatedActiveCat = (t.categories[activeCategory as keyof typeof t.categories] ?? activeCategory).toLowerCase();
       const currentCats = getNormalizedCategories(d.category).map(cat => cat.toLowerCase());
-      return currentCats.includes(activeCat);
+      return currentCats.includes(translatedActiveCat);
     })
     .filter((d) => {
       if (!search.trim()) return true;

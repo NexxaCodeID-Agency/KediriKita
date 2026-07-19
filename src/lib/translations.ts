@@ -294,7 +294,7 @@ export const translations = {
     searchDest: "搜索目的地...",
     noDest: "该类别下暂无目的地。",
     showAll: "显示全部",
-    viewDetail: "查看详情",
+    viewDetail: "查看详情", 
     back: "返回",
     openHistoryNotes: "打开历史记录 →",
     noHistory: "暂无历史数据。请稍后再来！✨",
@@ -308,12 +308,12 @@ export const translations = {
     history: "历史",
     categories: {
       "Semua": "全部",
-      "Wisata Alam": "自然风光",
-      "Kuliner": "特色美食",
+      "Wisata Alam": "自然旅游",
+      "Kuliner": "美食",
       "Sejarah & Budaya": "历史与文化",
       "Ruang Publik": "公共空间",
       "Ikon Kota": "城市地标",
-      "Cafe": "咖啡厅"
+      "Cafe": "咖啡馆"
     },
     historyPoin: {
       "Sejarah": "历史",

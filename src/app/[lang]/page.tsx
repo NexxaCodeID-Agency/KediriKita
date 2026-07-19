@@ -135,7 +135,113 @@ function PetaFallback() {
   );
 }
 
-const HeroSection = dynamic(() => import("@/components/sections/HeroSection"), { loading: () => null });
+/* ─── Hero Skeleton (for dynamic import loading) ─── */
+function HeroFallback() {
+  return (
+    <div className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden" style={{ background: "linear-gradient(to bottom, #050509 0%, #1e3050 28%, #5a4020 62%, #3a2510 80%, #050509 100%)" }}>
+      <style dangerouslySetInnerHTML={{ __html: SHIMMER }} />
+      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 gap-4 px-5 text-center">
+        <S w="140px" h={14} bg="rgba(212,160,23,0.08)" />
+        <div className="flex items-center gap-3 sm:gap-5">
+          <S w="clamp(60px, 14vw, 120px)" h={48} r={8} bg="rgba(255,248,224,0.04)" d={100} />
+          <S w="clamp(80px, 18vw, 160px)" h={48} r={8} bg="rgba(240,192,64,0.06)" d={200} />
+        </div>
+        <S w="clamp(80px, 18vw, 220px)" h={1} bg="rgba(212,160,23,0.1)" d={300} />
+        <S w="clamp(180px, 40vw, 400px)" h={12} bg="rgba(255,255,255,0.03)" d={400} />
+        <S w="clamp(220px, 50vw, 500px)" h={12} bg="rgba(255,255,255,0.02)" d={500} />
+      </div>
+      {/* Vignette */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 45%, transparent 35%, rgba(8,12,26,0.72) 100%)" }} />
+      {/* Bottom ornament placeholder */}
+      <div className="absolute bottom-0 left-0 right-0 h-20" style={{ background: "linear-gradient(to top, rgba(212,160,23,0.06), transparent)" }} />
+    </div>
+  );
+}
+
+/* ─── KediriSection Skeleton ─── */
+function KediriFallback() {
+  return (
+    <div className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: "100dvh", background: "#050509" }}>
+      <style dangerouslySetInnerHTML={{ __html: SHIMMER }} />
+      {/* Video placeholder — dark bg with subtle shimmer */}
+      <div className="absolute inset-0" style={{
+        background: `linear-gradient(90deg, rgba(26,26,46,0.3) 25%, rgba(26,26,46,0.5) 50%, rgba(26,26,46,0.3) 75%)`,
+        backgroundSize: "200% 100%",
+        animation: `_sk 2s ease-in-out infinite`,
+      }} />
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: "linear-gradient(to bottom, rgba(8,8,18,0.55) 0%, rgba(8,8,18,0.38) 40%, rgba(8,8,18,0.85) 88%, #050509 100%)",
+      }} />
+      {/* Text skeleton */}
+      <div className="relative z-10 flex flex-col items-center gap-4 text-center px-5" style={{ minHeight: "100dvh", justifyContent: "center", paddingTop: "clamp(6vh, 10vh, 12vh)", paddingBottom: "clamp(8vh, 10vh, 12vh)" }}>
+        <S w="120px" h={12} bg="rgba(212,160,23,0.08)" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <S w="clamp(60px, 12vw, 140px)" h={36} r={8} bg="rgba(255,248,224,0.04)" d={100} />
+          <S w="clamp(60px, 12vw, 140px)" h={36} r={8} bg="rgba(240,192,64,0.06)" d={200} />
+        </div>
+        <S w="clamp(60px, 14vw, 160px)" h={1} bg="rgba(212,160,23,0.1)" d={300} />
+        <S w="clamp(200px, 45vw, 420px)" h={12} bg="rgba(255,255,255,0.03)" d={400} />
+        <S w="clamp(180px, 38vw, 380px)" h={12} bg="rgba(255,255,255,0.02)" d={500} />
+        <div className="mt-6">
+          <S w="140px" h={36} r={9999} bg="rgba(212,160,23,0.06)" d={600} />
+        </div>
+      </div>
+      {/* Bottom wave placeholder */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style={{ zIndex: 11 }}>
+        <svg viewBox="0 0 1440 80" fill="none" className="w-full h-full" preserveAspectRatio="none">
+          <path d="M0 40 Q120 8 240 40 Q360 72 480 40 Q600 8 720 40 Q840 72 960 40 Q1080 8 1200 40 Q1320 72 1440 40 V80 H0 Z" fill="rgba(212,160,23,0.06)" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Chartline Skeleton ─── */
+function ChartFallback() {
+  return (
+    <section className="relative w-full py-16 px-6 flex flex-col items-center" style={{ background: "#050509" }}>
+      <style dangerouslySetInnerHTML={{ __html: SHIMMER }} />
+      {/* Badge */}
+      <S w="200px" h={10} bg="rgba(212,160,23,0.06)" />
+      {/* Title */}
+      <div className="mt-4 text-center space-y-2">
+        <S w="240px" h={28} r={8} bg="rgba(255,248,224,0.04)" d={100} />
+        <S w="320px" h={12} bg="rgba(255,255,255,0.02)" d={200} />
+      </div>
+      {/* Tabs */}
+      <div className="flex items-center gap-3 mt-8">
+        {[0, 1, 2].map((i) => (
+          <S key={i} w={i === 0 ? 100 : 90} h={32} r={8} bg="rgba(212,160,23,0.06)" d={300 + i * 80} />
+        ))}
+      </div>
+      {/* Chart area */}
+      <div className="mt-8 w-full max-w-3xl">
+        <div style={{
+          width: "100%", height: 300, borderRadius: 16,
+          border: "1px solid rgba(212,160,23,0.06)",
+          background: `linear-gradient(90deg, rgba(26,26,46,0.2) 25%, rgba(26,26,46,0.35) 50%, rgba(26,26,46,0.2) 75%)`,
+          backgroundSize: "200% 100%",
+          animation: `_sk 2s ease-in-out infinite`,
+          animationDelay: "400ms",
+        }}>
+          {/* Simulated chart line */}
+          <svg viewBox="0 0 800 300" className="w-full h-full" style={{ opacity: 0.08 }}>
+            <path d="M0 250 Q200 200 400 150 Q600 100 800 50" stroke="rgba(212,160,23,0.6)" strokeWidth="2" fill="none" />
+            <path d="M0 280 Q200 260 400 200 Q600 160 800 120" stroke="rgba(6,182,212,0.5)" strokeWidth="2" fill="none" />
+          </svg>
+        </div>
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <S w={80} h={10} bg="rgba(212,160,23,0.06)" d={700} />
+          <S w={80} h={10} bg="rgba(6,182,212,0.04)" d={800} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const HeroSection = dynamic(() => import("@/components/sections/HeroSection"), { loading: () => <HeroFallback /> });
 const KediriSection = dynamic(() => import("@/components/sections/KediriSection"), { ssr: false });
 const CardSection = dynamic(() => import("@/components/sections/CardSection"), { ssr: false });
 const Carauser = dynamic(() => import("@/components/sections/Carauser"), { ssr: false });
@@ -147,7 +253,7 @@ export default function Home() {
     <main>
       <HeroSection />
 
-      <LazySection minHeight="100dvh">
+      <LazySection minHeight="100dvh" fallback={<KediriFallback />}>
         <KediriSection />
       </LazySection>
 
@@ -159,7 +265,7 @@ export default function Home() {
         <Carauser />
       </LazySection>
 
-      <LazySection minHeight="100px">
+      <LazySection minHeight="300px" fallback={<ChartFallback />}>
         <Chartline />
       </LazySection>
 

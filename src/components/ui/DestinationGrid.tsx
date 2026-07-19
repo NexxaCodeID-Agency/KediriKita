@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useIntersectionObserverAnimation } from "@/hooks/useIntersectionAnimation";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { localizedPath } from "@/lib/i18n";
+import ScrollToTop from "./ScrollTop";
 
 const PLACEHOLDER_IMG =
   "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%231A1A2E' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23d4a017' font-family='serif' font-size='14' text-anchor='middle' dominant-baseline='middle'%3EKediri%3C/text%3E%3C/svg%3E";
@@ -34,6 +35,51 @@ type Destination = {
 };
 
 const CATEGORIES = ["Semua", "Wisata Alam", "Kuliner", "Sejarah & Budaya", "Ruang Publik", "Ikon Kota", "Cafe"];
+
+const SHIMMER = `@keyframes _sk{0%{background-position:-200% 0}100%{background-position:200% 0}}`;
+
+function Skel({ w, h = 12, r = 9999, bg = "rgba(212,160,23,0.06)", d = 0 }: { w: string | number; h?: number; r?: number; bg?: string; d?: number }) {
+  return (
+    <div style={{
+      width: w, height: h, borderRadius: r,
+      background: `linear-gradient(90deg,${bg} 25%,${bg.replace(/[\d.]+\)$/, m => `${Math.min(parseFloat(m) * 2, 0.2)})`)} 50%,${bg} 75%)`,
+      backgroundSize: "200% 100%",
+      animation: "_sk 1.8s ease-in-out infinite",
+      animationDelay: `${d}ms`,
+      flexShrink: 0,
+    }} />
+  );
+}
+
+function SkeletonCard({ index }: { index: number }) {
+  return (
+    <div style={{
+      borderRadius: 16, overflow: "hidden",
+      border: "1px solid rgba(255,255,255,0.08)",
+      background: "rgba(255,255,255,0.03)",
+    }}>
+      <style dangerouslySetInnerHTML={{ __html: SHIMMER }} />
+      {/* Image area */}
+      <div className="relative w-full h-48 sm:h-56 overflow-hidden" style={{
+        background: `linear-gradient(90deg,rgba(26,26,46,0.4) 25%,rgba(26,26,46,0.6) 50%,rgba(26,26,46,0.4) 75%)`,
+        backgroundSize: "200% 100%",
+        animation: "_sk 2s ease-in-out infinite",
+        animationDelay: `${index * 80}ms`,
+      }}>
+        <Skel w="70px" h={24} r={9999} bg="rgba(212,160,23,0.08)" d={index * 80} />
+        <div className="absolute top-3 left-3" />
+      </div>
+      <div className="p-4 sm:p-5 space-y-3">
+        <Skel w="70%" h={18} r={6} bg="rgba(255,255,255,0.05)" d={index * 80 + 100} />
+        <div className="space-y-1.5">
+          <Skel w="100%" h={10} bg="rgba(255,255,255,0.03)" d={index * 80 + 150} />
+          <Skel w="85%" h={10} bg="rgba(255,255,255,0.03)" d={index * 80 + 200} />
+        </div>
+        <Skel w="60px" h={10} bg="rgba(212,160,23,0.05)" d={index * 80 + 250} />
+      </div>
+    </div>
+  );
+}
 
 function getNormalizedCategories(categoryData: string[] | string): string[] {
   if (Array.isArray(categoryData)) {
@@ -181,6 +227,12 @@ export default function DestinationGrid({
   const { lang, t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [search, setSearch] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const activeCat = activeCategory.toLowerCase();
 
@@ -335,11 +387,17 @@ export default function DestinationGrid({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {filtered.map((item, i) => (
-            <DestinationCard key={item.id} item={item} index={i} />
-          ))}
+          {!mounted
+            ? Array.from({ length: Math.max(Math.min(filtered.length, 9), 6) }).map((_, i) => (
+                <SkeletonCard key={`skel-${i}`} index={i} />
+              ))
+            : filtered.map((item, i) => (
+                <DestinationCard key={item.id} item={item} index={i} />
+              ))
+          }
         </div>
       )}
+      <ScrollToTop/>
     </section>
   );
 }

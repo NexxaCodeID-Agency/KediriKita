@@ -388,9 +388,11 @@ export default function CardSection() {
                     "linear-gradient(to right, transparent, rgba(180,130,20,0.25), transparent)",
                 }}
               />
+
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   );

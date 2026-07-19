@@ -2,25 +2,42 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
+const SHIMMER_CSS = `
+  @keyframes _shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+`;
+
+function DefaultSkeleton() {
+  return (
+    <div className="w-full h-full flex items-center justify-center" style={{ minHeight: "inherit" }}>
+      <style dangerouslySetInnerHTML={{ __html: SHIMMER_CSS }} />
+      <div className="space-y-4 w-full max-w-md px-6">
+        <div style={{ height: 12, borderRadius: 9999, width: "40%", margin: "0 auto", background: "linear-gradient(90deg, rgba(212,160,23,0.04) 25%, rgba(212,160,23,0.1) 50%, rgba(212,160,23,0.04) 75%)", backgroundSize: "200% 100%", animation: "_shimmer 1.8s ease-in-out infinite" }} />
+        <div style={{ height: 28, borderRadius: 8, width: "60%", margin: "0 auto", background: "linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%)", backgroundSize: "200% 100%", animation: "_shimmer 1.8s ease-in-out infinite", animationDelay: "100ms" }} />
+        <div style={{ height: 12, borderRadius: 9999, width: "50%", margin: "0 auto", background: "linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 75%)", backgroundSize: "200% 100%", animation: "_shimmer 1.8s ease-in-out infinite", animationDelay: "200ms" }} />
+      </div>
+    </div>
+  );
+}
+
 interface LazySectionProps {
   children: React.ReactNode;
   threshold?: number;
   rootMargin?: string;
   className?: string;
   minHeight?: string;
+  fallback?: React.ReactNode;
 }
 
-/**
- * A wrapper component that only renders its children when it enters the viewport.
- * This helps reduce initial TBT and prevents heavy JS (like Three.js or GSAP) 
- * from running until the section is actually needed.
- */
 export default function LazySection({
   children,
   threshold = 0.01,
-  rootMargin = "300px 0px", // Load slightly before it enters the viewport
+  rootMargin = "300px 0px",
   className = "",
   minHeight = "100px",
+  fallback,
 }: LazySectionProps) {
   const [hasIntersected, setHasIntersected] = useState(false);
   const [renderedHeight, setRenderedHeight] = useState<string | undefined>(undefined);
@@ -59,16 +76,15 @@ export default function LazySection({
   const currentMinHeight = renderedHeight ?? minHeight;
 
   return (
-    <div 
-      ref={sectionRef} 
+    <div
+      ref={sectionRef}
       className={className}
       style={{ minHeight: currentMinHeight }}
     >
       {hasIntersected ? (
         children
       ) : (
-        // Placeholder content can be added here if needed
-        null
+        fallback ?? <DefaultSkeleton />
       )}
     </div>
   );

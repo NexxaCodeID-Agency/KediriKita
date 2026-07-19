@@ -1,7 +1,19 @@
 import { notFound } from "next/navigation";
+import { cache } from "react";
+import { supabase } from "@/lib/supabase";
 import DetailClient from "./DetailClient";
 import { getTranslationData } from "@/lib/db";
-import { createClient } from "@supabase/supabase-js";
+
+const getHistory = cache(async (slug: string) => {
+  const { data, error } = await supabase
+    .from("histories")
+    .select("id, title, year_era, description, short_desc, image")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return data;
+});
 
 export default async function SejarahDetailPage({
   params,
@@ -10,26 +22,15 @@ export default async function SejarahDetailPage({
 }) {
   const { lang, slug } = await params;
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-
-  const { data: history } = await supabase
-    .from("histories")
-    .select("id, title, year_era, description, short_desc, image") 
-    .eq("slug", slug)
-    .single();
-
+  const history = await getHistory(slug);
   if (!history) notFound();
 
-  const content = await getTranslationData(history.id, 'histories', lang);
+  const content = await getTranslationData(history.id, "histories", lang);
 
   const finalData = {
     ...history,
     ...content,
-    slug
+    slug,
   };
 
   return <DetailClient data={finalData} />;

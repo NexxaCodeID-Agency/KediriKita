@@ -1,12 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
-import { Timeline } from "@/components/ui/timeline"; 
+import { supabase } from "@/lib/supabase";
+import { Timeline } from "@/components/ui/timeline";
 import Image from "next/image";
 import Link from "next/link";
 import { translations } from "@/lib/translations";
 import { getLocale, localizedPath } from "@/lib/i18n";
-import { getTranslationData } from "@/lib/db";
+import { getBatchTranslations } from "@/lib/db";
 
-// 1. Tipe data disesuaikan dengan tabel baru 'histories'
 interface SejarahRow {
   id: string;
   slug: string;
@@ -17,7 +16,7 @@ interface SejarahRow {
   image?: string;
 }
 
-export const revalidate = 60; 
+export const revalidate = 60;
 
 export default async function SejarahPage({
   params,
@@ -28,54 +27,44 @@ export default async function SejarahPage({
   const lang = getLocale(langParam);
   const t = translations[lang];
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-  // 2. Tarik data dari tabel baru 'histories' & urutkan berdasarkan sort_order
   const { data: dbData } = await supabase
     .from("histories")
     .select("id, slug, title, year_era, short_desc, description, image")
-    .order("sort_order", { ascending: true }); 
+    .order("sort_order", { ascending: true });
 
   const dataSejarah = (dbData as SejarahRow[]) || [];
 
-  const dataSejarahTranslated = lang === "id"
-    ? dataSejarah
-    : await Promise.all(
-        dataSejarah.map(async (item) => {
-          const tr = await getTranslationData(item.id, 'histories', lang);
-          return tr ? { ...item, ...tr } : item;
-        })
-      );
+  let dataSejarahTranslated = dataSejarah;
+  if (lang !== "id" && dataSejarah.length > 0) {
+    const ids = dataSejarah.map((item) => item.id);
+    const translationsMap = await getBatchTranslations(ids, "histories", lang);
 
-  // 3. Transformasi data ke Aceternity Timeline dengan style mewah
+    dataSejarahTranslated = dataSejarah.map((item) => {
+      const tr = translationsMap.get(item.id);
+      return tr ? { ...item, ...tr } : item;
+    });
+  }
+
   const timelineData = dataSejarahTranslated.map((item) => ({
-    // Kita pajang Era/Tahun di sebelah kiri garis beserta judul peristiwanya
-    title: item.year_era, 
-    
+    title: item.year_era,
     content: (
       <div key={item.id} className="font-sans text-neutral-200 group/item">
-        {/* Judul Peristiwa / Nama Situs Sejarah */}
         <h3 className="text-xl md:text-2xl font-bold text-[#fff8e0] mb-3 tracking-wide transition-colors duration-300 group-hover/item:text-[#f0c040]">
           {item.title}
         </h3>
 
-        {/* Ringkasan Singkat ber-vibe prasasti/old paper */}
         {item.short_desc && (
           <p className="text-xs md:text-sm font-normal mb-4 bg-[#0a0a14]/80 text-[#c8a84b] p-4 rounded-lg border border-[rgba(212,160,23,0.22)] shadow-[0_0_15px_rgba(212,160,23,0.05)] group-hover/item:shadow-[0_0_20px_rgba(212,160,23,0.12)] group-hover/item:border-[rgba(240,192,64,0.35)] italic leading-relaxed transition-all duration-300">
             ✦ {item.short_desc}
           </p>
         )}
-        
-        {/* Deskripsi utama */}
+
         {item.description && (
           <p className="text-neutral-400 text-sm md:text-base font-normal mb-6 leading-relaxed line-clamp-4">
             {item.description}
           </p>
         )}
 
-        {/* Frame foto estetik dengan shadow glow */}
         {item.image && (
           <div className="relative w-full h-48 md:h-[350px] rounded-xl overflow-hidden mb-6 border border-[rgba(212,160,23,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.5)] group-hover/item:shadow-[0_0_30px_rgba(212,160,23,0.22)] group-hover/item:border-[rgba(240,192,64,0.4)] transition-all duration-500 ease-out">
             <Image
@@ -87,7 +76,6 @@ export default async function SejarahPage({
           </div>
         )}
 
-        {/* Tombol selengkapnya dengan style emas minimalis */}
         <div className="flex justify-start">
           <Link
             href={localizedPath(lang, `/sejarah/${item.slug}`)}
@@ -101,7 +89,6 @@ export default async function SejarahPage({
   }));
 
   return (
-    // Samakan background base-nya dengan warna gelap di footer lu
     <div className="w-full min-h-screen bg-[#050509] pt-10">
       {timelineData.length > 0 ? (
         <Timeline data={timelineData} />

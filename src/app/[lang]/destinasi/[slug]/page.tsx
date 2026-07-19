@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
+import { cache, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUp } from "lucide-react";
 import MapWrapper from "@/components/ui/MapWrapper";
 import StreetView from "@/components/ui/StreetView";
 import RouteButton from "@/components/ui/RouteButton";
@@ -11,6 +12,7 @@ import { translations } from "@/lib/translations";
 import { getLocale, localizedPath } from "@/lib/i18n";
 import { getTranslationData } from "@/lib/db";
 import { renderFormattedText } from "@/lib/formatText";
+import ScrollToTop from "@/components/ui/ScrollTop";
 
 function isValidImageSrc(src: string | null | undefined): src is string {
   if (!src) return false;
@@ -48,6 +50,17 @@ export async function generateStaticParams() {
   return data?.map((item) => ({ slug: item.slug })) ?? [];
 }
 
+const getDestination = cache(async (slug: string): Promise<Destination | null> => {
+  const { data, error } = await supabase
+    .from("destinations")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return data;
+});
+
 export async function generateMetadata({
   params,
 }: {
@@ -57,34 +70,13 @@ export async function generateMetadata({
   const slug = resolveParams.slug;
   if (!slug) notFound();
 
-  const { data } = await supabase
-    .from("destinations")
-    .select("name, short_desc")
-    .eq("slug", slug)
-    .single();
+  const destination = await getDestination(slug);
+  if (!destination) notFound();
 
   return {
-    title: `${data?.name} — Wisata Kediri`,
-    description: data?.short_desc,
+    title: `${destination.name} — Wisata Kediri`,
+    description: destination.short_desc,
   };
-}
-
-async function getDestination(slug: string): Promise<Destination | null> {
-  console.log(`Fetching destination for slug: "${slug}"`);
-  const { data, error } = await supabase
-    .from("destinations")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-
-  if (error) {
-    console.error(`Supabase error for slug "${slug}":`, error.message);
-    return null;
-  }
-  if (!data) {
-    console.log(`No data returned for slug: "${slug}"`);
-  }
-  return data;
 }
 
 export default async function DestinationDetailPage({
@@ -116,8 +108,7 @@ export default async function DestinationDetailPage({
             alt={d.name ?? ""}
             fill
             sizes="100vw"
-            quality={90}
-            unoptimized={true}
+            quality={80}
             className="object-cover"
             priority
           />
@@ -139,7 +130,7 @@ export default async function DestinationDetailPage({
 
         <Link
           href={localizedPath(lang, "/destinasi")}
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 text-xs sm:text-sm px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.18)]"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-[90] inline-flex items-center gap-2 text-xs sm:text-sm px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 border border-[rgba(212,160,23,0.3)] hover:border-[#d4a017] hover:shadow-[0_0_15px_rgba(212,160,23,0.18)]"
           style={{
             color: "#d4a017",
             background: "rgba(8,8,15,0.6)",
@@ -195,18 +186,32 @@ export default async function DestinationDetailPage({
         </div>
 
         {d.gallery && d.gallery.length > 0 && (
-          <div>
-            <p
-              className="text-xs uppercase tracking-[0.3em] mb-5 sm:mb-6 font-bold"
-              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-            >
-              ✦ {t.destDetail.gallery}
-            </p>
-            <GalleryClient
-              gallery={d.gallery.filter(isValidImageSrc)}
-              name={d.name}
-            />
-          </div>
+          <Suspense
+            fallback={
+              <div className="rounded-2xl p-5 sm:p-8" style={{ background: "rgba(212,160,23,0.02)", border: "1px solid rgba(212,160,23,0.06)" }}>
+                <div className="w-16 h-3 rounded-full mb-6 animate-pulse" style={{ background: "rgba(212,160,23,0.12)" }} />
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className={`rounded-xl animate-pulse ${i === 1 ? "col-span-2 md:col-span-2 h-48 sm:h-64 md:h-[300px]" : "h-36 sm:h-48 md:h-[200px]"}`} style={{ background: "rgba(255,255,255,0.03)" }} />
+                  ))}
+                </div>
+              </div>
+            }
+          >
+            <div className="rounded-2xl p-5 sm:p-8" style={{ background: "rgba(212,160,23,0.02)", border: "1px solid rgba(212,160,23,0.1)" }}>
+              <div className="flex items-center justify-between mb-6 sm:mb-8">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] font-bold" style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}>
+                    ✦ {t.destDetail.gallery}
+                  </p>
+                  <p className="text-[11px] mt-1.5 tracking-wide" style={{ color: "rgba(200,168,75,0.5)", fontFamily: "var(--font-lato)" }}>
+                    {d.gallery.filter(isValidImageSrc).length} foto &middot; Klik untuk memperbesar
+                  </p>
+                </div>
+              </div>
+              <GalleryClient gallery={d.gallery.filter(isValidImageSrc)} name={d.name} />
+            </div>
+          </Suspense>
         )}
 
         {d.tips && (
@@ -242,40 +247,46 @@ export default async function DestinationDetailPage({
         )}
 
         {d.street_view_url && (
-          <div>
-            <p
-              className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
-              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-            >
-              ✦ {t.destDetail.explore360}
-            </p>
-            <StreetView
-              url={d.street_view_url}
-              name={d.name}
-            />
-          </div>
+          <Suspense
+            fallback={
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] mb-6 font-bold" style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}>
+                  ✦ {t.destDetail.explore360}
+                </p>
+                <div className="w-full h-64 sm:h-80 rounded-2xl animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
+              </div>
+            }
+          >
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] mb-6 font-bold" style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}>
+                ✦ {t.destDetail.explore360}
+              </p>
+              <StreetView url={d.street_view_url} name={d.name} />
+            </div>
+          </Suspense>
         )}
 
         {d.latitude && d.longitude && (
-          <div>
-            <p
-              className="text-xs uppercase tracking-[0.3em] mb-6 font-bold"
-              style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}
-            >
-              ✦ {t.destDetail.mapLocation}
-            </p>
-            <MapWrapper
-              latitude={d.latitude}
-              longitude={d.longitude}
-              name={d.name}
-            />
-
-            <RouteButton
-              latitude={d.latitude}
-              longitude={d.longitude}
-            />
-          </div>
+          <Suspense
+            fallback={
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] mb-6 font-bold" style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}>
+                  ✦ {t.destDetail.mapLocation}
+                </p>
+                <div className="w-full h-64 sm:h-80 rounded-2xl animate-pulse" style={{ background: "rgba(255,255,255,0.03)" }} />
+              </div>
+            }
+          >
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] mb-6 font-bold" style={{ color: "#d4a017", fontFamily: "var(--font-lato)" }}>
+                ✦ {t.destDetail.mapLocation}
+              </p>
+              <MapWrapper latitude={d.latitude} longitude={d.longitude} name={d.name} />
+              <RouteButton latitude={d.latitude} longitude={d.longitude} />
+            </div>
+          </Suspense>
         )}
+        <ScrollToTop/>
       </div>
     </main>
   );

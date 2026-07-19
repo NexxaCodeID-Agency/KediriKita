@@ -94,9 +94,6 @@ function DestinationCard({ item, index }: { item: Destination; index: number }) 
               alt={item.name ?? "Destinasi"}
               fill
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-              unoptimized={
-                !!item.image && !item.image.includes(".supabase.co")
-              }
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div
@@ -191,9 +188,9 @@ export default function DestinationGrid({
     .filter((d) => d.slug)
     .filter((d) => {
       if (activeCategory === "Semua") return true;
-      const translatedActiveCat = (t.categories[activeCategory as keyof typeof t.categories] ?? activeCategory).toLowerCase();
-      const currentCats = getNormalizedCategories(d.category).map(cat => cat.toLowerCase());
-      return currentCats.includes(translatedActiveCat);
+      const translatedActiveCat = (t.categories[activeCategory as keyof typeof t.categories] ?? activeCategory).toLowerCase().trim();
+      const currentCats = getNormalizedCategories(d.category).map(cat => cat.toLowerCase().trim());
+      return currentCats.some(cat => cat === translatedActiveCat || cat.includes(translatedActiveCat) || translatedActiveCat.includes(cat));
     })
     .filter((d) => {
       if (!search.trim()) return true;

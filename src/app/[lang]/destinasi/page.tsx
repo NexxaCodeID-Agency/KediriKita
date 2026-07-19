@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import DestinationGrid from "@/components/ui/DestinationGrid";
-import { getTranslationData } from "@/lib/db";
+import { getBatchTranslations } from "@/lib/db";
 import { getLocale } from "@/lib/i18n";
 
 export const revalidate = 60;
@@ -17,11 +17,7 @@ async function getDestinations() {
     .select("*")
     .order("id", { ascending: true });
 
-  if (error) {
-    console.error("Gagal fetch data:", error.message);
-    return [];
-  }
-
+  if (error) return [];
   return data ?? [];
 }
 
@@ -35,15 +31,16 @@ export default async function DestinationPage({
 
   const destinations = await getDestinations();
 
-  const translatedDestinations =
-    lang === "id"
-      ? destinations
-      : await Promise.all(
-          destinations.map(async (dest) => {
-            const tr = await getTranslationData(String(dest.id), "destinations", lang);
-            return tr ? { ...dest, ...tr } : dest;
-          })
-        );
+  let translatedDestinations = destinations;
+  if (lang !== "id" && destinations.length > 0) {
+    const ids = destinations.map((d) => String(d.id));
+    const translationsMap = await getBatchTranslations(ids, "destinations", lang);
+
+    translatedDestinations = destinations.map((dest) => {
+      const tr = translationsMap.get(String(dest.id));
+      return tr ? { ...dest, ...tr } : dest;
+    });
+  }
 
   return (
     <main className="min-h-screen" style={{ background: "var(--color-langit-malam)" }}>

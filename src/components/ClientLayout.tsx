@@ -6,7 +6,7 @@ import LoadingScreen from './LoadingScreen';
 import Footer, { DestinationLink } from '@/components/sections/Footer';
 import LanguageSwitcher from '@/components/sections/LanguageSwitcher';
 import { getLocale } from '@/lib/i18n';
-import { useHistoryNavigation } from '@/hooks/useHistoryNavigation';
+
 
 export const ReadyContext = createContext(false);
 
@@ -50,7 +50,6 @@ export default function ClientLayout({
     setReady(true);
   };
 
-  useHistoryNavigation();
 
   return (
     <ReadyContext.Provider value={ready}>

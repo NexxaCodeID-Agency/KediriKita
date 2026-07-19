@@ -44,6 +44,9 @@ export const metadata: Metadata = {
       "Temukan keindahan, sejarah, dan kehangatan Kota Kediri — kota yang selalu punya cerita untukmu.",
     images: ["/assets/images/og-kediri.jpg"],
   },
+  icons: {
+    icon: "/favicon.ico",
+  }
 };
 
 export const viewport: Viewport = {

@@ -53,9 +53,10 @@ export async function getBatchTranslations(
 
   const map = new Map<string, Record<string, string>>();
   for (const row of data) {
-    const existing = map.get(row.target_id) ?? {};
+    const key = String(row.target_id);
+    const existing = map.get(key) ?? {};
     existing[row.column_name] = row.translated_text;
-    map.set(row.target_id, existing);
+    map.set(key, existing);
   }
   return map;
 }

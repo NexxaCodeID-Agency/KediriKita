@@ -40,7 +40,7 @@ export default async function SejarahPage({
     const translationsMap = await getBatchTranslations(ids, "histories", lang);
 
     dataSejarahTranslated = dataSejarah.map((item) => {
-      const tr = translationsMap.get(item.id);
+      const tr = translationsMap.get(String(item.id));
       return tr ? { ...item, ...tr } : item;
     });
   }

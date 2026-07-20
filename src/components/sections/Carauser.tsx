@@ -31,6 +31,7 @@ const GALLERY_ITEMS = [
     image: "/assets/images/Simpang-lima-gumul.avif",
     text: "Simpang Lima Gumul",
   },
+  { image: "/assets/images/tahu-takwa.avif", text: "Tahu Takwa/Tahu Kuning" },
 ];
 
 export default function Carauser() {
